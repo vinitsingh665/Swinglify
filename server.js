@@ -8,7 +8,7 @@ const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'client', 'dist')));
 
 // ─── In-Memory Cache ─────────────────────────────────────────────────────────
 const cache = new Map();
@@ -721,9 +721,9 @@ function getCategoryDescription(key) {
     return descriptions[key] || '';
 }
 
-// Serve frontend
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+// Serve React frontend (catch-all for client-side routing)
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'client', 'dist', 'index.html'));
 });
 
 // ─── Start Server ────────────────────────────────────────────────────────────
