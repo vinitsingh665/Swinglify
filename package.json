@@ -5,6 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
+    "build": "cd client && npm install && npm run build",
     "dev": "concurrently --names \"API,VITE\" --prefix-colors \"blue,magenta\" \"node server.js\" \"cd client && npm run dev\"",
     "server": "node server.js",
     "client": "cd client && npm run dev",
