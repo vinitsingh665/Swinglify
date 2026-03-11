@@ -2,43 +2,7 @@ import { useEffect } from 'react';
 import { useStockDetail } from '../hooks/useStockData';
 import { formatNumber, formatVolume, formatMarketCap, getSignalClass, formatSignal } from '../utils';
 
-function TradingViewChart({ symbol }) {
-  return (
-    <div style={{
-      margin: '16px 0',
-      padding: '20px',
-      borderRadius: 12,
-      border: '1px solid var(--glass-border)',
-      background: 'rgba(15, 23, 42, 0.5)',
-      textAlign: 'center'
-    }}>
-      <div style={{ fontSize: '2rem', marginBottom: 8 }}>📊</div>
-      <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: 12 }}>
-        View full interactive chart with indicators
-      </div>
-      <a
-        href={`https://www.tradingview.com/chart/?symbol=NSE:${symbol}`}
-        target="_blank"
-        rel="noopener noreferrer"
-        style={{
-          display: 'inline-flex', alignItems: 'center', gap: 8,
-          padding: '10px 24px',
-          background: 'linear-gradient(135deg, var(--accent-blue), var(--accent-purple))',
-          color: 'white', borderRadius: 100,
-          textDecoration: 'none', fontWeight: 600, fontSize: '0.85rem',
-          fontFamily: 'var(--font-sans)',
-          boxShadow: 'var(--shadow-glow-blue)',
-          transition: 'all 0.25s ease',
-        }}
-      >
-        📈 Open {symbol} Chart on TradingView
-      </a>
-      <div style={{ marginTop: 10, fontSize: '0.7rem', color: 'var(--text-dim)' }}>
-        Candlestick, MA, RSI, MACD & more available on TradingView
-      </div>
-    </div>
-  );
-}
+// Chart removed per user request
 
 export default function StockModal({ symbol, onClose }) {
   const { stock, loading, fetchStock } = useStockDetail();
@@ -83,9 +47,6 @@ export default function StockModal({ symbol, onClose }) {
 
               {/* Top 3 Indicator Signals */}
               <IndicatorSignals s={s} />
-
-              {/* TradingView Chart Widget */}
-              <TradingViewChart symbol={s.symbol} />
 
               {/* Key Stats */}
               <div className="modal-grid">
