@@ -115,7 +115,7 @@ export function useSearch() {
             try {
                 const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
                 const data = await res.json();
-                if (data.success) setResults(data.data.slice(0, 10));
+                if (data.success) setResults(data.data.slice(0, 50));
                 else setResults([]);
             } catch { setResults([]); }
             finally { setSearching(false); }

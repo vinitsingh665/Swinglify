@@ -1,69 +1,83 @@
-import { useState, useMemo } from 'react';
-import Header from './components/Header';
-import TickerBar from './components/TickerBar';
-import CategoryNav from './components/CategoryNav';
-import SubFilter from './components/SubFilter';
-import StatsBar from './components/StatsBar';
+import { useState, useMemo, useEffect, useCallback } from 'react';
+import Sidebar from './components/Sidebar';
+import TopBar from './components/TopBar';
+import OverviewCards from './components/OverviewCards';
 import StockTable from './components/StockTable';
 import StockModal from './components/StockModal';
-import Footer from './components/Footer';
+import SearchBar from './components/SearchBar';
 import { useStockData } from './hooks/useStockData';
-import { applySubFilter } from './utils';
 
 export default function App() {
   const [category, setCategory] = useState('nifty50');
   const [categoryName, setCategoryName] = useState('Nifty 50');
-  const [subFilter, setSubFilter] = useState('all');
   const [modalSymbol, setModalSymbol] = useState(null);
+  const [theme, setThemeState] = useState('dark');
+
+  useEffect(() => {
+    const saved = localStorage.getItem('theme');
+    if (saved) setThemeState(saved);
+  }, []);
+
+  const setTheme = (newTheme) => {
+    setThemeState(newTheme);
+    localStorage.setItem('theme', newTheme);
+  };
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+  }, [theme]);
 
   const { stocks, loading, error, lastUpdated, countdown, refresh } = useStockData(category, 10);
 
-  const filteredStocks = useMemo(() => applySubFilter(stocks, subFilter), [stocks, subFilter]);
-  const avgChange = useMemo(() => {
-    if (filteredStocks.length === 0) return 0;
-    return filteredStocks.reduce((sum, s) => sum + (s.change || 0), 0) / filteredStocks.length;
-  }, [filteredStocks]);
-
-  const handleCategoryChange = (id, label) => {
+  const handleCategoryChange = useCallback((id, label) => {
     setCategory(id);
     setCategoryName(label.replace(/[🟢🔴🔥]\s*/g, ''));
-    setSubFilter('all');
-  };
+  }, []);
+
+  // Search shortcut handled entirely inside SearchBar now
 
   return (
-    <>
-      <div className="bg-gradient"></div>
-      <div className="bg-grid"></div>
+    <div className="app-layout">
+      <Sidebar theme={theme} setTheme={setTheme} />
 
-      <div className="app">
-        <Header countdown={countdown} onRefresh={refresh} onOpenStock={setModalSymbol} />
-        <TickerBar />
-        <CategoryNav activeCategory={category} onCategoryChange={handleCategoryChange} />
-        <SubFilter activeFilter={subFilter} onFilterChange={setSubFilter} />
-        <StatsBar
-          stockCount={filteredStocks.length}
-          categoryName={categoryName}
-          lastUpdated={lastUpdated}
-          avgChange={avgChange}
-        />
+      <div className="main-area">
+        <TopBar />
 
-        {error ? (
-          <div className="table-container glass-card" style={{ textAlign: 'center', padding: '60px 20px' }}>
-            <div style={{ fontSize: '2rem', marginBottom: 12 }}>⚠️</div>
-            <div style={{ color: 'var(--red)', fontWeight: 600, marginBottom: 8 }}>{error}</div>
-            <button onClick={refresh} style={{
-              padding: '8px 20px', background: 'var(--accent-blue)', color: 'white', border: 'none',
-              borderRadius: 100, fontFamily: 'var(--font-sans)', fontSize: '0.85rem', cursor: 'pointer', fontWeight: 600
-            }}>Retry</button>
+        <div className="content">
+          <div className="content-inner">
+            {/* Overview Header */}
+            <div className="overview-header">
+              <h1 className="overview-title">Overview</h1>
+              <SearchBar onOpenStock={setModalSymbol} />
+            </div>
+
+            {/* Cards Grid */}
+            <OverviewCards
+              theme={theme}
+              categoryName={categoryName}
+              onCategoryChange={handleCategoryChange}
+              onOpenStock={setModalSymbol}
+            />
+
+            {/* Stock Table */}
+            {error ? (
+              <div className="table-card" style={{ textAlign: 'center', padding: '60px 20px' }}>
+                <div style={{ fontSize: '2rem', marginBottom: 12 }}>⚠️</div>
+                <div style={{ color: 'var(--red)', fontWeight: 600, marginBottom: 8 }}>{error}</div>
+                <button onClick={refresh} style={{
+                  padding: '10px 24px', background: 'var(--accent)', color: 'white', border: 'none',
+                  borderRadius: '8px', fontFamily: 'var(--font)', fontSize: '0.85rem', cursor: 'pointer', fontWeight: 600
+                }}>Retry</button>
+              </div>
+            ) : (
+              <StockTable stocks={stocks} loading={loading} onOpenStock={setModalSymbol} />
+            )}
           </div>
-        ) : (
-          <StockTable stocks={filteredStocks} loading={loading} onOpenStock={setModalSymbol} />
-        )}
-
-        <Footer />
+        </div>
       </div>
 
+      {/* Modals */}
       {modalSymbol && <StockModal symbol={modalSymbol} onClose={() => setModalSymbol(null)} />}
-    </>
+    </div>
   );
 }

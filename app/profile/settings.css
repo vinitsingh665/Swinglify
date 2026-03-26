@@ -1,0 +1,207 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   SETTINGS PAGE — PREMIUM CONTROL PANEL
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.settings-layout {
+  flex: 1; padding: 20px; background: var(--bg-base);
+  display: flex; flex-direction: column; gap: 20px; overflow-y: auto;
+}
+
+.settings-header {
+  font-size: 1.5rem; font-weight: 800; color: var(--text-primary); letter-spacing: -0.3px;
+}
+
+.settings-body {
+  display: grid; grid-template-columns: 240px 1fr; gap: 20px; flex: 1;
+}
+
+/* ─── Left: Section Tabs ─── */
+.settings-tabs {
+  background: var(--bg-surface); border: 1px solid var(--border); border-radius: 14px;
+  padding: 12px; height: fit-content; position: sticky; top: 20px;
+  display: flex; flex-direction: column; gap: 4px;
+}
+
+.set-tab {
+  display: flex; align-items: center; gap: 10px; padding: 12px 14px;
+  border-radius: 10px; border: none; background: transparent; color: var(--text-secondary);
+  font-size: 0.88rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
+  text-align: left; width: 100%;
+}
+.set-tab:hover { background: var(--bg-hover); color: var(--text-primary); }
+.set-tab.active {
+  background: var(--accent-bg); color: var(--accent); border: 1px solid var(--accent-bg);
+}
+.set-tab svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+/* ─── Right: Content Panel ─── */
+.settings-content {
+  display: flex; flex-direction: column; gap: 20px;
+}
+
+/* ─── Cards ─── */
+.set-card {
+  background: var(--bg-surface); border: 1px solid var(--border); border-radius: 14px;
+  padding: 24px; display: flex; flex-direction: column; gap: 20px;
+}
+.set-card-title {
+  font-size: 1.1rem; font-weight: 800; color: var(--text-primary); margin-bottom: 4px;
+}
+.set-card-desc {
+  font-size: 0.8rem; color: var(--text-dim); margin-top: -16px;
+}
+
+/* ─── Profile ─── */
+.set-profile-header {
+  display: flex; align-items: center; gap: 20px;
+}
+
+/* Avatar wrapper with upload overlay */
+.set-avatar-wrapper {
+  position: relative; width: 72px; height: 72px; border-radius: 50%;
+  cursor: pointer; flex-shrink: 0; overflow: hidden;
+  border: 3px solid var(--border);
+  transition: border-color 0.2s;
+}
+.set-avatar-wrapper:hover { border-color: var(--accent); }
+.set-avatar-wrapper:hover .set-avatar-overlay { opacity: 1; }
+
+.set-avatar {
+  width: 100%; height: 100%; border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 60%, #000));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.6rem; font-weight: 800; color: white; border: none;
+}
+.set-avatar-img {
+  width: 100%; height: 100%; object-fit: cover; border-radius: 50%;
+}
+.set-avatar-overlay {
+  position: absolute; inset: 0; background: rgba(0,0,0,0.55);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity 0.2s; border-radius: 50%;
+}
+.set-avatar-overlay svg { width: 24px; height: 24px; stroke: white; }
+
+.set-profile-info { display: flex; flex-direction: column; gap: 4px; }
+.set-profile-name { font-size: 1.2rem; font-weight: 800; color: var(--text-primary); }
+.set-profile-name-input {
+  font-size: 1.2rem; font-weight: 800; color: var(--text-primary);
+  background: var(--bg-input); border: 1px solid var(--accent); border-radius: 8px;
+  padding: 6px 12px; outline: none; font-family: inherit;
+}
+.set-profile-email { font-size: 0.85rem; color: var(--text-secondary); display: flex; align-items: center; gap: 6px; }
+.set-google-badge {
+  background: #4285f4; color: white; font-size: 0.6rem; font-weight: 700;
+  padding: 2px 6px; border-radius: 4px; text-transform: uppercase;
+}
+.set-profile-meta { font-size: 0.75rem; color: var(--text-dim); }
+.set-profile-plan {
+  display: inline-block; background: var(--accent-bg); color: var(--accent);
+  font-size: 0.7rem; font-weight: 700; padding: 3px 10px; border-radius: 6px;
+  border: 1px solid var(--accent-bg); margin-top: 4px; width: fit-content;
+}
+
+/* ─── Edit Button ─── */
+.set-edit-btn {
+  align-self: flex-start;
+  background: var(--bg-input); border: 1px solid var(--border); color: var(--text-primary);
+  padding: 8px 18px; border-radius: 8px; font-weight: 700; font-size: 0.82rem;
+  cursor: pointer; transition: all 0.2s;
+}
+.set-edit-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ─── Rows / Items ─── */
+.set-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 0; border-bottom: 1px solid var(--border);
+}
+.set-row:last-child { border-bottom: none; }
+
+.set-row-info { display: flex; flex-direction: column; gap: 2px; }
+.set-row-label { font-size: 0.9rem; font-weight: 700; color: var(--text-primary); }
+.set-row-desc { font-size: 0.75rem; color: var(--text-dim); }
+
+/* ─── Toggle Switch ─── */
+.set-toggle {
+  width: 44px; height: 24px; border-radius: 12px; border: none; cursor: pointer;
+  background: var(--bg-input); border: 1px solid var(--border); position: relative;
+  transition: all 0.3s; flex-shrink: 0;
+}
+.set-toggle::after {
+  content: ''; position: absolute; top: 2px; left: 2px;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: var(--text-dim); transition: all 0.3s;
+}
+.set-toggle.on {
+  background: var(--accent); border-color: var(--accent);
+}
+.set-toggle.on::after {
+  left: 22px; background: white;
+}
+
+/* ─── Pill Group ─── */
+.set-pills { display: flex; gap: 6px; flex-wrap: wrap; }
+.set-pill {
+  background: var(--bg-input); border: 1px solid var(--border); color: var(--text-secondary);
+  padding: 6px 14px; border-radius: 8px; font-size: 0.8rem; font-weight: 600;
+  cursor: pointer; transition: all 0.2s;
+}
+.set-pill:hover { border-color: var(--border-hover); color: var(--text-primary); }
+.set-pill.active { background: var(--accent-bg); border-color: var(--accent); color: var(--accent); }
+
+/* ─── Color Swatches ─── */
+.set-swatches { display: flex; gap: 10px; }
+.set-swatch {
+  width: 32px; height: 32px; border-radius: 50%; cursor: pointer;
+  border: 3px solid transparent; transition: all 0.2s;
+}
+.set-swatch:hover { transform: scale(1.15); }
+.set-swatch.active { border-color: white; box-shadow: 0 0 0 2px var(--accent); }
+
+/* ─── Danger Zone ─── */
+.set-danger {
+  background: rgba(239,68,68,0.05); border: 1px solid rgba(239,68,68,0.15); border-radius: 14px;
+  padding: 24px; display: flex; flex-direction: column; gap: 16px;
+}
+.set-danger-title {
+  font-size: 1rem; font-weight: 800; color: var(--red-bright);
+}
+.set-danger-btn {
+  background: transparent; border: 1px solid var(--red); color: var(--red-bright);
+  padding: 10px 20px; border-radius: 8px; font-weight: 700; font-size: 0.85rem;
+  cursor: pointer; transition: all 0.2s; align-self: flex-start;
+}
+.set-danger-btn:hover {
+  background: var(--red); color: white;
+}
+
+/* ─── Buttons ─── */
+.set-btn {
+  background: var(--bg-input); border: 1px solid var(--border); color: var(--text-primary);
+  padding: 10px 20px; border-radius: 8px; font-weight: 700; font-size: 0.85rem;
+  cursor: pointer; transition: all 0.2s;
+}
+.set-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ─── About ─── */
+.set-about-version {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--bg-input); border: 1px solid var(--border); border-radius: 8px;
+  padding: 8px 16px; font-family: var(--font-mono); font-size: 0.85rem;
+  font-weight: 700; color: var(--accent);
+}
+.set-about-links { display: flex; flex-direction: column; gap: 8px; }
+.set-about-link {
+  color: var(--text-secondary); font-size: 0.85rem; text-decoration: none;
+  transition: color 0.2s; cursor: pointer; background: none; border: none;
+  text-align: left; padding: 0; font-family: inherit;
+}
+.set-about-link:hover { color: var(--accent); }
+
+/* ─── Micro-feedback animation ─── */
+@keyframes setGlow {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 30%, transparent); }
+  50% { box-shadow: 0 0 12px 4px color-mix(in srgb, var(--accent) 15%, transparent); }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+.set-glow { animation: setGlow 0.5s ease; }

@@ -1,0 +1,260 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   WATCHLIST PAGE — DENSE ACTIONABLE TRACKING
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.watchlist-layout {
+  flex: 1; padding: 20px; background: var(--bg-base);
+  display: flex; flex-direction: column; gap: 16px; min-height: 100vh;
+}
+
+/* ─── Top Bar ─── */
+.wl-topbar {
+  background: var(--bg-surface); border: 1px solid var(--border); border-radius: 12px;
+  padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; gap: 16px;
+}
+.wl-tb-left { display: flex; align-items: center; gap: 20px; }
+.wl-title { font-size: 1.35rem; font-weight: 800; color: var(--text-primary); }
+
+.wl-search {
+  position: relative; display: flex; align-items: center; gap: 8px; width: 300px;
+}
+.wl-search-input-wrap {
+  display: flex; align-items: center; gap: 10px; width: 100%;
+  background: var(--bg-input); border: 1px solid var(--border); border-radius: 8px; padding: 7px 14px;
+  transition: all 0.2s;
+}
+.wl-search-input-wrap:focus-within { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-bg); }
+.wl-search svg { width: 15px; height: 15px; color: var(--text-muted); }
+.wl-search input {
+  background: transparent; border: none; outline: none; color: var(--text-primary); width: 100%; font-size: 0.85rem;
+}
+
+/* Search Dropdown */
+.wl-search-dropdown {
+  position: absolute; top: calc(100% + 4px); left: 0; width: 100%; max-height: 250px;
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px;
+  overflow-y: auto; z-index: 50; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+.wl-search-item {
+  padding: 10px 14px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between;
+  align-items: center; cursor: pointer; transition: background 0.15s;
+}
+.wl-search-item:last-child { border-bottom: none; }
+.wl-search-item:hover { background: var(--bg-hover); }
+.wl-si-sym { font-weight: 700; color: var(--text-primary); font-size: 0.85rem; }
+.wl-si-name { font-size: 0.7rem; color: var(--text-dim); }
+
+.wl-tb-right { display: flex; align-items: center; gap: 12px; }
+.wl-sort {
+  background: var(--bg-input); border: 1px solid var(--border); color: var(--text-primary);
+  padding: 6px 12px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; cursor: pointer; outline: none;
+}
+
+/* ─── Filter Pills ─── */
+.wl-pills { display: flex; align-items: center; gap: 8px; overflow-x: auto; padding-bottom: 4px; }
+.wl-pill {
+  padding: 6px 14px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; cursor: pointer;
+  background: var(--bg-input); border: 1px solid var(--border); color: var(--text-dim);
+  transition: all 0.2s; white-space: nowrap; display: flex; align-items: center; gap: 6px;
+}
+.wl-pill:hover { background: var(--bg-hover); color: var(--text-primary); }
+.wl-pill.active { background: var(--bg-surface); border-color: var(--text-primary); color: var(--text-primary); }
+.wl-pill.gain { color: var(--green); }
+.wl-pill.gain.active { border-color: var(--green); background: var(--green-bg); }
+.wl-pill.loss { color: var(--red); }
+.wl-pill.loss.active { border-color: var(--red); background: var(--red-bg); }
+.wl-pill.signal.active { border-color: var(--accent); color: var(--accent); background: var(--accent-bg); }
+
+/* ─── Main Grid (Left Table, Right Panel) ─── */
+.wl-body {
+  display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 16px; flex: 1; align-items: start;
+}
+.wl-body.no-panel { grid-template-columns: minmax(0, 1fr); }
+
+/* ─── Empty State ─── */
+.wl-empty {
+  background: var(--bg-surface); border: 1px dashed var(--border); border-radius: 12px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 60px 20px; text-align: center; color: var(--text-dim); min-height: 400px;
+}
+.wl-empty svg { width: 48px; height: 48px; margin-bottom: 16px; opacity: 0.4; stroke: var(--text-muted); }
+.wl-empty-title { font-size: 1.2rem; font-weight: 700; color: var(--text-primary); margin-bottom: 8px; }
+.wl-empty span { font-size: 0.9rem; margin-bottom: 24px; max-width: 300px; line-height: 1.5; }
+.wl-empty button {
+  background: var(--accent); color: white; border: none; padding: 10px 20px; border-radius: 8px;
+  font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px var(--accent-bg);
+}
+.wl-empty button:hover { transform: translateY(-1px); filter: brightness(1.1); }
+
+/* ─── Main Table ─── */
+.wl-table-wrap {
+  background: var(--bg-surface); border: 1px solid var(--border); border-radius: 12px;
+  overflow: hidden; display: flex; flex-direction: column;
+}
+
+.wl-table { width: 100%; border-collapse: collapse; }
+.wl-table th {
+  text-align: left; padding: 10px 16px; font-size: 0.68rem; color: var(--text-dim);
+  text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;
+  border-bottom: 1px solid var(--border); background: var(--bg-card);
+}
+
+.wl-row {
+  cursor: pointer; position: relative; border-bottom: 1px solid var(--border);
+  transition: all 0.2s; background: transparent;
+}
+.wl-row:last-child { border-bottom: none; }
+.wl-row:hover { background: rgba(255, 255, 255, 0.03); }
+.wl-row.selected { background: var(--bg-hover); box-shadow: inset 2px 0 0 var(--accent); }
+
+.wl-row td { padding: 10px 16px; vertical-align: middle; white-space: nowrap; }
+
+/* Micro-interaction: Action Overlay on Hover */
+.wl-actions {
+  position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+  display: flex; gap: 6px; opacity: 0; pointer-events: none; transition: opacity 0.2s;
+  background: linear-gradient(90deg, transparent, var(--bg-surface) 20%);
+  padding-left: 20px; height: 100%; align-items: center;
+}
+.wl-row:hover .wl-actions { opacity: 1; pointer-events: auto; }
+.wl-row.selected .wl-actions { background: linear-gradient(90deg, transparent, var(--bg-hover) 20%); }
+
+.wl-btn {
+  width: 28px; height: 28px; border-radius: 6px; border: 1px solid var(--border);
+  background: var(--bg-input); color: var(--text-secondary); display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all 0.2s;
+}
+.wl-btn:hover { background: var(--bg-card); color: var(--text-primary); border-color: var(--text-dim); }
+.wl-btn.danger:hover { background: var(--red-bg); color: var(--red-bright); border-color: rgba(239,68,68,0.4); }
+
+/* Table cells */
+.wl-stock { display: flex; align-items: center; gap: 10px; }
+.wl-logo { width: 26px; height: 26px; border-radius: 50%; object-fit: contain; background: white; padding: 1px; border: 1px solid var(--border); }
+.wl-logo-fallback { width: 26px; height: 26px; border-radius: 50%; background: var(--bg-input); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.65rem; color: var(--text-dim); }
+.wl-sym { font-weight: 700; color: var(--text-primary); font-size: 0.85rem; }
+.wl-context { display: block; font-size: 0.65rem; color: var(--text-dim); margin-top: 2px; }
+
+.wl-price { font-family: var(--font-mono); font-weight: 700; color: var(--text-primary); font-size: 0.9rem; }
+
+.wl-change { font-family: var(--font-mono); font-weight: 700; font-size: 0.8rem; }
+.wl-change.up { color: var(--green-bright); }
+.wl-change.down { color: var(--red-bright); }
+
+.wl-vol { font-family: var(--font-mono); font-size: 0.78rem; color: var(--text-secondary); }
+
+.wl-signal {
+  font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.4px;
+  padding: 3px 8px; border-radius: 5px; display: inline-block;
+}
+.wl-signal.buy { color: var(--green-bright); background: var(--green-bg); border: 1px solid rgba(34,197,94,0.2); }
+.wl-signal.sell { color: var(--red-bright); background: var(--red-bg); border: 1px solid rgba(239,68,68,0.2); }
+.wl-signal.neutral { color: var(--text-muted); background: var(--bg-input); border: 1px solid var(--border); }
+
+/* Mini Sparkline */
+.wl-spark { width: 60px; height: 20px; display: flex; align-items: flex-end; gap: 2px; margin-right: 40px; }
+.wl-sp-bar { width: 3px; background: var(--text-dim); border-radius: 1px; }
+.wl-sp-bar.up { background: var(--green); }
+.wl-sp-bar.down { background: var(--red); }
+
+/* ─── Right Panel: Insights ─── */
+.wl-panel {
+  background: var(--bg-surface); border: 1px solid var(--border); border-radius: 12px;
+  padding: 20px; position: sticky; top: 20px;
+}
+
+.wlp-header { margin-bottom: 24px; }
+.wlp-close { position: absolute; top: 16px; right: 16px; background: none; border: none; color: var(--text-dim); cursor: pointer; padding: 4px; border-radius: 4px; }
+.wlp-close:hover { background: var(--bg-hover); color: var(--text-primary); }
+
+.wlp-sym { font-size: 1.3rem; font-weight: 800; color: var(--text-primary); }
+.wlp-name { font-size: 0.75rem; color: var(--text-dim); margin-top: 2px; }
+
+.wlp-price-wrap { display: flex; align-items: baseline; gap: 10px; margin-top: 12px; }
+.wlp-price { font-size: 1.8rem; font-weight: 800; font-family: var(--font-mono); color: var(--text-primary); }
+.wlp-change { font-size: 1rem; font-weight: 700; font-family: var(--font-mono); }
+.wlp-change.up { color: var(--green-bright); }
+.wlp-change.down { color: var(--red-bright); }
+
+.wlp-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+.wlp-stat { background: var(--bg-card); padding: 10px; border-radius: 8px; border: 1px solid var(--border); }
+.wlp-sl { display: block; font-size: 0.65rem; color: var(--text-dim); text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; margin-bottom: 4px; }
+.wlp-sv { font-size: 0.85rem; font-weight: 700; color: var(--text-primary); font-family: var(--font-mono); }
+
+/* The Edge / Meaning Section */
+.wlp-edge { border-top: 1px solid var(--border); padding-top: 20px; }
+.wlp-edge-title { font-size: 0.75rem; color: var(--text-secondary); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+
+.wlp-insight {
+  padding: 12px; background: var(--bg-input); border-left: 3px solid var(--text-dim);
+  border-radius: 0 8px 8px 0; font-size: 0.82rem; margin-bottom: 10px; color: var(--text-primary);
+  line-height: 1.5;
+}
+.wlp-insight.positive { border-left-color: var(--green); background: var(--green-bg); }
+.wlp-insight.negative { border-left-color: var(--red); background: var(--red-bg); }
+.wlp-insight.accent { border-left-color: var(--accent); background: var(--accent-bg); }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   WATCHLIST — MOBILE ≤768px
+   ═══════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .watchlist-layout { padding: 14px 12px; }
+
+  /* ─── Top Bar ─── */
+  .wl-topbar {
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+  }
+  .wl-tb-left {
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    min-width: 0;
+  }
+  .wl-title { font-size: 1.15rem; flex-shrink: 0; }
+
+  .wl-search {
+    flex: 1;
+    width: auto;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+  .wl-search-input-wrap {
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .wl-search-dropdown {
+    width: 100%;
+  }
+
+  /* ─── Filter Pills ─── */
+  .wl-pills { gap: 6px; }
+  .wl-pill { padding: 5px 10px; font-size: 0.7rem; }
+
+  /* ─── Body: single column on mobile ─── */
+  .wl-body,
+  .wl-body.has-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .wl-panel { position: static; }
+
+  /* ─── Table ─── */
+  .wl-table th { padding: 8px 10px; font-size: 0.62rem; }
+  .wl-row td { padding: 8px 10px; }
+
+  .wl-stock { gap: 8px; }
+  .wl-logo, .wl-logo-fallback { width: 24px; height: 24px; font-size: 0.6rem; }
+  .wl-sym { font-size: 0.8rem; }
+  .wl-context { font-size: 0.6rem; }
+  .wl-price { font-size: 0.82rem; }
+  .wl-change { font-size: 0.72rem; }
+  .wl-vol { font-size: 0.7rem; }
+  .wl-signal { font-size: 0.6rem; padding: 2px 6px; }
+  .wl-spark { display: none; }
+
+  /* Show action buttons always on mobile (no hover) */
+  .wl-actions { opacity: 1; pointer-events: auto; position: relative; right: auto; top: auto; transform: none; background: none; padding-left: 0; height: auto; }
+}

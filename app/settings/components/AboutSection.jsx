@@ -1,0 +1,32 @@
+"use client";
+import { useRouter } from 'next/navigation';
+
+export default function AboutSection() {
+  const router = useRouter();
+
+  return (
+    <div className="set-card" style={{ alignItems: 'center', textAlign: 'center', padding: '40px 20px' }}>
+      <div style={{ width: 64, height: 64, background: 'var(--accent)', borderRadius: 16, marginBottom: 16, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <img src="/logo.png" alt="Swinglify" style={{ width: 40, filter: 'brightness(0) invert(1)' }} onError={(e) => e.target.style.display='none'} />
+      </div>
+      
+      <h2 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: 8 }}>Swinglify</h2>
+      
+      <div className="set-about-version" style={{ marginBottom: 32 }}>
+        v1.0.0 (Beta)
+      </div>
+
+      <div style={{ display: 'flex', gap: 16, marginBottom: 40 }}>
+        <button className="set-btn" onClick={() => router.push('/info/contact')}>Contact Support</button>
+        <button className="set-btn" onClick={() => router.push('/info/bug-report')}>Report a Bug</button>
+      </div>
+
+      <div className="set-about-links" style={{ flexDirection: 'row', gap: 24, justifyContent: 'center' }}>
+        <button className="set-about-link" onClick={() => router.push('/info/terms')}>Terms of Service</button>
+        <button className="set-about-link" onClick={() => router.push('/info/privacy')}>Privacy Policy</button>
+        <button className="set-about-link" onClick={() => router.push('/info/changelog')}>Changelog</button>
+      </div>
+    </div>
+  );
+}
+

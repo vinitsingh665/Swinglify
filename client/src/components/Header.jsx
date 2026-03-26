@@ -42,17 +42,13 @@ export default function Header({ countdown, onRefresh, onOpenStock }) {
       <div className="header-left">
         <div className="logo">
           <div className="logo-icon">
-            <img src={logoImg} alt="Swinglify Logo" style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: '12px' }} />
+            <img src={logoImg} alt="Swinglify" style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: '8px' }} />
           </div>
           <div className="logo-text">
             <h1>Swinglify</h1>
-            <span className="logo-tagline">(Stocks Available for Swing Trades at One Place)</span>
-            <span className="logo-subtitle">Indian Market · Live</span>
           </div>
         </div>
-      </div>
 
-      <div className="header-center">
         <div className={`market-status ${statusClass}`}>
           <span className="status-dot"></span>
           <span className="status-text">{statusText}</span>
@@ -68,7 +64,7 @@ export default function Header({ countdown, onRefresh, onOpenStock }) {
           <input
             type="text"
             className="search-input"
-            placeholder="Search stocks... (e.g. RELIANCE, TCS)"
+            placeholder="Search stocks..."
             value={query}
             onChange={handleSearch}
             onFocus={() => query.trim().length >= 1 && setShowResults(true)}
@@ -88,7 +84,7 @@ export default function Header({ countdown, onRefresh, onOpenStock }) {
                   </div>
                   <div className="sr-price">
                     <div style={{ fontWeight: 600 }}>₹{formatNumber(s.price)}</div>
-                    <div style={{ color: s.change >= 0 ? 'var(--green)' : 'var(--red)', fontSize: '0.75rem' }}>
+                    <div style={{ color: s.change >= 0 ? 'var(--green)' : 'var(--red)', fontSize: '0.72rem' }}>
                       {s.change >= 0 ? '+' : ''}{s.change}%
                     </div>
                   </div>

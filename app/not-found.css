@@ -1,0 +1,181 @@
+.nf-page {
+  position: fixed; inset: 0;
+  background: #0a0a0a;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden; font-family: 'Inter', -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.nf-canvas {
+  position: absolute; inset: 0; z-index: 1;
+}
+
+/* Animated gradient orbs */
+.nf-orb {
+  position: absolute; border-radius: 50%; filter: blur(100px);
+  z-index: 1; pointer-events: none;
+  animation: orbFloat 8s ease-in-out infinite;
+}
+.nf-orb-1 {
+  width: 500px; height: 500px; top: -10%; left: -5%;
+  background: radial-gradient(circle, rgba(249,115,22,0.15), transparent 70%);
+  animation-delay: 0s;
+}
+.nf-orb-2 {
+  width: 400px; height: 400px; bottom: -15%; right: -10%;
+  background: radial-gradient(circle, rgba(239,68,68,0.1), transparent 70%);
+  animation-delay: -3s;
+}
+.nf-orb-3 {
+  width: 300px; height: 300px; top: 30%; right: 20%;
+  background: radial-gradient(circle, rgba(249,115,22,0.08), transparent 70%);
+  animation-delay: -5s;
+}
+
+@keyframes orbFloat {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -20px) scale(1.05); }
+  66% { transform: translate(-20px, 30px) scale(0.95); }
+}
+
+.nf-content {
+  position: relative; z-index: 2; text-align: center;
+  transition: transform 0.3s ease-out;
+}
+
+/* Glitch 404 */
+.nf-code-wrap {
+  position: relative; display: inline-block; margin-bottom: 16px;
+  overflow: hidden;
+}
+
+.nf-code {
+  font-size: clamp(6rem, 18vw, 12rem);
+  font-weight: 900; letter-spacing: -4px;
+  background: linear-gradient(135deg, #f97316 0%, #ef4444 50%, #f97316 100%);
+  background-size: 200% 200%;
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradientShift 4s ease infinite;
+  position: relative; display: block;
+  text-shadow: 0 0 80px rgba(249,115,22,0.3);
+}
+
+.nf-code::before, .nf-code::after {
+  content: attr(data-text);
+  position: absolute; top: 0; left: 0;
+  background: inherit; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.nf-code::before {
+  animation: glitch1 3s infinite;
+  clip-path: inset(20% 0 50% 0);
+}
+.nf-code::after {
+  animation: glitch2 3s infinite;
+  clip-path: inset(60% 0 10% 0);
+}
+
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+@keyframes glitch1 {
+  0%, 90%, 100% { transform: none; opacity: 0; }
+  92% { transform: translate(-3px, 2px); opacity: 0.7; }
+  94% { transform: translate(3px, -2px); opacity: 0.7; }
+}
+@keyframes glitch2 {
+  0%, 90%, 100% { transform: none; opacity: 0; }
+  93% { transform: translate(3px, 1px); opacity: 0.7; }
+  95% { transform: translate(-2px, -1px); opacity: 0.7; }
+}
+
+.nf-scanline {
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 3px; background: rgba(249,115,22,0.1);
+  animation: scanline 4s linear infinite;
+  pointer-events: none;
+}
+@keyframes scanline {
+  0% { top: -10%; }
+  100% { top: 110%; }
+}
+
+.nf-title {
+  font-size: clamp(1.4rem, 4vw, 2.2rem);
+  font-weight: 800; color: #ffffff;
+  margin-bottom: 12px; letter-spacing: -0.5px;
+}
+
+.nf-subtitle {
+  font-size: clamp(0.85rem, 2vw, 1rem);
+  color: #666; line-height: 1.7; max-width: 420px;
+  margin: 0 auto 36px;
+}
+
+.nf-actions {
+  display: flex; align-items: center; justify-content: center; gap: 14px;
+  flex-wrap: wrap; margin-bottom: 48px;
+}
+
+.nf-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 12px 24px; border-radius: 10px;
+  font-size: 0.88rem; font-weight: 700; font-family: inherit;
+  text-decoration: none; cursor: pointer;
+  transition: all 0.25s ease;
+}
+.nf-btn svg { width: 16px; height: 16px; }
+
+.nf-btn-primary {
+  background: linear-gradient(135deg, #f97316, #ea580c);
+  color: white; border: none;
+  box-shadow: 0 4px 20px rgba(249,115,22,0.3);
+}
+.nf-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(249,115,22,0.4);
+}
+
+.nf-btn-ghost {
+  background: transparent; color: #888;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+.nf-btn-ghost:hover {
+  color: #ccc; border-color: rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.04);
+}
+
+/* Fake ticker tape */
+.nf-ticker {
+  overflow: hidden; max-width: 500px; margin: 0 auto;
+  border-radius: 8px; background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.05); padding: 8px 0;
+}
+
+.nf-ticker-track {
+  display: flex; gap: 32px; white-space: nowrap;
+  animation: tickerScroll 20s linear infinite;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem; font-weight: 600; color: #444;
+}
+.nf-ticker-track span { flex-shrink: 0; }
+
+@keyframes tickerScroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .nf-title { font-size: 1.5rem; }
+  .nf-code { letter-spacing: -2px; font-size: 6rem; }
+  .nf-subtitle br { display: none; }
+  .nf-actions { flex-direction: column; gap: 10px; }
+  .nf-btn { width: 200px; justify-content: center; }
+  .nf-ticker { max-width: 90vw; }
+  .nf-orb-1 { width: 300px; height: 300px; }
+  .nf-orb-2 { width: 250px; height: 250px; }
+  .nf-orb-3 { display: none; }
+}

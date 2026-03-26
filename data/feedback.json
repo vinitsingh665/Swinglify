@@ -1,0 +1,52 @@
+[
+  {
+    "id": "f-043543",
+    "type": "contact",
+    "subject": "Support: general",
+    "body": "aaaaaaa",
+    "senderName": "aaaa",
+    "senderEmail": "aaa@gmail.com",
+    "status": "resolved",
+    "createdAt": "2026-03-26T10:14:03.543Z"
+  },
+  {
+    "id": "f-101",
+    "type": "bug",
+    "subject": "Cannot delete alerts on mobile",
+    "body": "When I try to swipe left to delete an alert on my iPhone 13, nothing happens. The delete button never shows up. Please fix this soon as my list is getting huge.",
+    "senderName": "Rahul Verma",
+    "senderEmail": "rahul.v88@gmail.com",
+    "status": "resolved",
+    "createdAt": "2026-03-26T09:00:00.000Z"
+  },
+  {
+    "id": "f-102",
+    "type": "contact",
+    "subject": "Feature Request: Options chain",
+    "body": "Hey Swinglify team, absolutely loving the premium design. It feels so much better than TradingView. Any plans to add an options chain view for Nifty/BankNifty?",
+    "senderName": "Priya Sharma",
+    "senderEmail": "priya.finance@yahoo.com",
+    "status": "resolved",
+    "createdAt": "2026-03-26T06:00:00.000Z"
+  },
+  {
+    "id": "f-103",
+    "type": "bug",
+    "subject": "Screener filters resetting",
+    "body": "If I apply the \"Golden Crossover\" filter and then refresh the page, the table resets to the default view. It should remember my filters in the URL or local storage.",
+    "senderName": "Amit Patel",
+    "senderEmail": "amitp_trader@outlook.com",
+    "status": "resolved",
+    "createdAt": "2026-03-24T06:00:00.000Z"
+  },
+  {
+    "id": "f-104",
+    "type": "contact",
+    "subject": "Is there an annual plan?",
+    "body": "I see the monthly pricing but I would like to pay for a whole year upfront if there is a discount. Please let me know.",
+    "senderName": "Neha Desai",
+    "senderEmail": "neha.desai1995@gmail.com",
+    "status": "resolved",
+    "createdAt": "2026-03-21T06:00:00.000Z"
+  }
+]
