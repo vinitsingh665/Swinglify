@@ -1,5 +1,5 @@
 export default function sitemap() {
-  const baseUrl = 'https://swinglify.com';
+  const baseUrl = 'https://swinglify.online';
 
   return [
     { url: baseUrl, lastModified: new Date(), changeFrequency: 'daily', priority: 1.0 },
