@@ -5,6 +5,7 @@ import './analytics.css';
 import Sidebar from '../../components/Sidebar';
 import TopBar from '../../components/TopBar';
 import MarketPulse from './components/MarketPulse';
+import MarketBreadth from './components/MarketBreadth';
 import SectorPerformance from './components/SectorPerformance';
 import TrendSignals from './components/TrendSignals';
 import OpportunitiesToday from './components/OpportunitiesToday';
@@ -66,6 +67,9 @@ export default function AnalyticsPage() {
             <>
               {/* 1. Market Pulse Strip */}
               <MarketPulse pulse={data.marketPulse} indices={data.indices} sectors={data.sectors} />
+
+              {/* 1.5. EMA Market Breadth */}
+              <MarketBreadth emaBreadth={data.emaBreadth} />
 
               {/* 2. Sector Performance */}
               <SectorPerformance sectors={data.sectors} />

@@ -69,7 +69,7 @@ export default function Page() {
             />
 
             {/* Middle Section - Opportunities */}
-            <OpportunitiesRow />
+            <OpportunitiesRow onOpenStock={setModalSymbol} />
 
             {/* Smart List Table */}
             <SmartStockTable onOpenStock={setModalSymbol} />

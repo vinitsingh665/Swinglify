@@ -78,8 +78,23 @@
   }
 
   /* ─── Profile Trigger (button-based) ─── */
-  .mob-profile-trigger {
+  .mob-profile-trigger,
+  .mob-more-trigger {
     position: relative;
+  }
+
+  .mob-more-menu {
+    right: auto !important;
+    left: 50%;
+    transform: translateX(-50%);
+    min-width: 200px;
+    width: auto;
+    animation: mobMoreSlideUp 0.22s ease-out !important;
+  }
+
+  @keyframes mobMoreSlideUp {
+    from { opacity: 0; transform: translateX(-50%) translateY(8px); }
+    to   { opacity: 1; transform: translateX(-50%) translateY(0); }
   }
 
   .mob-profile-btn {

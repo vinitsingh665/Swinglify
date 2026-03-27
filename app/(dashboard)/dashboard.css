@@ -89,6 +89,147 @@
   width: 100%;
   height: 100%;
 }
+.opp-card.active {
+  border-color: var(--accent);
+  box-shadow: 0 4px 15px rgba(111, 66, 193, 0.15);
+}
+.opp-expand-icon {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 2;
+  opacity: 0.5;
+  transition: opacity 0.2s;
+}
+.opp-card:hover .opp-expand-icon { opacity: 1; }
+
+/* Expanded Stock List */
+.opp-expanded {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin-top: -8px;
+  margin-bottom: 24px;
+  overflow: hidden;
+  animation: oppExpandIn 0.3s ease;
+}
+@keyframes oppExpandIn {
+  from { opacity: 0; transform: translateY(-8px); max-height: 0; }
+  to { opacity: 1; transform: translateY(0); max-height: 800px; }
+}
+.opp-stock-header {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 0.7fr 1fr;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+.opp-stock-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 0.7fr 1fr;
+  padding: 10px 16px;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.opp-stock-row:last-child { border-bottom: none; }
+.opp-stock-row:hover { background: var(--bg-hover); }
+
+.opp-sr-symbol {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.opp-sr-logo {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--bg-card-inner);
+}
+.opp-sr-ticker {
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: var(--text-primary);
+}
+.opp-sr-name {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.opp-sr-price {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--text-primary);
+}
+.opp-sr-change {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+.opp-sr-change.positive { color: var(--green); }
+.opp-sr-change.negative { color: var(--red); }
+.opp-sr-rsi {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+.opp-sr-vol {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  text-align: right;
+}
+.opp-expanded-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 24px;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+.opp-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+.opp-expanded-empty {
+  padding: 24px;
+  text-align: center;
+  color: var(--text-dim);
+  font-size: 0.85rem;
+}
+.opp-expanded-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-top: 1px solid var(--border);
+  font-size: 0.78rem;
+  color: var(--text-dim);
+}
+.opp-view-all-link {
+  color: var(--accent);
+  font-weight: 700;
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+.opp-view-all-link:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}
 
 /* ─── Smart Stock Table ─── */
 .smart-table-wrapper {
@@ -408,4 +549,17 @@
   .sect-tile { padding: 10px 12px; border-radius: 8px; }
   .sect-name { font-size: 0.78rem; }
   .sect-change { font-size: 0.78rem; }
+
+  /* ─── Expanded opportunity list ─── */
+  .opp-expanded {
+    margin-top: 0;
+    border-radius: 10px;
+  }
+  .opp-stock-header { grid-template-columns: 2fr 1fr 1fr; }
+  .opp-stock-row { grid-template-columns: 2fr 1fr 1fr; }
+  .opp-sh-rsi, .opp-sh-vol,
+  .opp-sr-rsi, .opp-sr-vol { display: none; }
+  .opp-stock-header, .opp-stock-row { padding: 8px 12px; }
+  .opp-sr-ticker { font-size: 0.8rem; }
+  .opp-sr-name { max-width: 100px; font-size: 0.65rem; }
 }

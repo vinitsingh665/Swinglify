@@ -118,8 +118,8 @@ export default function WatchlistTable({ stocks, loading, symbolsCount, onRemove
 
                 <td style={{ padding: 0, width: 0, border: 'none' }}>
                   <div className="wl-actions" onClick={(e) => e.stopPropagation()}>
-                    <button className="wl-btn" title="View Chart" onClick={() => window.open(`https://in.tradingview.com/chart/?symbol=NSE:${s.symbol}`, '_blank')}>📊</button>
-                    <button className="wl-btn" title="Set Alert">🔔</button>
+                    <button className="wl-btn" title="Add to Portfolio" onClick={(e) => { e.stopPropagation(); window.location.href = `/portfolio?symbol=${s.symbol}`; }}>💼</button>
+                    <button className="wl-btn" title="Set Alert" onClick={(e) => { e.stopPropagation(); window.location.href = `/alerts?symbol=${s.symbol}`; }}>🔔</button>
                     <button className="wl-btn danger" title="Remove" onClick={(e) => { e.stopPropagation(); onRemove(s.symbol); }}>⭐</button>
                   </div>
                 </td>

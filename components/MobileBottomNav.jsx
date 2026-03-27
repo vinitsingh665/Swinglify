@@ -10,8 +10,10 @@ export default function MobileBottomNav() {
   const { data: session, status } = useSession();
   const pathname = usePathname();
   const [profileOpen, setProfileOpen] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
   const [theme, setTheme] = useState('dark');
   const menuRef = useRef(null);
+  const moreRef = useRef(null);
 
   useEffect(() => {
     const handleThemeEvent = () => {
@@ -23,21 +25,18 @@ export default function MobileBottomNav() {
     return () => window.removeEventListener('swinglify_settings_update', handleThemeEvent);
   }, []);
 
-  // Close profile menu on outside click
+  // Close menus on outside click
   useEffect(() => {
     const handler = (e) => {
-      if (menuRef.current && !menuRef.current.contains(e.target)) {
-        setProfileOpen(false);
-      }
+      if (menuRef.current && !menuRef.current.contains(e.target)) setProfileOpen(false);
+      if (moreRef.current && !moreRef.current.contains(e.target)) setMoreOpen(false);
     };
-    if (profileOpen) document.addEventListener('pointerdown', handler);
+    if (profileOpen || moreOpen) document.addEventListener('pointerdown', handler);
     return () => document.removeEventListener('pointerdown', handler);
-  }, [profileOpen]);
+  }, [profileOpen, moreOpen]);
 
-  // Close menu on route change
-  useEffect(() => { setProfileOpen(false); }, [pathname]);
-
-  const isProfileSection = ['/portfolio', '/alerts', '/settings'].some(p => pathname?.startsWith(p));
+  // Close menus on route change
+  useEffect(() => { setProfileOpen(false); setMoreOpen(false); }, [pathname]);
 
   const toggleTheme = () => {
     const next = theme === 'dark' ? 'light' : 'dark';
@@ -47,18 +46,23 @@ export default function MobileBottomNav() {
     setProfileOpen(false);
   };
 
-  // Hide the regular app's bottom nav entirely on the admin pages
-  if (pathname.startsWith('/vinit_admin')) {
-    return null;
-  }
+  if (pathname.startsWith('/vinit_admin')) return null;
 
   const handleProfileClick = () => {
     if (status === 'unauthenticated') {
       signIn('google');
     } else {
+      setMoreOpen(false);
       setProfileOpen(o => !o);
     }
   };
+
+  const handleMoreClick = () => {
+    setProfileOpen(false);
+    setMoreOpen(o => !o);
+  };
+
+  const isMoreSection = ['/markets', '/analytics', '/compare', '/watchlist'].some(p => pathname?.startsWith(p));
 
   return (
     <nav className="mob-bottom-nav">
@@ -73,6 +77,16 @@ export default function MobileBottomNav() {
         <span>Home</span>
       </Link>
 
+      {/* Screener */}
+      <Link href="/screener" className={`mob-nav-item ${pathname?.startsWith('/screener') ? 'active' : ''}`}>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+          <rect x="2" y="3" width="20" height="14" rx="2" />
+          <line x1="8" y1="21" x2="16" y2="21" />
+          <line x1="12" y1="17" x2="12" y2="21" />
+        </svg>
+        <span>Screener</span>
+      </Link>
+
       {/* Community */}
       <Link href="/community" className={`mob-nav-item ${pathname?.startsWith('/community') ? 'active' : ''}`}>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -84,26 +98,41 @@ export default function MobileBottomNav() {
         <span>Community</span>
       </Link>
 
-      {/* Screener */}
-      <Link href="/screener" className={`mob-nav-item ${pathname?.startsWith('/screener') ? 'active' : ''}`}>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-          <rect x="2" y="3" width="20" height="14" rx="2" />
-          <line x1="8" y1="21" x2="16" y2="21" />
-          <line x1="12" y1="17" x2="12" y2="21" />
-        </svg>
-        <span>Screener</span>
-      </Link>
+      {/* More (Analytics, Compare, Community, Watchlist) */}
+      <div className={`mob-nav-item mob-more-trigger ${isMoreSection ? 'active' : ''}`} ref={moreRef}>
+        <button className="mob-profile-btn" onClick={handleMoreClick}>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <circle cx="12" cy="5" r="1.5" />
+            <circle cx="12" cy="12" r="1.5" />
+            <circle cx="12" cy="19" r="1.5" />
+          </svg>
+          <span>More</span>
+        </button>
 
-      {/* Watchlist */}
-      <Link href="/watchlist" className={`mob-nav-item ${pathname?.startsWith('/watchlist') ? 'active' : ''}`}>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-          <path d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-        </svg>
-        <span>Watchlist</span>
-      </Link>
+        {moreOpen && (
+          <div className="mob-profile-menu mob-more-menu">
+            <Link href="/analytics" className="mob-pm-item" onClick={() => setMoreOpen(false)}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M21 12a9 9 0 11-6.219-8.56" /><path d="M21 3v9h-9" /></svg>
+              Analytics
+            </Link>
+            <Link href="/markets" className="mob-pm-item" onClick={() => setMoreOpen(false)}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M3 12l2-2 4 4 6-8 6 6" /><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h7" /></svg>
+              Markets
+            </Link>
+            <Link href="/compare" className="mob-pm-item" onClick={() => setMoreOpen(false)}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="1" y="4" width="22" height="16" rx="2" /><line x1="12" y1="4" x2="12" y2="20" /></svg>
+              Compare
+            </Link>
+            <Link href="/watchlist" className="mob-pm-item" onClick={() => setMoreOpen(false)}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" /></svg>
+              Watchlist
+            </Link>
+          </div>
+        )}
+      </div>
 
-      {/* Profile (with flyout) */}
-      <div className={`mob-nav-item mob-profile-trigger ${isProfileSection ? 'active' : ''}`} ref={menuRef}>
+      {/* Profile */}
+      <div className={`mob-nav-item mob-profile-trigger ${['/portfolio', '/alerts', '/settings'].some(p => pathname?.startsWith(p)) ? 'active' : ''}`} ref={menuRef}>
         <button 
           className={`mob-profile-btn ${pathname?.startsWith('/settings') && !profileOpen ? 'active' : ''}`}
           onClick={handleProfileClick}

@@ -10,8 +10,12 @@ import HoldingsTable from './components/HoldingsTable';
 import AllocationChart from './components/AllocationChart';
 import AddStockModal from './components/AddStockModal';
 import Skeleton from '../../components/Skeleton';
+import { useSearchParams } from 'next/navigation';
 
 export default function PortfolioPage() {
+  const searchParams = useSearchParams();
+  const urlSymbol = searchParams.get('symbol');
+
   const [theme, setThemeState] = useState('dark');
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingHolding, setEditingHolding] = useState(null);
@@ -31,6 +35,13 @@ export default function PortfolioPage() {
   }, [theme]);
 
   const { holdings, isLoaded, addHolding, removeHolding, updateHolding } = usePortfolio();
+
+  // Auto-open add modal if ?symbol=XYZ is present
+  useEffect(() => {
+    if (isLoaded && urlSymbol && !showAddModal && !editingHolding) {
+      setShowAddModal(true);
+    }
+  }, [isLoaded, urlSymbol]);
 
   // Collect unique symbols for live quotes
   const symbols = useMemo(() => [...new Set(holdings.map(h => h.symbol))], [holdings]);
@@ -131,6 +142,7 @@ export default function PortfolioPage() {
           editingHolding={editingHolding}
           existingSymbols={symbols}
           onRequestEdit={handleRequestEdit}
+          initialSymbol={urlSymbol}
         />
       )}
     </div>

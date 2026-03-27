@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useSearch } from '../../../hooks/useStockData';
 
-export default function AddStockModal({ onAdd, onClose, editingHolding, existingSymbols = [], onRequestEdit }) {
+export default function AddStockModal({ onAdd, onClose, editingHolding, existingSymbols = [], onRequestEdit, initialSymbol }) {
   const [symbol, setSymbol] = useState('');
   const [name, setName] = useState('');
   const [qty, setQty] = useState('');
@@ -22,9 +22,17 @@ export default function AddStockModal({ onAdd, onClose, editingHolding, existing
       setAvgPrice(editingHolding.avgPrice?.toString() || '');
       setLogo(editingHolding.logo || '');
     } else {
-      setSymbol(''); setName(''); setQty(''); setAvgPrice(''); setLogo('');
+      setSymbol(initialSymbol || ''); 
+      setName(''); setQty(''); setAvgPrice(''); setLogo('');
     }
-  }, [editingHolding]);
+  }, [editingHolding, initialSymbol]);
+
+  useEffect(() => {
+    if (!editingHolding && initialSymbol) {
+      search(initialSymbol);
+      setShowDropdown(true);
+    }
+  }, []); // Run auto-search only once on mount
 
   useEffect(() => {
     const handleClickOutside = (event) => {

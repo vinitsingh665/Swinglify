@@ -166,6 +166,51 @@
 .fp-select:focus { border-color: var(--accent); }
 .fp-select option { background: var(--bg-card); color: var(--text-primary); }
 
+/* Index category list */
+.fp-index-group { margin-bottom: 8px; }
+.fp-index-group-label {
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 6px 0 4px 0;
+  margin-top: 4px;
+}
+.fp-index-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: left;
+  font-family: inherit;
+}
+.fp-index-item:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+.fp-index-item.active {
+  background: var(--accent-bg);
+  color: var(--accent);
+}
+.fp-index-item svg {
+  flex-shrink: 0;
+  opacity: 0.5;
+}
+.fp-index-item.active svg {
+  opacity: 1;
+  color: var(--accent);
+}
+
 /* Find Opportunities Button */
 .fp-opportunity {
   width: 100%; padding: 11px; border-radius: 10px; font-weight: 700; font-size: 0.85rem;

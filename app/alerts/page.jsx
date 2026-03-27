@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import './alerts.css';
 import Sidebar from '../../components/Sidebar';
 import TopBar from '../../components/TopBar';
@@ -13,6 +14,9 @@ import Toast from './components/Toast';
 import { useAlerts } from '../../hooks/useAlerts';
 
 export default function AlertsPage() {
+  const searchParams = useSearchParams();
+  const urlSymbol = searchParams.get('symbol');
+
   const [theme, setThemeState] = useState('dark');
   const [filter, setFilter] = useState('all');
   
@@ -23,6 +27,14 @@ export default function AlertsPage() {
   const [toastMessage, setToastMessage] = useState('');
 
   const { alerts, isLoaded, addAlert, updateAlert, removeAlert } = useAlerts();
+
+  // Auto-open create panel if ?symbol=XYZ
+  useEffect(() => {
+    if (isLoaded && urlSymbol && !isCreating && !editingAlert) {
+      setEditingAlert({ symbol: urlSymbol.toUpperCase(), comparison: 'ABOVE', value: '' });
+      setIsCreating(true);
+    }
+  }, [isLoaded, urlSymbol]);
 
   // Theme persistence
   useEffect(() => {

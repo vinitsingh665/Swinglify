@@ -138,8 +138,8 @@ export default function MarketTable({ stocks, loading, onOpenStock }) {
                          >
                            {inWatchlist ? '★' : '⭐'}
                          </button>
-                         <button className="ra-btn" title="Open Chart" onClick={() => onOpenStock(stock.symbol)}>📊</button>
-                         <button className="ra-btn primary" title="Quick Trade">⚡</button>
+                         <button className="ra-btn" title="Set Alert" onClick={(e) => { e.stopPropagation(); window.location.href = '/alerts?symbol=' + stock.symbol; }}>🔔</button>
+                         <button className="ra-btn" title="Add to Portfolio" onClick={(e) => { e.stopPropagation(); window.location.href = '/portfolio?symbol=' + stock.symbol; }}>💼</button>
                        </div>
                      </div>
                   </td>
@@ -153,13 +153,18 @@ export default function MarketTable({ stocks, loading, onOpenStock }) {
       {/* Toast notification */}
       {toastMsg && (
         <div style={{
-          position: 'fixed', bottom: 80, left: '50%', transform: 'translateX(-50%)',
-          background: 'var(--bg-card)', border: '1px solid var(--accent)', borderRadius: 10,
-          padding: '10px 20px', color: 'var(--text-primary)', fontSize: '0.82rem',
-          fontWeight: 600, zIndex: 9999, boxShadow: '0 8px 30px rgba(0,0,0,0.4)',
-          animation: 'modalIn 0.2s ease-out'
+          position: 'fixed', bottom: 80, left: 0, right: 0, 
+          display: 'flex', justifyContent: 'center', pointerEvents: 'none',
+          zIndex: 9999
         }}>
-          {toastMsg}
+          <div style={{
+            background: 'var(--bg-card)', border: '1px solid var(--accent)', borderRadius: 10,
+            padding: '10px 20px', color: 'var(--text-primary)', fontSize: '0.82rem',
+            fontWeight: 600, boxShadow: '0 8px 30px rgba(0,0,0,0.4)',
+            animation: 'modalIn 0.2s ease-out'
+          }}>
+            {toastMsg}
+          </div>
         </div>
       )}
     </div>

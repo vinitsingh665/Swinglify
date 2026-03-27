@@ -1,8 +1,61 @@
 "use client";
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
-export default function FilterPanel({ filters, setFilters, onFindOpportunities, activeCount, sectors }) {
-  // Local state for expandable sections
+const INDEX_CATEGORIES = [
+  {
+    group: "Broad Market",
+    items: [
+      { id: 'nifty50', label: 'Nifty 50' },
+      { id: 'niftynext50', label: 'Nifty Next 50' },
+      { id: 'nifty100', label: 'Nifty 100' },
+      { id: 'nifty200', label: 'Nifty 200' },
+      { id: 'nifty500', label: 'Nifty 500' },
+    ]
+  },
+  {
+    group: "Size-Based",
+    items: [
+      { id: 'midcap50', label: 'Midcap 50' },
+      { id: 'midcap100', label: 'Midcap 100' },
+      { id: 'midcap150', label: 'Midcap 150' },
+      { id: 'smallcap50', label: 'Smallcap 50' },
+      { id: 'smallcap100', label: 'Smallcap 100' },
+      { id: 'smallcap250', label: 'Smallcap 250' },
+      { id: 'microcap250', label: 'Microcap 250' },
+      { id: 'largemidcap250', label: 'LargeMidcap 250' },
+      { id: 'midsmall400', label: 'MidSmall 400' },
+    ]
+  },
+  {
+    group: "Sectoral",
+    items: [
+      { id: 'banknifty', label: 'Bank Nifty' },
+      { id: 'financial', label: 'Nifty Financial' },
+      { id: 'niftyit', label: 'Nifty IT' },
+      { id: 'pharma', label: 'Nifty Pharma' },
+      { id: 'auto', label: 'Nifty Auto' },
+      { id: 'fmcg', label: 'Nifty FMCG' },
+      { id: 'metal', label: 'Nifty Metal' },
+      { id: 'realty', label: 'Nifty Realty' },
+      { id: 'energy', label: 'Nifty Energy' },
+      { id: 'infra', label: 'Nifty Infra' },
+      { id: 'healthcare', label: 'Healthcare' },
+      { id: 'media', label: 'Nifty Media' },
+      { id: 'consumer', label: 'Consumer' },
+      { id: 'oilgas', label: 'Oil & Gas' },
+    ]
+  },
+  {
+    group: "Performance",
+    items: [
+      { id: 'gainers', label: 'Top Gainers' },
+      { id: 'losers', label: 'Top Losers' },
+      { id: 'mostactive', label: 'Most Active' },
+    ]
+  }
+];
+
+export default function FilterPanel({ filters, setFilters, onFindOpportunities, activeCount, sectors, selectedIndex, onSelectIndex }) {
   const [collapsed, setCollapsed] = useState({});
 
   const toggle = (section) => setCollapsed(p => ({ ...p, [section]: !p[section] }));
@@ -23,11 +76,14 @@ export default function FilterPanel({ filters, setFilters, onFindOpportunities, 
           Filters
           {activeCount > 0 && <span className="fp-count">{activeCount}</span>}
         </div>
-        <button className="fp-clear" onClick={() => setFilters({
-          exchange: 'NSE', priceMin: '', priceMax: '', changeMin: '', volumeMin: '',
-          rsiMode: null, emaMode: null, marketCap: null, sector: null, signal: null,
-          sortBy: 'volume', sortOrder: 'desc'
-        })}>Clear All</button>
+        <button className="fp-clear" onClick={() => {
+          onSelectIndex?.(null);
+          setFilters({
+            exchange: 'NSE', priceMin: '', priceMax: '', changeMin: '', volumeMin: '',
+            rsiMode: null, emaMode: null, marketCap: null, sector: null, signal: null,
+            sortBy: 'volume', sortOrder: 'desc'
+          });
+        }}>Clear All</button>
       </div>
 
       {/* Find Opportunities */}
@@ -35,8 +91,39 @@ export default function FilterPanel({ filters, setFilters, onFindOpportunities, 
         🔥 Find Opportunities
       </button>
 
-      {/* Price & Volume */}
+      {/* ═══ Index Categories ═══ */}
       <div className="fp-section" style={{ marginTop: 16 }}>
+        <div className="fps-header" onClick={() => toggle('indices')}>
+          <span className="fps-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /></svg>
+            Indices
+            {selectedIndex && <span className="fp-count">1</span>}
+          </span>
+          <svg className={`fps-chevron ${collapsed.indices ? 'collapsed' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 12 15 18 9" /></svg>
+        </div>
+        <div className={`fps-body ${collapsed.indices ? 'collapsed' : ''}`}>
+          {INDEX_CATEGORIES.map((group) => (
+            <div key={group.group} className="fp-index-group">
+              <div className="fp-index-group-label">{group.group}</div>
+              {group.items.map((item) => (
+                <button
+                  key={item.id}
+                  className={`fp-index-item ${selectedIndex === item.id ? 'active' : ''}`}
+                  onClick={() => onSelectIndex?.(selectedIndex === item.id ? null : item.id)}
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="14" height="14">
+                    <path d="M3 3h18v4H3zM3 10h18v4H3zM3 17h18v4H3z" />
+                  </svg>
+                  {item.label}
+                </button>
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Price & Volume */}
+      <div className="fp-section">
         <div className="fps-header" onClick={() => toggle('price')}>
           <span className="fps-label">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" /></svg>

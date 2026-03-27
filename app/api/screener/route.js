@@ -103,7 +103,7 @@ export async function POST(request) {
             symbols: { query: { types: ['stock'] } },
             columns: FIELDS,
             sort: { sortBy: sortMap[sortBy] || 'volume', sortOrder: sortOrder || 'desc' },
-            range: [0, Math.min(Number(limit), 500)]
+            range: [0, Math.min(Number(limit), 1000)]
         };
 
         const tvData = await fetchFromTradingView(tvBody);

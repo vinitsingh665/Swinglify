@@ -56,6 +56,52 @@
 .mp-ht-name { font-size: 0.62rem; color: rgba(255,255,255,0.9); font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; }
 .mp-ht-val { font-size: 0.8rem; font-weight: 800; color: white; font-family: var(--font-mono); margin-top: 2px; }
 
+/* ─── Market Breadth (EMA Cards) ─── */
+.mb-section { display: flex; flex-direction: column; gap: 14px; }
+.mb-header { margin-bottom: 2px; }
+.mb-title { font-size: 1.05rem; font-weight: 700; color: var(--text-primary); }
+.mb-subtitle { font-size: 0.72rem; color: var(--text-dim); font-weight: 500; }
+.mb-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+
+.mb-card {
+  background: var(--bg-surface); border: 1px solid var(--border); border-radius: 12px;
+  padding: 16px; display: flex; flex-direction: column; gap: 12px;
+  transition: all 0.2s;
+}
+.mb-card:hover { border-color: var(--border-hover); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+
+.mb-card-top { display: flex; justify-content: space-between; align-items: center; }
+.mb-card-label { display: flex; align-items: center; gap: 6px; }
+.mb-card-icon { font-size: 1rem; }
+.mb-card-ema { font-size: 0.85rem; font-weight: 800; color: var(--text-primary); }
+.mb-card-badge {
+  font-size: 0.6rem; font-weight: 800; padding: 3px 8px; border-radius: 5px;
+  text-transform: uppercase; letter-spacing: 0.4px;
+}
+.mb-card-badge.bullish { background: var(--green-bg); color: var(--green-bright); }
+.mb-card-badge.bearish { background: var(--red-bg); color: var(--red-bright); }
+.mb-card-badge.neutral { background: var(--bg-input); color: var(--text-dim); }
+
+.mb-bar-wrap { display: flex; flex-direction: column; gap: 6px; }
+.mb-bar { height: 8px; background: var(--bg-input); border-radius: 4px; overflow: hidden; }
+.mb-bar-above { height: 100%; border-radius: 4px; transition: width 0.5s ease; min-width: 2px; }
+.mb-bar-labels { display: flex; justify-content: space-between; }
+.mb-bar-above-label { font-size: 0.68rem; font-weight: 700; font-family: var(--font-mono); }
+.mb-bar-below-label { font-size: 0.68rem; font-weight: 600; color: var(--text-dim); font-family: var(--font-mono); }
+
+.mb-card-stats { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.mb-stat { display: flex; flex-direction: column; align-items: center; gap: 1px; flex: 1; }
+.mb-stat-val { font-size: 0.92rem; font-weight: 800; font-family: var(--font-mono); color: var(--text-primary); }
+.mb-stat-label { font-size: 0.58rem; color: var(--text-dim); font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; }
+.mb-stat-divider { width: 1px; height: 24px; background: var(--border); }
+
+@media (max-width: 768px) {
+  .mb-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .mb-card { padding: 12px; gap: 10px; }
+  .mb-card-ema { font-size: 0.78rem; }
+  .mb-stat-val { font-size: 0.82rem; }
+}
+
 /* ─── Sector Performance ─── */
 .sector-perf {
   background: var(--bg-surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px 24px;
@@ -182,3 +228,75 @@
 }
 .analytics-loading .spinner { width: 32px; height: 32px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MOBILE ANALYTICS — ≤768px
+   ═══════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .analytics-layout {
+    padding: 14px 12px;
+    gap: 14px;
+  }
+
+  /* Market Pulse */
+  .market-pulse { padding: 14px; gap: 12px; }
+  .mp-top { flex-direction: column; align-items: stretch; gap: 12px; }
+  .mp-indices { flex-direction: column; gap: 8px; }
+  .mp-index { min-width: 0; padding: 8px 12px; flex-direction: row; align-items: center; gap: 8px; }
+  .mp-index-name { font-size: 0.65rem; }
+  .mp-index-val { font-size: 0.92rem; }
+  .mp-sentiment { flex-direction: column; gap: 10px; }
+  .mp-advdec { min-width: 0; }
+  .mp-heatmap { grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)); gap: 4px; }
+  .mp-heat-tile { padding: 6px 4px; }
+  .mp-ht-name { font-size: 0.56rem; }
+  .mp-ht-val { font-size: 0.72rem; }
+
+  /* Trend Signals — 2-column grid */
+  .trend-signals {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  .ts-card { padding: 14px; gap: 10px; border-radius: 12px; }
+  .ts-label { font-size: 0.62rem; }
+  .ts-count { font-size: 1rem; }
+  .ts-chips { gap: 4px; }
+  .ts-chip { padding: 3px 6px; font-size: 0.62rem; }
+  .ts-chip-logo { width: 14px; height: 14px; }
+  .ts-chip-change { font-size: 0.55rem; }
+
+  /* Sector Performance */
+  .sector-perf { padding: 14px; }
+  .sp-header { flex-direction: column; align-items: flex-start; gap: 8px; margin-bottom: 12px; }
+  .sp-bar-label { width: 50px; font-size: 0.72rem; }
+  .sp-bar-track { height: 24px; }
+  .sp-bar-val { font-size: 0.68rem; }
+
+  /* Bottom Grid — single column */
+  .analytics-bottom {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  /* Opportunities */
+  .opp-section { padding: 14px; }
+  .opp-title { font-size: 0.92rem; margin-bottom: 10px; }
+  .opp-tabs { gap: 5px; margin-bottom: 10px; }
+  .opp-tab { padding: 5px 10px; font-size: 0.68rem; }
+  .opp-table { display: block; overflow-x: auto; white-space: nowrap; }
+  .opp-table th { padding: 6px 8px; font-size: 0.6rem; }
+  .opp-table td { padding: 7px 8px; font-size: 0.75rem; }
+  .opp-logo { width: 20px; height: 20px; }
+  .opp-sym { font-size: 0.75rem; }
+
+  /* Market Trends */
+  .mkt-trends { padding: 14px; }
+  .mt-title { font-size: 0.92rem; margin-bottom: 10px; }
+  .mt-card { padding: 10px 12px; }
+  .mt-card-name { font-size: 0.82rem; }
+  .mt-card-value { font-size: 0.85rem; }
+  .mt-perfs { grid-template-columns: repeat(4, 1fr); gap: 6px; }
+  .mt-perf { padding: 6px 3px; }
+  .mt-perf-label { font-size: 0.55rem; }
+  .mt-perf-val { font-size: 0.72rem; }
+}

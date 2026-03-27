@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useSearchParams } from 'next/navigation';
 import './screener.css';
 import Sidebar from '../../components/Sidebar';
 import TopBar from '../../components/TopBar';
@@ -35,6 +36,7 @@ const TIMEFRAME_PRESETS = {
 const DEFAULT_FILTERS = TIMEFRAME_PRESETS.swing;
 
 export default function ScreenerPage() {
+  const searchParams = useSearchParams();
   const [theme, setThemeState] = useState('dark');
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
   const [stocks, setStocks] = useState([]);
@@ -43,6 +45,30 @@ export default function ScreenerPage() {
   const [selectedStock, setSelectedStock] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [timeframe, setTimeframe] = useState('swing');
+  const [selectedIndex, setSelectedIndex] = useState(null);
+
+  // Apply URL query params as filters (from dashboard opportunity cards)
+  useEffect(() => {
+    const params = Object.fromEntries(searchParams.entries());
+    if (Object.keys(params).length > 0) {
+      setTimeframe(''); // Clear timeframe toggle since custom filters are applied
+      setFilters(prev => ({
+        ...prev,
+        exchange: params.exchange || prev.exchange,
+        priceMin: params.priceMin || '',
+        priceMax: params.priceMax || '',
+        changeMin: params.changeMin || '',
+        volumeMin: params.volumeMin || '',
+        rsiMode: params.rsiMode || null,
+        emaMode: params.emaMode || null,
+        marketCap: params.marketCap || null,
+        sector: params.sector || null,
+        signal: params.signal || null,
+        sortBy: params.sortBy || 'volume',
+        sortOrder: params.sortOrder || 'desc'
+      }));
+    }
+  }, [searchParams]);
 
   // Load default market from preferences
   useEffect(() => {
@@ -69,40 +95,51 @@ export default function ScreenerPage() {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
 
-  // Fetch screener data
+  // Fetch screener data (custom filters or index-based)
   const fetchScreener = useCallback(async () => {
     try {
       setLoading(true);
-      const res = await fetch('/api/screener', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          exchange: filters.exchange,
-          priceMin: filters.priceMin || undefined,
-          priceMax: filters.priceMax || undefined,
-          changeMin: filters.changeMin || undefined,
-          volumeMin: filters.volumeMin || undefined,
-          rsiMode: filters.rsiMode || undefined,
-          emaMode: filters.emaMode || undefined,
-          marketCap: filters.marketCap || undefined,
-          sector: filters.sector || undefined,
-          signal: filters.signal || undefined,
-          sortBy: filters.sortBy,
-          sortOrder: filters.sortOrder,
-          limit: 200
-        })
-      });
-      const data = await res.json();
-      if (data.success) {
-        setStocks(data.data);
-        if (data.sectors) setSectors(data.sectors);
+
+      if (selectedIndex) {
+        // Fetch from category API when an index is selected
+        const res = await fetch(`/api/stocks/${selectedIndex}?exchange=${filters.exchange}`);
+        const data = await res.json();
+        if (data.success) {
+          setStocks(data.data);
+        }
+      } else {
+        // Fetch from custom screener API
+        const res = await fetch('/api/screener', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            exchange: filters.exchange,
+            priceMin: filters.priceMin || undefined,
+            priceMax: filters.priceMax || undefined,
+            changeMin: filters.changeMin || undefined,
+            volumeMin: filters.volumeMin || undefined,
+            rsiMode: filters.rsiMode || undefined,
+            emaMode: filters.emaMode || undefined,
+            marketCap: filters.marketCap || undefined,
+            sector: filters.sector || undefined,
+            signal: filters.signal || undefined,
+            sortBy: filters.sortBy,
+            sortOrder: filters.sortOrder,
+            limit: 1000
+          })
+        });
+        const data = await res.json();
+        if (data.success) {
+          setStocks(data.data);
+          if (data.sectors) setSectors(data.sectors);
+        }
       }
     } catch (err) {
       console.error('Screener fetch error:', err);
     } finally {
       setLoading(false);
     }
-  }, [filters]);
+  }, [filters, selectedIndex]);
 
   useEffect(() => {
     fetchScreener();
@@ -195,14 +232,26 @@ export default function ScreenerPage() {
                 {['Intraday', 'Swing', 'Positional'].map(t => (
                   <button key={t} className={`st-toggle ${timeframe === t.toLowerCase() ? 'active' : ''}`} onClick={() => {
                     const tf = t.toLowerCase();
-                    setTimeframe(tf);
-                    setFilters({ ...TIMEFRAME_PRESETS[tf], exchange: filters.exchange });
+                    if (timeframe === tf) {
+                      // Deselect — reset to no preset filters
+                      setTimeframe('');
+                      setFilters(prev => ({
+                        exchange: prev.exchange, priceMin: '', priceMax: '',
+                        changeMin: '', volumeMin: '',
+                        rsiMode: null, emaMode: null,
+                        marketCap: null, sector: null, signal: null,
+                        sortBy: 'volume', sortOrder: 'desc'
+                      }));
+                    } else {
+                      setTimeframe(tf);
+                      setFilters({ ...TIMEFRAME_PRESETS[tf], exchange: filters.exchange });
+                    }
                   }}>{t}</button>
                 ))}
               </div>
               <div className="st-exchange">
                 {['NSE', 'BSE'].map(ex => (
-                  <button key={ex} className={`st-ex-btn ${filters.exchange === ex ? 'active' : ''}`} onClick={() => setFilters(p => ({ ...p, exchange: ex }))}>{ex}</button>
+                  <button key={ex} className={`st-ex-btn ${filters.exchange === ex ? 'active' : ''}`} onClick={() => setFilters(p => ({ ...p, exchange: p.exchange === ex ? 'NSE' : ex }))}>{ex}</button>
                 ))}
               </div>
             </div>
@@ -213,10 +262,12 @@ export default function ScreenerPage() {
             {/* Left: Filters */}
             <FilterPanel
               filters={filters}
-              setFilters={setFilters}
-              onFindOpportunities={handleFindOpportunities}
+              setFilters={(f) => { setSelectedIndex(null); setFilters(f); }}
+              onFindOpportunities={() => { setSelectedIndex(null); handleFindOpportunities(); }}
               activeCount={activeCount}
               sectors={sectors}
+              selectedIndex={selectedIndex}
+              onSelectIndex={(idx) => { setSelectedIndex(idx); setTimeframe(''); }}
             />
 
             {/* Center: Results */}

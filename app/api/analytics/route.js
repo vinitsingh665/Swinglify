@@ -99,6 +99,22 @@ export async function GET() {
         const topMovers = [...allStocks].sort((a, b) => Math.abs(b.change || 0) - Math.abs(a.change || 0)).slice(0, 10);
         const volumeSpikes = allStocks.filter(s => s.volume && s.avgVolume10d && s.avgVolume10d > 0 && (s.volume / s.avgVolume10d) > 2).sort((a, b) => (b.volume / b.avgVolume10d) - (a.volume / a.avgVolume10d)).slice(0, 10).map(s => ({ ...s, volumeRatio: Math.round((s.volume / s.avgVolume10d) * 100) / 100 }));
 
+        // EMA Breadth
+        const computeEmaBreadth = (emaKey, label) => {
+            const valid = allStocks.filter(s => s.price != null && s[emaKey] != null);
+            const above = valid.filter(s => s.price > s[emaKey]).length;
+            const below = valid.length - above;
+            const abovePct = valid.length > 0 ? Math.round((above / valid.length) * 100) : 0;
+            return { label, above, below, total: valid.length, abovePct, belowPct: 100 - abovePct };
+        };
+
+        const emaBreadth = {
+            ema10: computeEmaBreadth('ema10', '10 EMA'),
+            ema20: computeEmaBreadth('ema20', '20 EMA'),
+            ema50: computeEmaBreadth('ema50', '50 EMA'),
+            ema200: computeEmaBreadth('ema200', '200 EMA'),
+        };
+
         const result = {
             success: true,
             lastUpdated: new Date().toISOString(),
@@ -111,6 +127,7 @@ export async function GET() {
                 emaCrossover: { count: allStocks.filter(s => s.ema50 && s.ema200 && s.ema50 > s.ema200 && s.price > s.ema50).length, stocks: emaCrossover },
                 breakouts: { count: allStocks.filter(s => s.price && s.week52High && s.price >= s.week52High * 0.97).length, stocks: breakouts }
             },
+            emaBreadth,
             opportunities: { topMovers, volumeSpikes }
         };
 
