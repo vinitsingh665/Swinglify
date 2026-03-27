@@ -1,4 +1,5 @@
 "use client";
+import { useState, useEffect } from 'react';
 
 function MetricBar({ label, value, displayValue, min = 0, max = 100, invertColor = false }) {
   const pct = Math.min(100, Math.max(0, ((value - min) / (max - min)) * 100));
@@ -62,6 +63,9 @@ export default function QuickInsights({ stock }) {
       </div>
 
       <div className="qi-metrics">
+        {/* AI Insight */}
+        <AIInsight ticker={s.symbol} s={s} />
+
         {/* RSI */}
         {s.rsi != null && (
           <MetricBar
@@ -129,6 +133,57 @@ export default function QuickInsights({ stock }) {
       <div className={`qi-verdict ${verdictCls}`}>
         <div className="qi-verdict-label">Overall Signal</div>
         <div className={`qi-verdict-signal ${verdictCls}`}>{verdictLabel}</div>
+      </div>
+    </div>
+  );
+}
+
+function AIInsight({ ticker, s }) {
+  const [insight, setInsight] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!ticker || !s || !s.price) return;
+
+    setLoading(true);
+    fetch('/api/stocks/insight', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        ticker,
+        currentPrice: s.price,
+        rsi: s.rsi,
+        technicalScore: s.indicatorScore?.label || s.recommendation || 'Neutral',
+      }),
+    })
+      .then((r) => r.json())
+      .then((data) => {
+        setInsight(data.insight);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error(err);
+        setInsight('AI analysis is currently unavailable.');
+        setLoading(false);
+      });
+  }, [ticker, s]);
+
+  return (
+    <div className="ai-insight-card" style={{ marginTop: '0', marginBottom: '16px', background: 'transparent', border: '1px solid rgba(99, 102, 241, 0.2)', padding: '12px', boxShadow: 'none' }}>
+      <div className="ai-insight-header">
+        <span className="ai-param-icon">✨</span> 
+        <span className="ai-insight-title">AI Insight</span>
+        <span className="ai-insight-badge" style={{ fontSize: '0.6rem', padding: '1px 5px' }}>Llama 3</span>
+      </div>
+      <div className="ai-insight-body">
+        {loading ? (
+          <div className="ai-skeleton-container">
+            <div className="ai-skeleton-line" style={{ width: '95%' }}></div>
+            <div className="ai-skeleton-line" style={{ width: '85%' }}></div>
+          </div>
+        ) : (
+          <p className="ai-insight-text" style={{ fontSize: '0.8rem' }}>{insight}</p>
+        )}
       </div>
     </div>
   );

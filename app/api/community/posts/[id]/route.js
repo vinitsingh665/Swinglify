@@ -27,3 +27,38 @@ export async function GET(request, { params }) {
     return NextResponse.json({ error: 'Server error' }, { status: 500 });
   }
 }
+
+// DELETE — Delete own post
+export async function DELETE(request, { params }) {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    await dbConnect();
+    const { id } = await params;
+
+    const post = await Post.findById(id);
+    if (!post) {
+      return NextResponse.json({ error: 'Post not found' }, { status: 404 });
+    }
+
+    // Only the author can delete their post
+    // Resolve the MongoDB user ID from the session email
+    const dbUser = await (await import('../../../../../models/User')).default.findOne({ email: session.user.email });
+    if (!dbUser || post.author.toString() !== dbUser._id.toString()) {
+      return NextResponse.json({ error: 'You can only delete your own posts' }, { status: 403 });
+    }
+
+    // Delete the post and all its comments
+    await Comment.deleteMany({ postId: id });
+    await Post.findByIdAndDelete(id);
+
+    return NextResponse.json({ success: true, message: 'Post deleted' });
+  } catch (error) {
+    console.error('Post DELETE Error:', error);
+    return NextResponse.json({ error: 'Server error' }, { status: 500 });
+  }
+}
+

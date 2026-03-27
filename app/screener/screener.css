@@ -71,14 +71,14 @@
 
 /* ─── LEFT PANEL: Filters ─── */
 .filter-panel {
-  background: var(--bg-surface);
-  border: 1px solid var(--border);
+  background: linear-gradient(145deg, var(--bg-surface), var(--bg-hover));
+  border: 1px solid var(--border-hover);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   border-radius: 14px;
   padding: 20px;
-  height: fit-content;
+  height: calc(100vh - 120px);
   position: sticky;
   top: 20px;
-  max-height: calc(100vh - 140px);
   overflow-y: auto;
 }
 
@@ -224,12 +224,14 @@
 
 /* ─── CENTER: Results Table ─── */
 .screener-results {
-  background: var(--bg-surface);
-  border: 1px solid var(--border);
+  background: linear-gradient(145deg, var(--bg-surface), var(--bg-hover));
+  border: 1px solid var(--border-hover);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   border-radius: 14px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  height: calc(100vh - 120px);
 }
 
 .sr-header {
@@ -239,7 +241,7 @@
 .sr-count { font-size: 0.85rem; color: var(--text-secondary); }
 .sr-count strong { color: var(--accent); font-weight: 700; }
 
-.sr-table-wrap { flex: 1; overflow-y: auto; max-height: calc(100vh - 250px); }
+.sr-table-wrap { flex: 1; overflow-y: auto; max-height: 100%; }
 
 .sr-table { width: 100%; border-collapse: collapse; }
 .sr-table th {
@@ -315,13 +317,15 @@
 
 /* ─── RIGHT PANEL: Quick Insights ─── */
 .insights-panel {
-  background: var(--bg-surface);
-  border: 1px solid var(--border);
+  background: linear-gradient(145deg, var(--bg-surface), var(--bg-hover));
+  border: 1px solid var(--border-hover);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   border-radius: 14px;
   padding: 20px;
-  height: fit-content;
+  height: calc(100vh - 120px);
   position: sticky;
   top: 20px;
+  overflow-y: auto;
 }
 
 .qi-empty {
@@ -560,7 +564,7 @@
 
   @keyframes slideInsightsOpen {
     from { max-height: 0; opacity: 0; }
-    to   { max-height: 600px; opacity: 1; }
+    to   { max-height: 900px; opacity: 1; }
   }
 
   .sr-inline-insights {
@@ -598,6 +602,25 @@
   .sr-inline-insights .qi-verdict { padding: 8px; border-radius: 8px; }
   .sr-inline-insights .qi-verdict-label { font-size: 0.65rem; }
   .sr-inline-insights .qi-verdict-signal { font-size: 0.92rem; }
+
+  /* AI Insight card overflow fix for mobile */
+  .sr-inline-insights .ai-insight-card {
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+  .sr-inline-insights .ai-insight-text {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+    font-size: 0.78rem;
+    line-height: 1.5;
+  }
+  .sr-inline-insights .ai-insight-header {
+    flex-wrap: wrap;
+  }
 
   .qi-stock-name { font-size: 1rem; }
   .qi-stock-price { font-size: 0.85rem; }

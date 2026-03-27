@@ -1,5 +1,5 @@
 "use client";
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useStockDetail } from '../hooks/useStockData';
 import { formatNumber, formatVolume, formatMarketCap, getSignalClass, formatSignal } from '../utils';
 
@@ -45,6 +45,9 @@ export default function StockModal({ symbol, onClose }) {
                   {changeSign}{(s.change || 0).toFixed(2)}% ({changeSign}₹{formatNumber(Math.abs(s.changeAbs || 0))})
                 </div>
               </div>
+
+              {/* AI Insight */}
+              <AIInsight ticker={s.symbol} s={s} />
 
               {/* Indicator Signals */}
               <IndicatorSignals s={s} />
@@ -206,6 +209,58 @@ function MAStat({ label, maValue, price }) {
     <div className="modal-stat">
       <div className="modal-stat-label">{label}</div>
       <div className="modal-stat-value" style={{ color }}>₹{maValue ? formatNumber(maValue) : '—'}</div>
+    </div>
+  );
+}
+
+
+function AIInsight({ ticker, s }) {
+  const [insight, setInsight] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!ticker || !s || !s.price) return;
+
+    setLoading(true);
+    fetch('/api/stocks/insight', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        ticker,
+        currentPrice: s.price,
+        rsi: s.rsi,
+        technicalScore: s.recommendation,
+      }),
+    })
+      .then((r) => r.json())
+      .then((data) => {
+        setInsight(data.insight);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error(err);
+        setInsight('AI analysis is currently unavailable.');
+        setLoading(false);
+      });
+  }, [ticker, s]);
+
+  return (
+    <div className="ai-insight-card">
+      <div className="ai-insight-header">
+        <span className="ai-param-icon">✨</span> 
+        <span className="ai-insight-title">AI Insight</span>
+        <span className="ai-insight-badge">Llama 3</span>
+      </div>
+      <div className="ai-insight-body">
+        {loading ? (
+          <div className="ai-skeleton-container">
+            <div className="ai-skeleton-line" style={{ width: '95%' }}></div>
+            <div className="ai-skeleton-line" style={{ width: '85%' }}></div>
+          </div>
+        ) : (
+          <p className="ai-insight-text">{insight}</p>
+        )}
+      </div>
     </div>
   );
 }

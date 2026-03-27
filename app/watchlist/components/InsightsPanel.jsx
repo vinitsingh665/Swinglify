@@ -1,4 +1,5 @@
 "use client";
+import { useState, useEffect } from 'react';
 
 const formatVol = (v) => {
   if (!v) return '—';
@@ -15,44 +16,60 @@ const formatMCap = (m) => {
   return `${(m / 10000000).toFixed(0)} Cr`;
 };
 
+function WatchlistAIInsight({ stock }) {
+  const [insight, setInsight] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!stock || !stock.symbol || !stock.price) return;
+
+    setLoading(true);
+    fetch('/api/stocks/insight', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        ticker: stock.symbol,
+        currentPrice: stock.price,
+        rsi: stock.rsi,
+        technicalScore: stock.recommendation || 'Neutral',
+      }),
+    })
+      .then((r) => r.json())
+      .then((data) => {
+        setInsight(data.insight);
+        setLoading(false);
+      })
+      .catch(() => {
+        setInsight('AI analysis is currently unavailable.');
+        setLoading(false);
+      });
+  }, [stock?.symbol]);
+
+  return (
+    <div className="ai-insight-card" style={{ marginTop: '0', background: 'transparent', border: '1px solid rgba(99, 102, 241, 0.2)', padding: '12px', boxShadow: 'none' }}>
+      <div className="ai-insight-header">
+        <span className="ai-param-icon">✨</span>
+        <span className="ai-insight-title">AI Insight</span>
+        <span className="ai-insight-badge" style={{ fontSize: '0.6rem', padding: '1px 5px' }}>Llama 3</span>
+      </div>
+      <div className="ai-insight-body">
+        {loading ? (
+          <div className="ai-skeleton-container">
+            <div className="ai-skeleton-line" style={{ width: '95%' }}></div>
+            <div className="ai-skeleton-line" style={{ width: '85%' }}></div>
+          </div>
+        ) : (
+          <p className="ai-insight-text" style={{ fontSize: '0.8rem' }}>{insight}</p>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function InsightsPanel({ stock, onClose }) {
   if (!stock) return null;
 
   const isUp = (stock.change || 0) >= 0;
-
-  // Generate the "Meaning" insights dynamically based on the TradingView data points
-  const insights = [];
-
-  // Volatility / Volume logic
-  if (stock.volume && stock.avgVolume10d && stock.volume > stock.avgVolume10d * 2) {
-    insights.push({ type: 'accent', text: `Huge volume spike detected (${(stock.volume/stock.avgVolume10d).toFixed(1)}x average). Institutional activity likely.` });
-  } else if (stock.volume && stock.avgVolume10d && stock.volume > stock.avgVolume10d * 1.3) {
-    insights.push({ type: 'accent', text: "Above average volume supporting current price move." });
-  }
-
-  // RSI Logic
-  if (stock.rsi != null) {
-    if (stock.rsi < 30) insights.push({ type: 'positive', text: "RSI is deeply oversold (<30) → watch for a possible bounce or reversal." });
-    else if (stock.rsi > 70) insights.push({ type: 'negative', text: "RSI is overbought (>70) → strong momentum, but risk of pullback exists." });
-  }
-
-  // Trend / Change Logic
-  if (stock.perfWeek != null && stock.perfWeek > 5) {
-    insights.push({ type: 'positive', text: `Strong weekly momentum (+${stock.perfWeek.toFixed(1)}% this week).` });
-  } else if (stock.perfWeek != null && stock.perfWeek < -5) {
-    insights.push({ type: 'negative', text: `Significant weekly weakness (${stock.perfWeek.toFixed(1)}% this week).` });
-  }
-
-  // EMA Logic
-  if (stock.ema50 != null && stock.ema200 != null && stock.price != null) {
-    if (stock.ema50 > stock.ema200 && stock.price > stock.ema50) {
-      insights.push({ type: 'positive', text: "Price is above both long-term and short-term moving averages. Bullish trend holds." });
-    }
-  }
-
-  if (insights.length === 0) {
-    insights.push({ type: 'neutral', text: "Trading at average volume with neutral momentum indicators. Consolidating." });
-  }
 
   return (
     <div className="wl-panel">
@@ -98,32 +115,8 @@ export default function InsightsPanel({ stock, onClose }) {
         </div>
       </div>
 
-      <div className="wlp-edge">
-        <div className="wlp-edge-title">
-          <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" strokeWidth="2.5" fill="none"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"></path></svg>
-          Trading Edge Analysis
-        </div>
-        
-        {insights.map((insight, idx) => (
-          <div key={idx} className={`wlp-insight ${insight.type}`}>
-            {insight.text}
-          </div>
-        ))}
-
-        <a 
-          href={`https://in.tradingview.com/chart/?symbol=NSE:${stock.symbol}`} 
-          target="_blank" 
-          rel="noreferrer"
-          style={{
-            display: 'block', textAlign: 'center', marginTop: 16, padding: '10px',
-            background: 'var(--bg-input)', border: '1px solid var(--border)',
-            borderRadius: 8, color: 'var(--text-primary)', textDecoration: 'none',
-            fontSize: '0.75rem', fontWeight: 700
-          }}
-        >
-          Open Chart on TradingView ↗
-        </a>
-      </div>
+      <WatchlistAIInsight stock={stock} />
     </div>
   );
 }
+

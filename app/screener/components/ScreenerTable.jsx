@@ -91,6 +91,8 @@ function InlineInsights({ stock }) {
               </span>
             </div>
 
+            <InlineAIInsight ticker={s.symbol} s={s} />
+
             <div className="sr-ii-metrics">
               {s.rsi != null && (
                 <MiniMetric label="RSI" value={s.rsi}
@@ -120,6 +122,57 @@ function InlineInsights({ stock }) {
         </div>
       </td>
     </tr>
+  );
+}
+
+/* ─── Inline AI Insight for mobile ─── */
+function InlineAIInsight({ ticker, s }) {
+  const [insight, setInsight] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!ticker || !s || !s.price) return;
+
+    setLoading(true);
+    fetch('/api/stocks/insight', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        ticker,
+        currentPrice: s.price,
+        rsi: s.rsi,
+        technicalScore: s.indicatorScore?.label || s.recommendation || 'Neutral',
+      }),
+    })
+      .then((r) => r.json())
+      .then((data) => {
+        setInsight(data.insight);
+        setLoading(false);
+      })
+      .catch(() => {
+        setInsight('AI analysis is currently unavailable.');
+        setLoading(false);
+      });
+  }, [ticker, s]);
+
+  return (
+    <div className="ai-insight-card" style={{ marginTop: '12px', marginBottom: '4px', background: 'transparent', border: '1px solid rgba(99, 102, 241, 0.2)', padding: '12px', boxShadow: 'none' }}>
+      <div className="ai-insight-header">
+        <span className="ai-param-icon">✨</span>
+        <span className="ai-insight-title">AI Insight</span>
+        <span className="ai-insight-badge" style={{ fontSize: '0.6rem', padding: '1px 5px' }}>Llama 3</span>
+      </div>
+      <div className="ai-insight-body">
+        {loading ? (
+          <div className="ai-skeleton-container">
+            <div className="ai-skeleton-line" style={{ width: '95%' }}></div>
+            <div className="ai-skeleton-line" style={{ width: '85%' }}></div>
+          </div>
+        ) : (
+          <p className="ai-insight-text" style={{ fontSize: '0.8rem' }}>{insight}</p>
+        )}
+      </div>
+    </div>
   );
 }
 
