@@ -20,7 +20,9 @@ const SETTINGS_SECTIONS = [
   { id: 'about', label: 'About' },
 ];
 
-export default function SettingsPage() {
+import { Suspense } from 'react';
+
+function SettingsContent() {
   const searchParams = useSearchParams();
   const [theme, setThemeState] = useState('dark');
   const [activeSection, setActiveSection] = useState(() => {
@@ -96,5 +98,19 @@ export default function SettingsPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function SettingsPage() {
+  return (
+    <Suspense fallback={
+      <div className="app-layout" data-theme="dark">
+        <div className="main-area" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', color: 'var(--text-muted)' }}>
+          Loading Settings...
+        </div>
+      </div>
+    }>
+      <SettingsContent />
+    </Suspense>
   );
 }
