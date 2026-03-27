@@ -24,12 +24,30 @@ export async function GET(req) {
       return NextResponse.json({ error: 'Failed to fetch indices' }, { status: 500 });
     }
 
-    const nifty = indicesData.data.find(i => i.symbol === 'NSE:NIFTY') || { change: 0, value: 0 };
-    const bankNifty = indicesData.data.find(i => i.symbol === 'NSE:BANKNIFTY') || { change: 0, value: 0 };
-    const vix = indicesData.data.find(i => i.symbol === 'NSE:INDIA_VIX') || { change: 0, value: 0 };
+    const nifty = indicesData.data.find(i => i.symbol === 'NIFTY') || { change: 0, value: 0 };
+    const bankNifty = indicesData.data.find(i => i.symbol === 'BANKNIFTY') || { change: 0, value: 0 };
+    const vix = indicesData.data.find(i => i.symbol === 'INDIA_VIX') || { change: 0, value: 0 };
+
+    // 1b. Fetch Top Volume Movers (so the AI can talk about individual stocks)
+    const tvBody = {
+      symbols: { query: { types: ['stock'], exchanges: ['NSE'] } },
+      columns: ['name', 'change', 'volume', 'RSI'],
+      sort: { sortBy: 'volume', sortOrder: 'desc' },
+      range: [0, 5]
+    };
+    const tvRes = await fetch('https://scanner.tradingview.com/india/scan', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'User-Agent': 'Mozilla/5.0' },
+      body: JSON.stringify(tvBody)
+    });
+    const tvData = await tvRes.json();
+    const topMoversText = (tvData.data || []).filter(item => item.d && item.d.length >= 4).map(item => {
+      const sym = item.s?.replace('NSE:', '') || '';
+      return `${sym}: ${Math.round(item.d[1] * 100) / 100}%, RSI ${Math.round(item.d[3] * 10) / 10}`;
+    }).join('\n');
 
     // 2. Generate AI Wrap-up
-    const article = await generateMarketWrapUp(nifty.change, bankNifty.change, `VIX at ${vix.value}`);
+    const article = await generateMarketWrapUp(nifty.change, bankNifty.change, `VIX at ${vix.value}`, topMoversText);
 
     if (!article) {
       return NextResponse.json({ error: 'AI generation failed' }, { status: 500 });

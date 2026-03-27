@@ -38,6 +38,7 @@ export default function PostDetailPage() {
   const [loading, setLoading] = useState(true);
   const [commentText, setCommentText] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [deletePostId, setDeletePostId] = useState(null);
   const [replyTo, setReplyTo] = useState(null);
   const [replyText, setReplyText] = useState('');
   const [replyingSubmitting, setReplyingSubmitting] = useState(false);
@@ -306,18 +307,7 @@ export default function PostDetailPage() {
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="18" cy="5" r="3" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="19" r="3" /><line x1="8.59" y1="13.51" x2="15.42" y2="17.49" /><line x1="15.41" y1="6.51" x2="8.59" y2="10.49" /></svg>
             </button>
             {session?.user?.dbId && String(post.author?._id || post.author) === session.user.dbId && (
-              <button className="insight-share-btn" title="Delete post" onClick={async () => {
-                if (!confirm('Are you sure you want to delete this post? This cannot be undone.')) return;
-                try {
-                  const res = await fetch(`/api/community/posts/${post._id}`, { method: 'DELETE' });
-                  const data = await res.json();
-                  if (data.success) {
-                    router.push('/community');
-                  } else {
-                    alert(data.error || 'Failed to delete');
-                  }
-                } catch (err) { console.error(err); }
-              }} style={{ color: 'var(--text-dim)' }} onMouseOver={(e) => e.currentTarget.style.color = 'var(--red-bright)'} onMouseOut={(e) => e.currentTarget.style.color = 'var(--text-dim)'}>
+              <button className="insight-share-btn" title="Delete post" onClick={() => setDeletePostId(post._id)} style={{ color: 'var(--text-dim)' }} onMouseOver={(e) => e.currentTarget.style.color = 'var(--red-bright)'} onMouseOut={(e) => e.currentTarget.style.color = 'var(--text-dim)'}>
                 <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6" /><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" /></svg>
               </button>
             )}
@@ -360,6 +350,37 @@ export default function PostDetailPage() {
           comments.filter(c => !c.parentId).map(comment => renderComment(comment))
         )}
       </div>
+      {/* ─── Delete Confirmation Modal ─── */}
+      {deletePostId && (
+        <div className="delete-modal-overlay" onClick={() => setDeletePostId(null)}>
+          <div className="delete-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="delete-modal-icon">
+              <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#ff4d4f" strokeWidth="2">
+                <polyline points="3 6 5 6 21 6" />
+                <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
+                <line x1="10" y1="11" x2="10" y2="17" />
+                <line x1="14" y1="11" x2="14" y2="17" />
+              </svg>
+            </div>
+            <h3 className="delete-modal-title">Delete Post</h3>
+            <p className="delete-modal-text">Are you sure you want to delete this post? This action cannot be undone.</p>
+            <div className="delete-modal-actions">
+              <button className="delete-modal-btn cancel" onClick={() => setDeletePostId(null)}>Cancel</button>
+              <button className="delete-modal-btn confirm" onClick={() => {
+                fetch(`/api/community/posts/${deletePostId}`, { method: 'DELETE' })
+                  .then(r => r.json())
+                  .then(data => {
+                    if (data.success) router.push('/community');
+                    else alert(data.error || 'Failed to delete');
+                  })
+                  .catch(err => console.error(err))
+                  .finally(() => setDeletePostId(null));
+              }}>Delete</button>
+            </div>
+          </div>
+        </div>
+      )}
+
         </div>
       </div>
     </div>
