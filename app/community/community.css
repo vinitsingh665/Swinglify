@@ -514,7 +514,7 @@
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   padding: 14px 16px;
-  min-height: 80px;
+  min-height: 180px;
   margin-bottom: 12px;
   display: flex;
   align-items: flex-start;

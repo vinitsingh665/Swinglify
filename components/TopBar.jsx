@@ -1,8 +1,10 @@
 "use client";
+import { useSession, signIn } from 'next-auth/react';
 import { useMarketStatus, useIndices } from '../hooks/useStockData';
 import { formatNumber } from '../utils';
 
 export default function TopBar() {
+  const { data: session, status } = useSession();
   const marketStatus = useMarketStatus();
   const { indices } = useIndices();
 
@@ -55,6 +57,29 @@ export default function TopBar() {
             {marketStatus.isOpen ? 'Live' : 'Closed'}
           </span>
         </div>
+        
+        {/* Sign In Button for unauthenticated users */}
+        {status !== 'loading' && !session && (
+          <button 
+            onClick={() => signIn('google')}
+            style={{
+              marginLeft: '12px',
+              padding: '6px 16px',
+              borderRadius: '8px',
+              backgroundColor: 'var(--accent)',
+              color: 'var(--bg-primary)',
+              border: 'none',
+              fontWeight: 600,
+              cursor: 'pointer',
+              fontSize: '0.9rem',
+              transition: 'all 0.2s',
+            }}
+            onMouseOver={(e) => e.currentTarget.style.opacity = '0.9'}
+            onMouseOut={(e) => e.currentTarget.style.opacity = '1'}
+          >
+            Sign In
+          </button>
+        )}
       </div>
     </div>
   );

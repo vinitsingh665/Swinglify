@@ -448,10 +448,28 @@ export default function CommunityPage() {
               </div>
             )}
 
+            {/* Create Insight Placeholder (Unauthenticated) */}
             {status !== 'authenticated' && (
-              <div className="community-login-prompt">
-                <p>Sign in to share insights, vote, and follow analysts</p>
-                <button className="community-btn community-btn-primary" onClick={() => signIn('google')}>Sign In with Google</button>
+              <div className="community-create-placeholder unauth" onClick={() => signIn('google')}>
+                <div className="create-placeholder-top">
+                  <div className="create-placeholder-avatar default">
+                    ?
+                  </div>
+                  <span className="create-placeholder-title">Share a trading insight...</span>
+                </div>
+                
+                <div className="create-placeholder-box">
+                  <span className="create-placeholder-text">What's your analysis on the market today? Drop a stock ticker, strategy, or chart setup...</span>
+                </div>
+
+                <div className="create-placeholder-footer">
+                  <div className="create-placeholder-badges">
+                    <span className="tag-badge">🚀 Strategy</span>
+                    <span className="tag-badge">⏱️ Timeframe</span>
+                    <span className="tag-badge">📈 Sentiment</span>
+                  </div>
+                  <button className="community-btn community-btn-primary" onClick={(e) => { e.stopPropagation(); signIn('google'); }} style={{ padding: '6px 14px', fontSize: '0.8rem' }}>Sign in to post</button>
+                </div>
               </div>
             )}
 
