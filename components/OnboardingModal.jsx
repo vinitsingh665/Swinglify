@@ -17,7 +17,7 @@ export default function OnboardingModal() {
 
   // Show the modal only for first-time users
   useEffect(() => {
-    if (status === "authenticated" && session?.user && session.user.isProfileComplete === false) {
+    if (status === "authenticated" && session?.user && !session.user.isProfileComplete && !session.user.username) {
       setShow(true);
       setDisplayName(session.user.displayName || session.user.name || "");
       setProfilePic(session.user.profilePic || session.user.image || "");
