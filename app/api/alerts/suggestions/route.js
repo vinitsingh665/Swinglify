@@ -3,6 +3,8 @@ import dbConnect from '../../../../lib/mongodb';
 import InsightCache from '../../../../models/InsightCache';
 import { generateSmartSuggestions } from '../../../../lib/ai';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
     await dbConnect();
