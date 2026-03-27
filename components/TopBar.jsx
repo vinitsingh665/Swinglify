@@ -62,7 +62,7 @@ export default function TopBar() {
         {status !== 'loading' && !session && (
           <button 
             className="hide-on-mobile"
-            onClick={() => signIn('google')}
+            onClick={() => window.location.href = '/auth/signin'}
             style={{
               marginLeft: '12px',
               padding: '6px 16px',

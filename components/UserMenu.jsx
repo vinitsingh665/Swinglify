@@ -32,7 +32,7 @@ export default function UserMenu() {
     return (
       <button
         className="sidebar-icon"
-        onClick={() => signIn("google")}
+        onClick={() => window.location.href = '/auth/signin'}
         title="Sign in with Google"
       >
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">

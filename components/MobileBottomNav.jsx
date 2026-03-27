@@ -50,7 +50,7 @@ export default function MobileBottomNav() {
 
   const handleProfileClick = () => {
     if (status === 'unauthenticated') {
-      signIn('google');
+      window.location.href = '/auth/signin?callbackUrl=' + encodeURIComponent(pathname || '/');
     } else {
       setMoreOpen(false);
       setProfileOpen(o => !o);
