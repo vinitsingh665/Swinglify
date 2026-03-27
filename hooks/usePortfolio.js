@@ -1,10 +1,14 @@
 "use client";
 import { useState, useEffect, useCallback } from 'react';
 
+import { useSession } from 'next-auth/react';
+
 export function usePortfolio() {
+  const { data: session, status } = useSession();
   const [holdings, setHoldings] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
 
+  // 1. Initial Load from LocalStorage
   useEffect(() => {
     try {
       const saved = localStorage.getItem('swinglify_portfolio');
@@ -18,13 +22,36 @@ export function usePortfolio() {
     }
   }, []);
 
+  // 2. Hydrate from MongoDB once authenticated
+  useEffect(() => {
+    if (status === 'authenticated' && session?.user) {
+      fetch('/api/user/sync')
+        .then(res => res.json())
+        .then(data => {
+          if (data.success && data.data && data.data.portfolio) {
+            setHoldings(data.data.portfolio);
+            localStorage.setItem('swinglify_portfolio', JSON.stringify(data.data.portfolio));
+          }
+        })
+        .catch(err => console.error("Failed to sync portfolio from db:", err));
+    }
+  }, [status, session]);
+
+  // 3. Save function that mutates both local and server
   const saveHoldings = (newHoldings) => {
     setHoldings(newHoldings);
     localStorage.setItem('swinglify_portfolio', JSON.stringify(newHoldings));
+
+    if (status === 'authenticated') {
+      fetch('/api/user/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ portfolio: newHoldings })
+      }).catch(err => console.error("Background sync failed:", err));
+    }
   };
 
   const addHolding = (holding) => {
-    // Requires: symbol, name, qty, avgPrice
     const newHoldings = [...holdings, { 
       ...holding, 
       id: Date.now().toString(),

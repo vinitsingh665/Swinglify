@@ -1,6 +1,54 @@
 [
   {
     "query": "TATA",
+    "timestamp": "2026-03-27T08:24:22.192Z"
+  },
+  {
+    "query": "REL",
+    "timestamp": "2026-03-27T08:01:27.309Z"
+  },
+  {
+    "query": "RE",
+    "timestamp": "2026-03-27T08:01:26.785Z"
+  },
+  {
+    "query": "RE",
+    "timestamp": "2026-03-27T07:57:57.743Z"
+  },
+  {
+    "query": "TATA",
+    "timestamp": "2026-03-26T17:19:45.517Z"
+  },
+  {
+    "query": "ADANI",
+    "timestamp": "2026-03-26T17:19:23.594Z"
+  },
+  {
+    "query": "ADA",
+    "timestamp": "2026-03-26T17:19:23.199Z"
+  },
+  {
+    "query": "RELIANCE",
+    "timestamp": "2026-03-26T17:19:04.573Z"
+  },
+  {
+    "query": "RE",
+    "timestamp": "2026-03-26T17:19:02.936Z"
+  },
+  {
+    "query": "TATA",
+    "timestamp": "2026-03-26T17:18:45.878Z"
+  },
+  {
+    "query": "ADANI",
+    "timestamp": "2026-03-26T17:03:21.126Z"
+  },
+  {
+    "query": "TATA",
+    "timestamp": "2026-03-26T17:03:12.123Z"
+  },
+  {
+    "query": "TATA",
     "timestamp": "2026-03-26T10:40:59.829Z"
   }
 ]

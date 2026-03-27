@@ -104,6 +104,55 @@
   border: 1px solid var(--accent-bg); margin-top: 4px; width: fit-content;
 }
 
+/* ─── Google Sign-In Button ─── */
+.set-google-signin-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px 28px;
+  background: #ffffff;
+  color: #3c4043;
+  border: 1px solid #dadce0;
+  border-radius: 10px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+.set-google-signin-btn:hover {
+  background: #f8f9fa;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  transform: translateY(-1px);
+}
+.set-google-signin-btn:active {
+  transform: translateY(0);
+}
+.set-google-signin-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ─── Sign Out Button ─── */
+.set-signout-btn {
+  background: transparent;
+  border: 1px solid var(--red, #ef4444);
+  color: var(--red-bright, #f87171);
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.82rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.set-signout-btn:hover {
+  background: var(--red, #ef4444);
+  color: white;
+}
+
 /* ─── Edit Button ─── */
 .set-edit-btn {
   align-self: flex-start;

@@ -1,6 +1,6 @@
+import dbConnect from '../../../lib/mongodb';
+import Feedback from '../../../models/Feedback';
 import nodemailer from 'nodemailer';
-import fs from 'fs/promises';
-import path from 'path';
 
 export async function POST(req) {
   try {
@@ -14,28 +14,19 @@ export async function POST(req) {
       });
     }
 
-    // Save to local feedback.json database for Admin Dashboard
+    // NEW: Save to MongoDB
     try {
-      const dataFile = path.join(process.cwd(), 'data', 'feedback.json');
-      let fbData = [];
-      try {
-        const fileContent = await fs.readFile(dataFile, 'utf8');
-        fbData = JSON.parse(fileContent);
-      } catch(e) {}
-      
-      fbData.unshift({
-        id: 'f-' + Date.now().toString().slice(-6),
+      await dbConnect();
+      await Feedback.create({
         type: type === 'bug' ? 'bug' : 'contact',
         subject: subject || 'New Message from ' + name,
         body: message,
         senderName: name,
         senderEmail: email,
-        status: 'new',
-        createdAt: new Date().toISOString()
+        status: 'new'
       });
-      await fs.writeFile(dataFile, JSON.stringify(fbData, null, 2), 'utf8');
     } catch (dbErr) {
-      console.error('Failed to save feedback to local DB:', dbErr);
+      console.error('Failed to save feedback to MongoDB:', dbErr);
     }
 
     // Configure the SMTP transporter using environment variables

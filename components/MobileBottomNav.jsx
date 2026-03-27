@@ -3,9 +3,11 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
+import { useSession, signIn, signOut } from 'next-auth/react';
 import './MobileBottomNav.css';
 
 export default function MobileBottomNav() {
+  const { data: session, status } = useSession();
   const pathname = usePathname();
   const [profileOpen, setProfileOpen] = useState(false);
   const [theme, setTheme] = useState('dark');
@@ -50,6 +52,14 @@ export default function MobileBottomNav() {
     return null;
   }
 
+  const handleProfileClick = () => {
+    if (status === 'unauthenticated') {
+      signIn('google');
+    } else {
+      setProfileOpen(o => !o);
+    }
+  };
+
   return (
     <nav className="mob-bottom-nav">
       {/* Home */}
@@ -63,13 +73,15 @@ export default function MobileBottomNav() {
         <span>Home</span>
       </Link>
 
-      {/* Markets */}
-      <Link href="/markets" className={`mob-nav-item ${pathname?.startsWith('/markets') || pathname?.startsWith('/analytics') || pathname?.startsWith('/compare') ? 'active' : ''}`}>
+      {/* Community */}
+      <Link href="/community" className={`mob-nav-item ${pathname?.startsWith('/community') ? 'active' : ''}`}>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-          <path d="M3 12l2-2 4 4 6-8 6 6" />
-          <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h7" />
+          <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+          <circle cx="9" cy="7" r="4" />
+          <path d="M23 21v-2a4 4 0 00-3-3.87" />
+          <path d="M16 3.13a4 4 0 010 7.75" />
         </svg>
-        <span>Markets</span>
+        <span>Community</span>
       </Link>
 
       {/* Screener */}
@@ -92,16 +104,53 @@ export default function MobileBottomNav() {
 
       {/* Profile (with flyout) */}
       <div className={`mob-nav-item mob-profile-trigger ${isProfileSection ? 'active' : ''}`} ref={menuRef}>
-        <button className="mob-profile-btn" onClick={() => setProfileOpen(o => !o)}>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-            <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
-            <circle cx="12" cy="7" r="4" />
-          </svg>
-          <span>Profile</span>
+        <button 
+          className={`mob-profile-btn ${pathname?.startsWith('/settings') && !profileOpen ? 'active' : ''}`}
+          onClick={handleProfileClick}
+        >
+          {session?.user && (session.user.profilePic || session.user.image) ? (
+            <img 
+              src={session.user.profilePic || session.user.image} 
+              alt={session.user.displayName || session.user.name || "Profile"} 
+              className="mob-nav-avatar" 
+              referrerPolicy="no-referrer"
+            />
+          ) : (
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </svg>
+          )}
+          <span>{status === 'authenticated' ? 'Account' : 'Sign In'}</span>
         </button>
 
-        {profileOpen && (
+        {profileOpen && status === 'authenticated' && (
           <div className="mob-profile-menu">
+            <div className="mob-profile-header">
+              <div className="mob-profile-avatar-wrap">
+                {session?.user && (session.user.profilePic || session.user.image) ? (
+                  <img 
+                    src={session.user.profilePic || session.user.image} 
+                    alt="" 
+                    className="mob-pm-avatar"
+                    referrerPolicy="no-referrer"
+                  />
+                ) : (
+                  <div className="mob-pm-avatar-fallback">
+                    {(session.user.displayName || session.user.name)?.charAt(0)?.toUpperCase()}
+                  </div>
+                )}
+              </div>
+              <div className="mob-profile-details">
+                <div className="mob-profile-name">{session.user.displayName || session.user.name}</div>
+                <div className="mob-profile-sub">
+                  {session.user.username && <span className="mob-profile-username">@{session.user.username}</span>}
+                  <span className="mob-profile-email">{session.user.email}</span>
+                </div>
+              </div>
+            </div>
+            <div className="mob-pm-divider" />
+            
             <Link href="/portfolio" className="mob-pm-item" onClick={() => setProfileOpen(false)}>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></svg>
               Portfolio
@@ -125,7 +174,7 @@ export default function MobileBottomNav() {
               )}
               {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
             </button>
-            <button className="mob-pm-item mob-pm-logout">
+            <button className="mob-pm-item mob-pm-logout" onClick={() => signOut()}>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" /></svg>
               Logout
             </button>

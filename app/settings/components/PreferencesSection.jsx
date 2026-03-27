@@ -7,13 +7,13 @@ export default function PreferencesSection({ currentTheme }) {
     currency: 'INR',
     timeframe: '1D',
     theme: currentTheme || 'dark',
-    accent: '#f97316'
+    accent: '#6366f1'
   });
 
   // Load initial state
   useEffect(() => {
     const savedTheme = localStorage.getItem('swinglify_theme') || localStorage.getItem('theme') || 'dark';
-    const savedAccent = localStorage.getItem('swinglify_accent') || '#f97316';
+    const savedAccent = localStorage.getItem('swinglify_accent') || '#6366f1';
     const savedMarket = localStorage.getItem('swinglify_market') || 'NSE';
     const savedTimeframe = localStorage.getItem('swinglify_timeframe') || '1D';
 
@@ -117,6 +117,7 @@ export default function PreferencesSection({ currentTheme }) {
           {[
             { id: 'gold', val: '#d4af37' },
             { id: 'blue', val: '#3b82f6' },
+            { id: 'indigo', val: '#6366f1' },
             { id: 'orange', val: '#f97316' },
             { id: 'green', val: '#22c55e' }
           ].map(color => (

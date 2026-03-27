@@ -1,8 +1,13 @@
 import './globals.css';
 import ThemeProvider from '../components/ThemeProvider';
 import VisitorTracker from '../components/VisitorTracker';
+import AuthProvider from '../components/AuthProvider';
+import OnboardingModal from '../components/OnboardingModal';
+
+import Script from 'next/script';
 
 export const metadata = {
+
   title: {
     default: 'Swinglify — Free Swing Trading Screener for Indian Stocks | NSE & BSE',
     template: '%s | Swinglify',
@@ -95,21 +100,12 @@ export default function RootLayout({ children }) {
           document.documentElement.style.setProperty('--accent', '#6366f1');
           document.documentElement.style.setProperty('--accent-bg', 'rgba(99, 102, 241, 0.1)');
         } else {
-          var accent = localStorage.getItem('swinglify_accent');
-          if (!accent) {
-            var prefsStr = localStorage.getItem('swinglify_prefs');
-            if (prefsStr) {
-              var prefs = JSON.parse(prefsStr);
-              if (prefs.accent) accent = prefs.accent;
-            }
-          }
-          if (accent) {
-            document.documentElement.style.setProperty('--accent', accent);
-            var r = parseInt(accent.slice(1, 3), 16);
-            var g = parseInt(accent.slice(3, 5), 16);
-            var b = parseInt(accent.slice(5, 7), 16);
-            document.documentElement.style.setProperty('--accent-bg', 'rgba('+r+','+g+','+b+',0.1)');
-          }
+          var accent = localStorage.getItem('swinglify_accent') || '#6366f1';
+          document.documentElement.style.setProperty('--accent', accent);
+          var r = parseInt(accent.slice(1, 3), 16);
+          var g = parseInt(accent.slice(3, 5), 16);
+          var b = parseInt(accent.slice(5, 7), 16);
+          document.documentElement.style.setProperty('--accent-bg', 'rgba('+r+','+g+','+b+',0.1)');
         }
       } catch(e) {}
     })();
@@ -117,13 +113,16 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        <Script id="theme-init">{themeScript}</Script>
       </head>
       <body suppressHydrationWarning={true}>
-        <ThemeProvider>
-          <VisitorTracker />
-          {children}
-        </ThemeProvider>
+        <AuthProvider>
+          <ThemeProvider>
+            <VisitorTracker />
+            <OnboardingModal />
+            {children}
+          </ThemeProvider>
+        </AuthProvider>
       </body>
     </html>
   );

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs/promises';
-import path from 'path';
+import dbConnect from '../../../../lib/mongodb';
+import Visitor from '../../../../models/Visitor';
 
 export async function POST(req) {
     try {
@@ -11,41 +11,28 @@ export async function POST(req) {
             return NextResponse.json({ success: false, error: 'Session ID required' }, { status: 400 });
         }
 
-        const dataFile = path.join(process.cwd(), 'data', 'visitors.json');
-        let visitorsData = [];
-        
-        try {
-            const fileContent = await fs.readFile(dataFile, 'utf8');
-            visitorsData = JSON.parse(fileContent);
-        } catch (e) {
-            // File doesn't exist yet, which is fine
-        }
+        await dbConnect();
+        const now = new Date();
 
-        const now = Date.now();
-        const THRESHOLD = 30000; // 30 seconds
+        // 1. Update the current visitor (Upsert = create if not exists)
+        await Visitor.findOneAndUpdate(
+            { sessionId },
+            { 
+                lastActive: now, 
+                path: currentPath || 'unknown' 
+            },
+            { upsert: true, new: true }
+        );
 
-        // 1. Filter out stale visitors (older than 30s)
-        let activeVisitors = visitorsData.filter(v => (now - v.lastSeen) < THRESHOLD);
+        // 2. Periodic Cleanup: Delete visitors inactive for more than 2 minutes
+        // (This keeps the "Active Now" count accurate)
+        const twoMinutesAgo = new Date(now.getTime() - 120000);
+        await Visitor.deleteMany({ lastActive: { $lt: twoMinutesAgo } });
 
-        // 2. Find and update the current visitor, or add them
-        const existingIndex = activeVisitors.findIndex(v => v.sessionId === sessionId);
-        if (existingIndex >= 0) {
-            activeVisitors[existingIndex].lastSeen = now;
-            if (currentPath) activeVisitors[existingIndex].path = currentPath;
-        } else {
-            activeVisitors.push({
-                sessionId,
-                lastSeen: now,
-                path: currentPath || 'unknown',
-                joinedAt: now
-            });
-        }
+        // 3. Count total active users
+        const activeCount = await Visitor.countDocuments({});
 
-        // 3. Save back to disk
-        await fs.writeFile(dataFile, JSON.stringify(activeVisitors, null, 2), 'utf8');
-
-        // Allow frontend to optionally know how many people are online
-        return NextResponse.json({ success: true, activeCount: activeVisitors.length });
+        return NextResponse.json({ success: true, activeCount });
 
     } catch (error) {
         console.error('Heartbeat Tracker Error:', error);

@@ -2,15 +2,15 @@
 
 import './dashboard.css';
 import { useState, useEffect, useCallback } from 'react';
-import Sidebar from '../components/Sidebar';
-import TopBar from '../components/TopBar';
-import OverviewCards from '../components/OverviewCards';
-import StockModal from '../components/StockModal';
-import SearchBar from '../components/SearchBar';
-import OpportunitiesRow from '../components/dashboard/OpportunitiesRow';
-import SmartStockTable from '../components/dashboard/SmartStockTable';
-import MiniWatchlist from '../components/dashboard/MiniWatchlist';
-import SectorSnapshot from '../components/dashboard/SectorSnapshot';
+import Sidebar from '../../components/Sidebar';
+import TopBar from '../../components/TopBar';
+import OverviewCards from '../../components/OverviewCards';
+import StockModal from '../../components/StockModal';
+import SearchBar from '../../components/SearchBar';
+import OpportunitiesRow from '../../components/dashboard/OpportunitiesRow';
+import SmartStockTable from '../../components/dashboard/SmartStockTable';
+import MiniWatchlist from '../../components/dashboard/MiniWatchlist';
+import SectorSnapshot from '../../components/dashboard/SectorSnapshot';
 
 export default function Page() {
   const [category, setCategory] = useState('nifty50');

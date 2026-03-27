@@ -7,6 +7,24 @@ import '../info.css';
 
 const CHANGELOG = [
   {
+    version: '1.1.0',
+    date: 'March 27, 2026',
+    title: 'Community Trading Hub 🧠',
+    items: [
+      { type: 'new', text: 'Community redesigned into a 3-panel Trading Insights Hub with structured insight cards' },
+      { type: 'new', text: 'Left panel with Strategy Tags, Timeframe, Sentiment, and Watchlist filters' },
+      { type: 'new', text: 'Right panel with Most Discussed Stocks, Strong Signals, Market Sentiment Gauge, and Top Analysts' },
+      { type: 'new', text: 'Structured post creation requiring stock ticker, strategy tag, timeframe, sentiment, and confidence' },
+      { type: 'new', text: 'Nested threaded comment replies with inline reply forms' },
+      { type: 'new', text: 'Watchlist filter connects your saved stocks to community posts' },
+      { type: 'improve', text: 'Post detail page redesigned with insight card styling and live indicator' },
+      { type: 'improve', text: 'Enhanced Create Insight placeholder with larger, more inviting layout' },
+      { type: 'fix', text: 'Mobile filter/insights drawers can now be closed by tapping outside' },
+      { type: 'fix', text: 'Fixed critical syntax error in community posts API route' },
+      { type: 'fix', text: 'Resolved MongoDB connection issues with IP whitelist guidance' },
+    ],
+  },
+  {
     version: '1.0.0',
     date: 'March 25, 2026',
     title: 'Public Beta Launch 🚀',

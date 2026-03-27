@@ -1,55 +1,75 @@
 "use client";
-import { useState, useEffect } from 'react';
-
-const STORAGE_KEY = 'swinglify_alerts';
+import { useState, useEffect, useCallback } from 'react';
 
 export function useAlerts() {
   const [alerts, setAlerts] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  useEffect(() => {
+  // Fetch alerts from MongoDB on mount
+  const fetchAlerts = useCallback(async () => {
     try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        setAlerts(JSON.parse(saved));
+      const res = await fetch('/api/alerts');
+      const data = await res.json();
+      if (data.success) {
+        setAlerts(data.data);
       }
     } catch (e) {
-      console.warn("Failed to load alerts from local storage");
+      console.warn("Failed to load alerts from server:", e);
     } finally {
       setIsLoaded(true);
     }
   }, []);
 
-  const saveAlerts = (newAlerts) => {
-    setAlerts(newAlerts);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(newAlerts));
+  useEffect(() => {
+    fetchAlerts();
+  }, [fetchAlerts]);
+
+  const addAlert = async (alert) => {
+    try {
+      const res = await fetch('/api/alerts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(alert)
+      });
+      const data = await res.json();
+      if (data.success) {
+        setAlerts(prev => [data.data, ...prev]);
+      }
+    } catch (e) {
+      console.error('Failed to create alert:', e);
+    }
   };
 
-  const addAlert = (alert) => {
-    const newAlert = {
-      ...alert,
-      id: Date.now().toString(),
-      timestamp: new Date().toISOString(),
-      status: 'active'
-    };
-    saveAlerts([newAlert, ...alerts]);
+  const updateAlert = async (id, updates) => {
+    try {
+      const res = await fetch(`/api/alerts/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updates)
+      });
+      const data = await res.json();
+      if (data.success) {
+        setAlerts(prev => prev.map(a => a.id === id ? data.data : a));
+      }
+    } catch (e) {
+      console.error('Failed to update alert:', e);
+    }
   };
 
-  const updateAlert = (id, updates) => {
-    saveAlerts(alerts.map(a => a.id === id ? { ...a, ...updates } : a));
+  const removeAlert = async (id) => {
+    try {
+      const res = await fetch(`/api/alerts/${id}`, { method: 'DELETE' });
+      const data = await res.json();
+      if (data.success) {
+        setAlerts(prev => prev.filter(a => a.id !== id));
+      }
+    } catch (e) {
+      console.error('Failed to delete alert:', e);
+    }
   };
 
-  const removeAlert = (id) => {
-    saveAlerts(alerts.filter(a => a.id !== id));
-  };
-
-  const markTriggered = (id, triggerPrice) => {
-    saveAlerts(alerts.map(a => a.id === id ? { 
-      ...a, 
-      status: 'triggered', 
-      triggerPrice,
-      triggerTimestamp: new Date().toISOString() 
-    } : a));
+  const markTriggered = async (id, triggerPrice) => {
+    await updateAlert(id, { triggered: true, triggerPrice });
   };
 
   return { alerts, isLoaded, addAlert, updateAlert, removeAlert, markTriggered };

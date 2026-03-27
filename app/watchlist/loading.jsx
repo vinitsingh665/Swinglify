@@ -22,34 +22,44 @@ export default function WatchlistLoading() {
         <div className="watchlist-layout">
 
           {/* Top bar skeleton */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-            <Skeleton width="160px" height="32px" />
-            <Skeleton width="120px" height="36px" borderRadius="var(--radius-sm)" />
+          <div className="wl-topbar">
+            <div className="wl-tb-left">
+              <Skeleton width="120px" height="28px" />
+              <Skeleton width="280px" height="34px" borderRadius="8px" />
+            </div>
+            <div className="wl-tb-right">
+              <Skeleton width="100px" height="30px" borderRadius="6px" />
+            </div>
           </div>
 
           {/* Filter pills */}
-          <div style={{ display: 'flex', gap: '8px', marginBottom: '20px' }}>
+          <div className="wl-pills" style={{ marginTop: '4px', marginBottom: '12px' }}>
             {[1,2,3,4,5].map(i => (
-              <Skeleton key={i} width="80px" height="32px" borderRadius="8px" />
+              <Skeleton key={i} width="80px" height="30px" borderRadius="20px" />
             ))}
           </div>
 
           {/* Body: table */}
-          <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '14px', overflow: 'hidden' }}>
-            {[1,2,3,4,5,6,7,8].map(i => (
-              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '14px 18px', borderBottom: '1px solid var(--border)' }}>
-                <Skeleton width="32px" height="32px" circle />
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <Skeleton width="90px" height="14px" />
-                  <Skeleton width="130px" height="10px" />
-                </div>
-                <div style={{ marginLeft: 'auto', display: 'flex', gap: '20px', alignItems: 'center' }}>
-                  <Skeleton width="70px" height="16px" />
-                  <Skeleton width="55px" height="22px" borderRadius="5px" />
-                  <Skeleton width="30px" height="30px" borderRadius="6px" />
-                </div>
+          <div className="wl-body no-panel">
+            <div className="wl-table-wrap" style={{ minHeight: '500px' }}>
+              <div style={{ display: 'flex', padding: '12px 16px', borderBottom: '1px solid var(--border)', background: 'var(--bg-card)' }}>
+                 <Skeleton width="150px" height="16px" />
               </div>
-            ))}
+              {[1,2,3,4,5,6,7,8,9,10].map(i => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '14px 18px', borderBottom: '1px solid var(--border)' }}>
+                  <Skeleton width="32px" height="32px" circle />
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    <Skeleton width="90px" height="14px" />
+                    <Skeleton width="130px" height="10px" />
+                  </div>
+                  <div style={{ marginLeft: 'auto', display: 'flex', gap: '20px', alignItems: 'center' }}>
+                    <Skeleton width="70px" height="18px" />
+                    <Skeleton width="55px" height="22px" borderRadius="5px" />
+                    <Skeleton width="30px" height="30px" borderRadius="6px" />
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
 
         </div>

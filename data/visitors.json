@@ -1,20 +1,8 @@
 [
   {
-    "sessionId": "e549346bc2f74477",
-    "lastSeen": 1774522629440,
-    "path": "/admin",
-    "joinedAt": 1774522070786
-  },
-  {
-    "sessionId": "04e8f5c531542a39",
-    "lastSeen": 1774522626469,
+    "sessionId": "21b26a30ace2500b",
+    "lastSeen": 1774535023168,
     "path": "/",
-    "joinedAt": 1774522146464
-  },
-  {
-    "sessionId": "c0b33eb4fcb7852e",
-    "lastSeen": 1774522625525,
-    "path": "/",
-    "joinedAt": 1774522307565
+    "joinedAt": 1774535020466
   }
 ]

@@ -24,33 +24,41 @@ export default function ScreenerLoading() {
           {/* Top Bar Skeleton */}
           <div className="screener-topbar">
             <div className="st-left">
-              <Skeleton width="120px" height="28px" />
-              <Skeleton width="280px" height="38px" borderRadius="10px" />
+              <Skeleton width="130px" height="32px" />
+              <div className="st-search" style={{ border: 'none', background: 'transparent', padding: 0 }}>
+                <Skeleton width="100%" height="40px" borderRadius="10px" />
+              </div>
             </div>
             <div className="st-right">
-              <Skeleton width="200px" height="34px" borderRadius="8px" />
-              <Skeleton width="100px" height="34px" borderRadius="8px" />
+              <Skeleton width="220px" height="36px" borderRadius="8px" />
+              <Skeleton width="110px" height="36px" borderRadius="8px" />
             </div>
           </div>
 
           {/* 3-Panel Body Skeleton */}
           <div className="screener-body">
             {/* Left: Filters */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <Skeleton height="40px" borderRadius="14px" />
-              {[1,2,3,4].map(i => (
-                <Skeleton key={i} height="60px" borderRadius="10px" />
+            <div className="filter-panel" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <Skeleton height="30px" width="120px" style={{ marginBottom: '8px' }} />
+              {[1,2,3,4,5].map(i => (
+                <div key={i}>
+                  <Skeleton height="14px" width="80px" style={{ marginBottom: '10px' }} />
+                  <Skeleton height="36px" borderRadius="8px" />
+                </div>
               ))}
-              <Skeleton height="44px" borderRadius="10px" />
+              <Skeleton height="44px" borderRadius="10px" style={{ marginTop: '10px' }} />
             </div>
 
             {/* Center: Results table */}
-            <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: '14px', overflow: 'hidden' }}>
-              <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--border)' }}>
+            <div className="screener-results">
+              <div className="sr-header">
                 <Skeleton width="180px" height="20px" />
               </div>
-              <div style={{ padding: '0' }}>
-                {[1,2,3,4,5,6,7,8].map(i => (
+              <div className="sr-table-wrap" style={{ minHeight: '500px' }}>
+                <div style={{ display: 'flex', padding: '12px 16px', borderBottom: '1px solid var(--border)', background: 'var(--bg-surface)' }}>
+                   <Skeleton width="100%" height="16px" />
+                </div>
+                {[1,2,3,4,5,6,7,8,9].map(i => (
                   <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '12px 16px', borderBottom: '1px solid var(--border)' }}>
                     <Skeleton width="30px" height="30px" circle />
                     <Skeleton width="100px" height="16px" />
@@ -65,7 +73,13 @@ export default function ScreenerLoading() {
             </div>
 
             {/* Right: Insights */}
-            <Skeleton height="360px" borderRadius="14px" />
+            <div className="insights-panel">
+               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', minHeight: '300px', opacity: 0.5 }}>
+                 <Skeleton width="48px" height="48px" circle style={{ marginBottom: '16px' }} />
+                 <Skeleton width="140px" height="16px" style={{ marginBottom: '8px' }} />
+                 <Skeleton width="100px" height="12px" />
+               </div>
+            </div>
           </div>
 
         </div>

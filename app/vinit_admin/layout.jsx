@@ -30,21 +30,18 @@ export default function AdminLayout({ children }) {
       const t = localStorage.getItem('swinglify_theme') || 'dark';
       document.documentElement.setAttribute('data-theme', t);
       
-      const prefsStr = localStorage.getItem('swinglify_prefs');
-      if (prefsStr) {
+      const accent = localStorage.getItem('swinglify_accent');
+      if (accent) {
+        document.documentElement.style.setProperty('--accent', accent);
         try {
-          const prefs = JSON.parse(prefsStr);
-          if (prefs.accent) {
-             document.documentElement.style.setProperty('--accent', prefs.accent);
-             const r = parseInt(prefs.accent.slice(1, 3), 16);
-             const g = parseInt(prefs.accent.slice(3, 5), 16);
-             const b = parseInt(prefs.accent.slice(5, 7), 16);
-             document.documentElement.style.setProperty('--accent-bg', 'rgba('+r+','+g+','+b+',0.1)');
-          } else {
-             document.documentElement.style.removeProperty('--accent');
-             document.documentElement.style.removeProperty('--accent-bg');
-          }
-        } catch(e){}
+          const r = parseInt(accent.slice(1, 3), 16);
+          const g = parseInt(accent.slice(3, 5), 16);
+          const b = parseInt(accent.slice(5, 7), 16);
+          document.documentElement.style.setProperty('--accent-bg', 'rgba('+r+','+g+','+b+',0.1)');
+        } catch(e) {}
+      } else {
+        document.documentElement.style.setProperty('--accent', '#6366f1');
+        document.documentElement.style.setProperty('--accent-bg', 'rgba(99, 102, 241, 0.1)');
       }
     };
   }, []);

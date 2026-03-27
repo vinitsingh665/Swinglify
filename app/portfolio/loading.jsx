@@ -26,21 +26,21 @@ export default function PortfolioLoading() {
         <TopBar />
         <div className="portfolio-layout">
           
-          <div className="portfolio-header" style={{ marginBottom: '24px', display: 'flex', justifyContent: 'space-between' }}>
-            <Skeleton width="160px" height="32px" />
-            <Skeleton width="120px" height="36px" borderRadius="var(--radius-sm)" />
+          <div className="portfolio-header">
+            <h1 className="portfolio-title">Portfolio</h1>
+            <Skeleton width="120px" height="42px" borderRadius="12px" />
           </div>
 
-          <div className="summary-grid" style={{ marginBottom: '32px' }}>
-            <Skeleton height="110px" borderRadius="var(--radius)" />
-            <Skeleton height="110px" borderRadius="var(--radius)" />
-            <Skeleton height="110px" borderRadius="var(--radius)" />
-            <Skeleton height="110px" borderRadius="var(--radius)" />
+          <div className="summary-grid">
+            <Skeleton height="135px" borderRadius="20px" />
+            <Skeleton height="135px" borderRadius="20px" />
+            <Skeleton height="135px" borderRadius="20px" />
+            <Skeleton height="135px" borderRadius="20px" />
           </div>
 
-          <div className="portfolio-body" style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: '24px' }}>
-            <Skeleton height="400px" borderRadius="var(--radius)" />
-            <Skeleton height="400px" borderRadius="var(--radius)" />
+          <div className="portfolio-body">
+            <Skeleton height="400px" borderRadius="20px" />
+            <Skeleton height="400px" borderRadius="20px" />
           </div>
 
         </div>
