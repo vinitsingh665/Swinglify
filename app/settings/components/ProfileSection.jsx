@@ -144,7 +144,7 @@ export default function ProfileSection() {
         {error && <div style={{ color: '#ef4444', fontSize: '0.8rem' }}>{error}</div>}
 
         {isEditing ? (
-          <div style={{ display: 'flex', gap: '8px', alignSelf: 'flex-start' }}>
+          <div className="set-edit-actions" style={{ display: 'flex', gap: '8px', alignSelf: 'flex-start' }}>
             <button className="set-btn" onClick={() => setIsEditing(false)} disabled={saving} style={{ background: 'transparent' }}>Cancel</button>
             <button className="set-edit-btn" onClick={handleSave} disabled={saving} style={{ background: 'var(--accent)', color: 'white', borderColor: 'var(--accent)' }}>
               {saving ? 'Saving...' : 'Save Profile'}

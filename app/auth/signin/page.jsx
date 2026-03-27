@@ -12,7 +12,7 @@ function SignInContent() {
     <div className="signin-page">
       <div className="signin-card">
         <div className="signin-logo">
-          <span className="signin-logo-icon">📈</span>
+          <img src="/logo.png" alt="Swinglify Logo" className="signin-logo-img" />
           <h1>Swinglify</h1>
           <p>Your Swing Trading Intelligence Platform</p>
         </div>
@@ -54,7 +54,7 @@ export default function SignInPage() {
       <div className="signin-page">
         <div className="signin-card">
           <div className="signin-logo">
-            <span className="signin-logo-icon">📈</span>
+            <img src="/logo.png" alt="Swinglify Logo" className="signin-logo-img" />
             <h1>Swinglify</h1>
             <p>Loading...</p>
           </div>

@@ -327,7 +327,12 @@
   .set-card-desc { font-size: 0.72rem; }
 
   /* ─── Profile ─── */
-  .set-profile-header { gap: 14px; }
+  .set-profile-header { gap: 14px; flex-wrap: wrap; }
+  .set-profile-info { min-width: calc(100% - 80px); }
+  .set-edit-btn { width: 100%; text-align: center; margin-top: 4px; }
+  .set-edit-actions { width: 100%; margin-top: 4px; }
+  .set-edit-actions button { flex: 1; }
+  
   .set-avatar-wrapper { width: 56px; height: 56px; }
   .set-avatar { font-size: 1.2rem; }
   .set-profile-name { font-size: 1rem; }
