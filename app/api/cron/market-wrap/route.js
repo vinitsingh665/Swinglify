@@ -14,6 +14,14 @@ export async function GET(req) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    // 0. Weekend Fail-Safe: Abort if today is Saturday (6) or Sunday (0)
+    const istOffset = 5.5 * 60 * 60 * 1000; // IST Time
+    const istDate = new Date(Date.now() + istOffset);
+    const dayOfWeek = istDate.getUTCDay();
+    if (dayOfWeek === 0 || dayOfWeek === 6) {
+      return NextResponse.json({ message: 'Market is closed on weekends. No market wrap-up generated.' }, { status: 200 });
+    }
+
     // 1. Fetch Today's Market Data
     // We use absolute URL for fetch inside API routes or directly call the logic. For simplicity, we fetch our own route.
     const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3050';
