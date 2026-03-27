@@ -1,5 +1,5 @@
 "use client";
-import { useSession, signIn } from "next-auth/react";
+import { useSession, signIn, signOut } from "next-auth/react";
 import { useState, useRef, useEffect, useCallback } from "react";
 
 export default function OnboardingModal() {
@@ -11,6 +11,7 @@ export default function OnboardingModal() {
   const [displayName, setDisplayName] = useState("");
   const [usernameStatus, setUsernameStatus] = useState(""); // "", "checking", "available", "taken", "invalid"
   const [saving, setSaving] = useState(false);
+  const [cancelling, setCancelling] = useState(false);
   const [error, setError] = useState("");
   const fileInputRef = useRef(null);
   const checkTimeoutRef = useRef(null);
@@ -119,11 +120,39 @@ export default function OnboardingModal() {
     }
   };
 
+  const handleCancel = async () => {
+    if (cancelling) return;
+    setCancelling(true);
+    try {
+      await fetch('/api/onboarding/cancel', { method: 'POST' });
+    } catch (e) {
+      console.error('Cancel registration error:', e);
+    }
+    signOut({ callbackUrl: '/' });
+  };
+
   if (!show) return null;
 
   return (
     <div className="onboard-overlay">
       <div className="onboard-modal">
+        {/* Close / Cancel Button */}
+        <button
+          className="onboard-close-btn"
+          onClick={handleCancel}
+          disabled={cancelling || saving}
+          title="Cancel registration"
+        >
+          {cancelling ? (
+            <div className="onboard-close-spinner" />
+          ) : (
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="18" height="18">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          )}
+        </button>
+
         {/* Header */}
         <div className="onboard-header">
           <div className="onboard-logo">
