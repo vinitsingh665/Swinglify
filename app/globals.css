@@ -1683,5 +1683,15 @@ body {
 @media (max-width: 600px) {
   .onboard-modal {
     padding: 30px 20px;
+    width: 95%;
+  }
+  .onboard-actions {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 768px) {
+  .hide-on-mobile {
+    display: none !important;
   }
 }

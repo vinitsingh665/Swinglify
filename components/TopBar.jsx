@@ -61,6 +61,7 @@ export default function TopBar() {
         {/* Sign In Button for unauthenticated users */}
         {status !== 'loading' && !session && (
           <button 
+            className="hide-on-mobile"
             onClick={() => signIn('google')}
             style={{
               marginLeft: '12px',

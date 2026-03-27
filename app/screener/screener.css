@@ -167,7 +167,7 @@
 .fp-select option { background: var(--bg-card); color: var(--text-primary); }
 
 /* Index category list */
-.fp-index-group { margin-bottom: 8px; }
+.fp-index-group { margin-bottom: 12px; }
 .fp-index-group-label {
   font-size: 0.62rem;
   font-weight: 700;
@@ -177,37 +177,39 @@
   padding: 6px 0 4px 0;
   margin-top: 4px;
 }
+.fp-index-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+}
 .fp-index-item {
   width: 100%;
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 7px 10px;
-  background: transparent;
-  border: none;
+  justify-content: center;
+  padding: 8px 6px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
   border-radius: 6px;
   color: var(--text-secondary);
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.15s;
-  text-align: left;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   font-family: inherit;
 }
 .fp-index-item:hover {
   background: var(--bg-hover);
+  border-color: var(--border-hover);
   color: var(--text-primary);
 }
 .fp-index-item.active {
   background: var(--accent-bg);
-  color: var(--accent);
-}
-.fp-index-item svg {
-  flex-shrink: 0;
-  opacity: 0.5;
-}
-.fp-index-item.active svg {
-  opacity: 1;
+  border-color: var(--accent);
   color: var(--accent);
 }
 
@@ -371,6 +373,10 @@
 /* ─── Inline Insights: hidden by default on desktop ─── */
 .sr-inline-insights-row { display: none; }
 
+/* Mobile Filter Button toggle: hidden on desktop */
+.hide-desktop { display: none; }
+.st-mob-filter-btn { display: none; }
+
 @media (max-width: 768px) {
   .sr-inline-insights-row { display: table-row; }
 }
@@ -417,6 +423,17 @@
 
   .st-toggle { padding: 5px 10px; font-size: 0.7rem; }
   .st-ex-btn { padding: 5px 12px; font-size: 0.7rem; }
+  
+  .hide-desktop { display: flex; }
+  
+  .st-mob-filter-btn {
+    display: flex; align-items: center; gap: 6px; 
+    padding: 6px 12px; background: var(--bg-card); 
+    border: 1px solid var(--border); border-radius: 8px;
+    color: var(--text-primary); font-size: 0.8rem; font-weight: 600;
+  }
+  .st-mob-filter-btn svg { width: 14px; height: 14px; }
+  .st-mob-badge { background: var(--accent); color: white; border-radius: 10px; padding: 2px 6px; font-size: 0.65rem; }
 
   /* ─── 3-Panel Body → single column stack ─── */
   .screener-body {
@@ -427,27 +444,53 @@
     max-width: 100%;
   }
 
+  /* ─── Mobile Filters Modal ─── */
+  .screener-filters-wrapper {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: var(--bg-surface); z-index: 9999;
+    transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex; flex-direction: column;
+  }
+  .screener-filters-wrapper.mob-open {
+    transform: translateY(0);
+  }
+  
+  .sfw-header {
+    padding: 16px; border-bottom: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+    background: var(--bg-surface);
+  }
+  .sfw-header h3 { font-size: 1.1rem; margin: 0; color: var(--text-primary); display: flex; gap: 8px; align-items: center; }
+  .sfw-close { background: transparent; border: none; font-size: 1.2rem; color: var(--text-muted); padding: 5px; cursor: pointer; }
+  
+  .sfw-content { flex: 1; overflow-y: auto; padding: 16px; }
+  
+  .sfw-footer { padding: 16px; border-top: 1px solid var(--border); background: var(--bg-surface); }
+  .sfw-apply-btn { width: 100%; padding: 12px; background: var(--accent); color: white; font-weight: 700; border: none; border-radius: 8px; font-size: 0.9rem; }
+
   /* ─── Filter Panel ─── */
   .filter-panel {
     position: static;
     max-height: none;
-    padding: 14px;
-    border-radius: 12px;
+    padding: 0;
+    background: transparent;
+    border: none;
     max-width: 100%;
     box-sizing: border-box;
   }
 
-  .fp-header { margin-bottom: 14px; }
+  .fp-header { display: none; /* Hide default header in mobile since modal has one */ }
+  .fp-opportunity { display: none; /* Can be hidden or kept. Let's hide on mobile or move it? We'll keep it via css but hidden if needed. Or just leave as is. User can scroll to it. */ }
+  
   .fp-title { font-size: 0.9rem; }
-  .fp-section { margin-bottom: 14px; padding-bottom: 12px; }
-  .fps-label { font-size: 0.68rem; }
-  .fp-pills { gap: 5px; }
-  .fp-pill { padding: 5px 9px; font-size: 0.68rem; }
-  .fp-range input { padding: 6px 8px; font-size: 0.78rem; }
-  .fp-input { padding: 6px 8px; font-size: 0.78rem; }
-  .fp-select { padding: 6px 8px; font-size: 0.78rem; }
-  .fp-opportunity { padding: 10px; font-size: 0.8rem; border-radius: 8px; }
-
+  .fp-section { margin-bottom: 20px; padding-bottom: 0; border: none; }
+  .fps-label { font-size: 0.72rem; }
+  .fp-pills { gap: 8px; }
+  .fp-pill { padding: 8px 12px; font-size: 0.72rem; }
+  .fp-range input { padding: 8px 10px; font-size: 0.82rem; }
+  .fp-input { padding: 8px 10px; font-size: 0.82rem; margin-top: 8px; }
+  .fp-select { padding: 8px 10px; font-size: 0.82rem; }
+  
   /* ─── Results Table ─── */
   .screener-results {
     border-radius: 12px;

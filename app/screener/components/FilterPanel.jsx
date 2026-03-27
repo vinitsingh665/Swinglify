@@ -105,18 +105,18 @@ export default function FilterPanel({ filters, setFilters, onFindOpportunities, 
           {INDEX_CATEGORIES.map((group) => (
             <div key={group.group} className="fp-index-group">
               <div className="fp-index-group-label">{group.group}</div>
-              {group.items.map((item) => (
-                <button
-                  key={item.id}
-                  className={`fp-index-item ${selectedIndex === item.id ? 'active' : ''}`}
-                  onClick={() => onSelectIndex?.(selectedIndex === item.id ? null : item.id)}
-                >
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="14" height="14">
-                    <path d="M3 3h18v4H3zM3 10h18v4H3zM3 17h18v4H3z" />
-                  </svg>
-                  {item.label}
-                </button>
-              ))}
+              <div className="fp-index-grid">
+                {group.items.map((item) => (
+                  <button
+                    key={item.id}
+                    className={`fp-index-item ${selectedIndex === item.id ? 'active' : ''}`}
+                    onClick={() => onSelectIndex?.(selectedIndex === item.id ? null : item.id)}
+                    title={item.label}
+                  >
+                    {item.label}
+                  </button>
+                ))}
+              </div>
             </div>
           ))}
         </div>

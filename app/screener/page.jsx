@@ -43,6 +43,8 @@ export default function ScreenerPage() {
   const [sectors, setSectors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedStock, setSelectedStock] = useState(null);
+  const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
+
   const [searchQuery, setSearchQuery] = useState('');
   const [timeframe, setTimeframe] = useState('swing');
   const [selectedIndex, setSelectedIndex] = useState(null);
@@ -228,6 +230,14 @@ export default function ScreenerPage() {
               </div>
             </div>
             <div className="st-right">
+              <button 
+                className="st-mob-filter-btn hide-desktop"
+                onClick={() => setMobileFilterOpen(true)}
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" /></svg>
+                Filters
+                {activeCount > 0 && <span className="st-mob-badge">{activeCount}</span>}
+              </button>
               <div className="st-toggle-group">
                 {['Intraday', 'Swing', 'Positional'].map(t => (
                   <button key={t} className={`st-toggle ${timeframe === t.toLowerCase() ? 'active' : ''}`} onClick={() => {
@@ -260,15 +270,26 @@ export default function ScreenerPage() {
           {/* 3-Panel Body */}
           <div className={`screener-body ${!selectedStock ? '' : ''}`}>
             {/* Left: Filters */}
-            <FilterPanel
-              filters={filters}
-              setFilters={(f) => { setSelectedIndex(null); setFilters(f); }}
-              onFindOpportunities={() => { setSelectedIndex(null); handleFindOpportunities(); }}
-              activeCount={activeCount}
-              sectors={sectors}
-              selectedIndex={selectedIndex}
-              onSelectIndex={(idx) => { setSelectedIndex(idx); setTimeframe(''); }}
-            />
+            <div className={`screener-filters-wrapper ${mobileFilterOpen ? 'mob-open' : ''}`}>
+              <div className="sfw-header hide-desktop">
+                <h3>Filters {activeCount > 0 && <span className="st-mob-badge">{activeCount}</span>}</h3>
+                <button className="sfw-close" onClick={() => setMobileFilterOpen(false)}>✕</button>
+              </div>
+              <div className="sfw-content">
+                <FilterPanel
+                  filters={filters}
+                  setFilters={(f) => { setSelectedIndex(null); setFilters(f); }}
+                  onFindOpportunities={() => { setSelectedIndex(null); handleFindOpportunities(); }}
+                  activeCount={activeCount}
+                  sectors={sectors}
+                  selectedIndex={selectedIndex}
+                  onSelectIndex={(idx) => { setSelectedIndex(idx); setTimeframe(''); }}
+                />
+              </div>
+              <div className="sfw-footer hide-desktop">
+                <button className="sfw-apply-btn" onClick={() => setMobileFilterOpen(false)}>Apply Filters</button>
+              </div>
+            </div>
 
             {/* Center: Results */}
             <ScreenerTable
