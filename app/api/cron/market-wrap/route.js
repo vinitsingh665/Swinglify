@@ -14,12 +14,25 @@ export async function GET(req) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // 0. Weekend Fail-Safe: Abort if today is Saturday (6) or Sunday (0)
+    // 0. Weekend and Holiday Fail-Safe
     const istOffset = 5.5 * 60 * 60 * 1000; // IST Time
     const istDate = new Date(Date.now() + istOffset);
     const dayOfWeek = istDate.getUTCDay();
-    if (dayOfWeek === 0 || dayOfWeek === 6) {
-      return NextResponse.json({ message: 'Market is closed on weekends. No market wrap-up generated.' }, { status: 200 });
+    const dateString = istDate.toISOString().split('T')[0]; // format: YYYY-MM-DD
+    
+    // Add known NSE market holidays here (Format: 'YYYY-MM-DD')
+    const TRADING_HOLIDAYS = [
+      '2026-01-26', // Republic Day
+      '2026-03-20', // Example Festival
+      '2026-05-01', // Maharashtra Day
+      '2026-08-15', // Independence Day
+      '2026-10-02', // Gandhi Jayanti
+      '2026-11-09', // Diwali
+      '2026-12-25', // Christmas
+    ];
+
+    if (dayOfWeek === 0 || dayOfWeek === 6 || TRADING_HOLIDAYS.includes(dateString)) {
+      return NextResponse.json({ message: 'Market is closed today (Weekend/Holiday). No market wrap-up generated.' }, { status: 200 });
     }
 
     // 1. Fetch Today's Market Data
