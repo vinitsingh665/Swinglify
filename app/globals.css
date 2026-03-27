@@ -223,6 +223,9 @@ body {
    TOP BAR
    ═══════════════════════════════════════════════════════════════════════════ */
 .topbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
   height: var(--topbar-height);
   display: flex;
   align-items: center;
