@@ -75,11 +75,23 @@ export async function GET(request) {
       return NextResponse.json({ available: false });
     }
 
+    // Get the current user's session so we can exclude their own username
+    const session = await getServerSession(authOptions);
+    const currentEmail = session?.user?.email;
+
     await dbConnect();
-    const exists = await User.findOne({ username: username.toLowerCase() });
+
+    // Exclude the current user's own record from the check
+    const query = { username: username.toLowerCase() };
+    if (currentEmail) {
+      query.email = { $ne: currentEmail };
+    }
+    const exists = await User.findOne(query);
 
     return NextResponse.json({ available: !exists });
   } catch (error) {
-    return NextResponse.json({ available: false });
+    console.error('Username check error:', error);
+    // On DB timeout/error, don't falsely report "Taken"
+    return NextResponse.json({ available: true });
   }
 }
