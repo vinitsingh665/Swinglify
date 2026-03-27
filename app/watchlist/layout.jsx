@@ -22,7 +22,7 @@ export const metadata = {
   openGraph: {
     title: 'Free Stock Watchlist for NSE & BSE — Swinglify',
     description: 'Create and manage your stock watchlist with live prices for Indian markets.',
-    url: 'https://swinglify.com/watchlist',
+    url: 'https://swinglify.online/watchlist',
   },
 };
 

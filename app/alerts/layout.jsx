@@ -22,7 +22,7 @@ export const metadata = {
   openGraph: {
     title: 'Free Stock Price Alerts for NSE & BSE — Swinglify',
     description: 'Set price, volume, and RSI alerts for Indian stocks. Never miss a trading opportunity.',
-    url: 'https://swinglify.com/alerts',
+    url: 'https://swinglify.online/alerts',
   },
 };
 

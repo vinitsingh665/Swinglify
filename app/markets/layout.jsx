@@ -22,7 +22,7 @@ export const metadata = {
   openGraph: {
     title: 'Live NSE & BSE Stock Prices — Swinglify Markets',
     description: 'Real-time stock prices, volume, buy/sell signals for all NSE & BSE listed stocks.',
-    url: 'https://swinglify.com/markets',
+    url: 'https://swinglify.online/markets',
   },
 };
 

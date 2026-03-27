@@ -22,7 +22,7 @@ export const metadata = {
   openGraph: {
     title: 'Free Stock Portfolio Tracker for Indian Markets — Swinglify',
     description: 'Track your NSE & BSE holdings, monitor P&L, and view allocation charts.',
-    url: 'https://swinglify.com/portfolio',
+    url: 'https://swinglify.online/portfolio',
   },
 };
 
