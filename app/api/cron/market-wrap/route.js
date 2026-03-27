@@ -14,30 +14,20 @@ export async function GET(req) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // 0. Weekend and Holiday Fail-Safe
-    const istOffset = 5.5 * 60 * 60 * 1000; // IST Time
-    const istDate = new Date(Date.now() + istOffset);
-    const dayOfWeek = istDate.getUTCDay();
-    const dateString = istDate.toISOString().split('T')[0]; // format: YYYY-MM-DD
-    
-    // Add known NSE market holidays here (Format: 'YYYY-MM-DD')
-    const TRADING_HOLIDAYS = [
-      '2026-01-26', // Republic Day
-      '2026-03-20', // Example Festival
-      '2026-05-01', // Maharashtra Day
-      '2026-08-15', // Independence Day
-      '2026-10-02', // Gandhi Jayanti
-      '2026-11-09', // Diwali
-      '2026-12-25', // Christmas
-    ];
-
-    if (dayOfWeek === 0 || dayOfWeek === 6 || TRADING_HOLIDAYS.includes(dateString)) {
-      return NextResponse.json({ message: 'Market is closed today (Weekend/Holiday). No market wrap-up generated.' }, { status: 200 });
+    // 0. Connect to our new centralized Market Status logic
+    const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3050';
+    try {
+      const statusRes = await fetch(`${baseUrl}/api/market-status`);
+      const statusData = await statusRes.json();
+      if (statusData && statusData.isTradingDay === false) {
+        return NextResponse.json({ message: 'Market is closed today (Weekend/Holiday). No market wrap-up generated.' }, { status: 200 });
+      }
+    } catch (e) {
+      console.error('Could not verify holiday status, proceeding anyway');
     }
 
     // 1. Fetch Today's Market Data
     // We use absolute URL for fetch inside API routes or directly call the logic. For simplicity, we fetch our own route.
-    const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3050';
     const indicesRes = await fetch(`${baseUrl}/api/indices`);
     const indicesData = await indicesRes.json();
     
