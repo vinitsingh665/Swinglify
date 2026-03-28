@@ -255,7 +255,9 @@ export default function FeedbackAdminPage() {
                       )}
 
                       {/* Full message body */}
-                      <div style={{ color: '#cbd5e1', whiteSpace: 'pre-wrap' }}>{t.body}</div>
+                      {t.type !== 'bug' && (
+                        <div style={{ color: '#cbd5e1', whiteSpace: 'pre-wrap' }}>{t.body}</div>
+                      )}
                     </div>
                   )}
                 </td>
