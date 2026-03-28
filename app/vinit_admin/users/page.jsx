@@ -1,26 +1,75 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-
 import Skeleton from '../../../components/Skeleton';
 
 export default function UsersAdminPage() {
   const [loading, setLoading] = useState(true);
+  const [users, setUsers] = useState([]);
+  
+  // Edit State
+  const [editUserId, setEditUserId] = useState(null);
+  const [editUsernameVal, setEditUsernameVal] = useState('');
+  const [savingUsername, setSavingUsername] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
 
   useEffect(() => {
-    // Simulate data loading
-    const t = setTimeout(() => setLoading(false), 600);
-    return () => clearTimeout(t);
+    fetchUsers();
   }, []);
 
-  const mockUsers = [
-    { id: 1, name: 'Rahul Verma', email: 'rahul.v88@gmail.com', joined: 'Mar 26, 2026', status: 'Active', plan: 'Pro' },
-    { id: 2, name: 'Priya Sharma', email: 'priya.finance@yahoo.com', joined: 'Mar 25, 2026', status: 'Active', plan: 'Free' },
-    { id: 3, name: 'Amit Patel', email: 'amitp_trader@outlook.com', joined: 'Mar 22, 2026', status: 'Inactive', plan: 'Free' },
-    { id: 4, name: 'Neha Desai', email: 'neha.desai1995@gmail.com', joined: 'Mar 18, 2026', status: 'Active', plan: 'Pro' },
-    { id: 5, name: 'Vikram Singh', email: 'vsingh.invest@gmail.com', joined: 'Mar 15, 2026', status: 'Active', plan: 'Free' },
-    { id: 6, name: 'Sneha Gupta', email: 'snehag12@yahoo.in', joined: 'Mar 12, 2026', status: 'Active', plan: 'Pro' },
-  ];
+  const fetchUsers = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch('/api/vinit_admin/users');
+      const json = await res.json();
+      if (json.success) {
+        setUsers(json.data);
+      }
+    } catch (e) {
+      console.error('Failed to load users');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const startEdit = (user) => {
+    setErrorMsg('');
+    setEditUserId(user._id);
+    setEditUsernameVal(user.username || '');
+  };
+
+  const cancelEdit = () => {
+    setErrorMsg('');
+    setEditUserId(null);
+    setEditUsernameVal('');
+  };
+
+  const saveUsername = async (userId) => {
+    setErrorMsg('');
+    setSavingUsername(true);
+    try {
+      const res = await fetch(`/api/vinit_admin/users/${userId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ username: editUsernameVal })
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        // Update local state
+        setUsers(users.map(u => u._id === userId ? { ...u, username: data.user.username } : u));
+        setEditUserId(null);
+      } else {
+        setErrorMsg(data.error || 'Failed to update username');
+      }
+    } catch (err) {
+      setErrorMsg('Server error. Please try again.');
+    } finally {
+      setSavingUsername(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -30,7 +79,7 @@ export default function UsersAdminPage() {
           <Skeleton width="340px" height="20px" />
         </div>
         <div className="ad-panel" style={{ padding: 16 }}>
-          {[1,2,3,4,5,6].map(i => (
+          {[1,2,3,4,5].map(i => (
             <div key={i} style={{ display: 'flex', gap: 16, marginBottom: 16, paddingBottom: 16, borderBottom: '1px solid rgba(255,255,255,0.05)', alignItems: 'center' }}>
               <Skeleton width="40px" height="20px" borderRadius="4px" />
               <div style={{ flex: 1.5 }}>
@@ -59,43 +108,105 @@ export default function UsersAdminPage() {
     <div>
       <div className="ad-header">
         <h1 className="ad-title">User Management</h1>
-        <p className="ad-subtitle">Manage registered users, subscriptions, and activity.</p>
+        <p className="ad-subtitle">Manage registered users, set usernames, and monitor activity.</p>
+        {errorMsg && (
+          <div style={{ marginTop: '12px', color: '#ef4444', backgroundColor: 'rgba(239, 68, 68, 0.1)', padding: '8px 12px', borderLeft: '3px solid #ef4444', borderRadius: '4px', fontSize: '0.85rem' }}>
+            {errorMsg}
+          </div>
+        )}
       </div>
 
       <div className="ad-panel" style={{ overflowX: 'auto' }}>
         <table className="ad-table">
           <thead>
             <tr>
-              <th>ID</th>
               <th>Name</th>
+              <th>Username</th>
               <th>Email</th>
               <th>Date Joined</th>
-              <th>Plan</th>
               <th>Status</th>
               <th style={{ textAlign: 'right' }}>Actions</th>
             </tr>
           </thead>
           <tbody>
-            {mockUsers.map(u => (
-              <tr key={u.id}>
-                <td style={{ fontFamily: 'var(--font-mono)' }}>#{u.id}</td>
-                <td style={{ fontWeight: 600, color: '#fff' }}>{u.name}</td>
-                <td>{u.email}</td>
-                <td>{u.joined}</td>
-                <td>
-                  <span className={`ad-badge ${u.plan === 'Pro' ? '' : 'free'}`} style={u.plan === 'Free' ? { backgroundColor: 'rgba(255,255,255,0.05)', color: '#aaa' } : {}}>
-                    {u.plan}
-                  </span>
-                </td>
-                <td>
-                  <span className="live-dot" style={{ display: 'inline-block', marginRight: 8, background: u.status === 'Active' ? '#10b981' : '#666', boxShadow: 'none', animation: 'none' }}></span>
-                  {u.status}
-                </td>
-                <td style={{ textAlign: 'right' }}>
-                  <button className="ad-action-btn">Edit</button>
+            {users.length === 0 && (
+              <tr>
+                <td colSpan="6" style={{ textAlign: 'center', padding: '30px 0', color: '#888' }}>
+                  No users found.
                 </td>
               </tr>
-            ))}
+            )}
+            {users.map(u => {
+              const isActive = u.isProfileComplete;
+              const dateObj = new Date(u.createdAt);
+              const formattedDate = !isNaN(dateObj) ? dateObj.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : 'Unknown';
+
+              const isEditing = editUserId === u._id;
+
+              return (
+                <tr key={u._id}>
+                  <td style={{ fontWeight: 600, color: '#fff' }}>{u.name}</td>
+                  
+                  <td>
+                    {isEditing ? (
+                      <input 
+                        type="text" 
+                        value={editUsernameVal} 
+                        onChange={(e) => setEditUsernameVal(e.target.value)}
+                        placeholder="Enter username"
+                        style={{
+                          background: 'rgba(255,255,255,0.05)',
+                          border: '1px solid var(--accent)',
+                          color: '#fff',
+                          padding: '4px 8px',
+                          borderRadius: '4px',
+                          width: '120px',
+                          outline: 'none',
+                          fontSize: '0.85rem'
+                        }}
+                        autoFocus
+                      />
+                    ) : (
+                      <span style={u.username ? { color: 'var(--accent)', fontWeight: 600 } : { color: '#666', fontStyle: 'italic' }}>
+                        {u.username ? `@${u.username}` : 'Not set'}
+                      </span>
+                    )}
+                  </td>
+                  
+                  <td>{u.email}</td>
+                  <td>{formattedDate}</td>
+                  
+                  <td>
+                    <span className="live-dot" style={{ display: 'inline-block', marginRight: 8, background: isActive ? '#10b981' : '#f59e0b', boxShadow: 'none', animation: 'none' }}></span>
+                    <span style={{ color: isActive ? '#fff' : '#aaa' }}>{isActive ? 'Active' : 'Incomplete'}</span>
+                  </td>
+                  
+                  <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
+                    {isEditing ? (
+                      <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
+                        <button 
+                          className="ad-action-btn" 
+                          style={{ background: 'var(--green)', color: '#fff', borderColor: 'var(--green)' }}
+                          onClick={() => saveUsername(u._id)}
+                          disabled={savingUsername}
+                        >
+                          {savingUsername ? '...' : 'Save'}
+                        </button>
+                        <button 
+                          className="ad-action-btn" 
+                          onClick={cancelEdit}
+                          disabled={savingUsername}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    ) : (
+                      <button className="ad-action-btn" onClick={() => startEdit(u)}>Edit Username</button>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
