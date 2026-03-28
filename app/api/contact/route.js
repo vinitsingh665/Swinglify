@@ -23,6 +23,12 @@ export async function POST(req) {
         body: message,
         senderName: name,
         senderEmail: email,
+        // Save bug-specific fields
+        severity: type === 'bug' && extraData ? extraData.severity : null,
+        affectedPage: type === 'bug' && extraData ? extraData.affectedPage : null,
+        stepsToReproduce: type === 'bug' && extraData ? extraData.steps : null,
+        expectedBehavior: type === 'bug' && extraData ? extraData.expected : null,
+        actualBehavior: type === 'bug' ? message : null,
         status: 'new'
       });
     } catch (dbErr) {

@@ -22,6 +22,28 @@ const FeedbackSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  // Bug report specific fields
+  severity: {
+    type: String,
+    enum: ['low', 'medium', 'high', 'critical', null],
+    default: null
+  },
+  affectedPage: {
+    type: String,
+    default: null
+  },
+  stepsToReproduce: {
+    type: String,
+    default: null
+  },
+  expectedBehavior: {
+    type: String,
+    default: null
+  },
+  actualBehavior: {
+    type: String,
+    default: null
+  },
   status: {
     type: String,
     enum: ['new', 'resolved', 'archived'],

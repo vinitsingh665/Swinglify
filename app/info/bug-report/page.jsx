@@ -111,10 +111,15 @@ export default function ReportBugPage() {
                       <option value="dashboard">Dashboard</option>
                       <option value="markets">Markets</option>
                       <option value="screener">Screener</option>
+                      <option value="community">Community</option>
                       <option value="portfolio">Portfolio</option>
                       <option value="alerts">Alerts</option>
                       <option value="watchlist">Watchlist</option>
+                      <option value="compare">Compare</option>
+                      <option value="feed">Feed</option>
+                      <option value="profile">Profile</option>
                       <option value="settings">Settings</option>
+                      <option value="help-center">Help Center</option>
                       <option value="other">Other</option>
                     </select>
                   </div>

@@ -111,8 +111,7 @@ export default function ContactSupportPage() {
                   <select className="info-form-input info-form-select" value={form.category} onChange={e => setForm(f => ({...f, category: e.target.value}))}>
                     <option value="general">General Question</option>
                     <option value="account">Account Issue</option>
-                    <option value="billing">Billing & Plans</option>
-                    <option value="data">Data & API</option>
+                    <option value="business">Business / Partnership</option>
                     <option value="feature">Feature Request</option>
                   </select>
                 </div>
