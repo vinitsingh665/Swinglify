@@ -32,9 +32,54 @@ export default function AlertList({ alerts, filter, selectedId, onSelect, onSmar
       <div className="al-suggestion">
         <div className="al-sug-maintitle">✨ AI Smart Suggestions</div>
         {sugLoading ? (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', padding: '8px 0' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', padding: '8px 0' }}>
             {[1, 2, 3].map(i => (
-              <div key={i} style={{ height: '52px', borderRadius: '10px', background: 'var(--bg-input)', animation: 'ai-shimmer 1.5s infinite' }} />
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '12px', opacity: 1 - (i * 0.15) }}>
+                {/* Icon skeleton */}
+                <div style={{
+                  width: 22, height: 22, borderRadius: '50%',
+                  background: 'var(--bg-input)', flexShrink: 0,
+                }} />
+                {/* Text skeleton */}
+                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  <div style={{
+                    height: 10, width: `${70 - i * 10}%`, borderRadius: 4,
+                    background: 'var(--bg-input)',
+                    position: 'relative', overflow: 'hidden',
+                  }}>
+                    <div style={{
+                      position: 'absolute', inset: 0,
+                      background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent)',
+                      animation: 'ai-shimmer 1.5s infinite',
+                    }} />
+                  </div>
+                  <div style={{
+                    height: 8, width: `${90 - i * 8}%`, borderRadius: 4,
+                    background: 'var(--bg-input)',
+                    position: 'relative', overflow: 'hidden',
+                  }}>
+                    <div style={{
+                      position: 'absolute', inset: 0,
+                      background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent)',
+                      animation: 'ai-shimmer 1.5s infinite',
+                      animationDelay: '0.3s',
+                    }} />
+                  </div>
+                </div>
+                {/* Button skeleton */}
+                <div style={{
+                  width: 48, height: 28, borderRadius: 6,
+                  background: 'var(--bg-input)', flexShrink: 0,
+                  position: 'relative', overflow: 'hidden',
+                }}>
+                  <div style={{
+                    position: 'absolute', inset: 0,
+                    background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent)',
+                    animation: 'ai-shimmer 1.5s infinite',
+                    animationDelay: '0.6s',
+                  }} />
+                </div>
+              </div>
             ))}
           </div>
         ) : suggestions.length === 0 ? (
