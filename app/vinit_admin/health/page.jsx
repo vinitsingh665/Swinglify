@@ -10,8 +10,14 @@ export default function HealthAdminPage() {
     const fetchStats = async () => {
       try {
         const res = await fetch('/api/admin/stats');
-        const data = await res.json();
-        setStats(data);
+        const json = await res.json();
+        if (json.success) {
+          setStats({
+            databaseLoad: json.data.databaseLoad,
+            cacheHitRate: json.data.cacheHitRate,
+            apiLatency: json.data.systemHealth?.apiLatency || 0
+          });
+        }
       } catch(e) {}
     };
     fetchStats();
