@@ -234,6 +234,7 @@
 .changelog-badge.new { background: var(--green-bg); color: var(--green-bright); }
 .changelog-badge.fix { background: var(--red-bg); color: var(--red-bright); }
 .changelog-badge.improve { background: var(--accent-bg); color: var(--accent); }
+.changelog-badge.wip { background: rgba(234, 179, 8, 0.12); color: #eab308; }
 
 /* ─── Success state ─── */
 .info-success {

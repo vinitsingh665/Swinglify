@@ -1,6 +1,15 @@
 "use client";
 import { useState, useEffect, useCallback } from 'react';
 
+// Lighten a hex color by a percentage (0-100)
+function lightenColor(hex, percent) {
+  const num = parseInt(hex.replace('#', ''), 16);
+  const r = Math.min(255, (num >> 16) + Math.round(2.55 * percent));
+  const g = Math.min(255, ((num >> 8) & 0x00FF) + Math.round(2.55 * percent));
+  const b = Math.min(255, (num & 0x0000FF) + Math.round(2.55 * percent));
+  return `#${(1 << 24 | r << 16 | g << 8 | b).toString(16).slice(1)}`;
+}
+
 export default function PreferencesSection({ currentTheme }) {
   const [prefs, setPrefs] = useState({
     market: 'NSE',
@@ -24,6 +33,11 @@ export default function PreferencesSection({ currentTheme }) {
       theme: savedTheme,
       accent: savedAccent
     });
+
+    // Apply accent on initial load
+    document.documentElement.style.setProperty('--accent', savedAccent);
+    document.documentElement.style.setProperty('--accent-hover', lightenColor(savedAccent, 25));
+    document.documentElement.style.setProperty('--accent-bg', savedAccent + '1A');
   }, [currentTheme]);
 
   const updatePref = useCallback((key, value) => {
@@ -36,6 +50,7 @@ export default function PreferencesSection({ currentTheme }) {
     } else if (key === 'accent') {
       localStorage.setItem('swinglify_accent', value);
       document.documentElement.style.setProperty('--accent', value);
+      document.documentElement.style.setProperty('--accent-hover', lightenColor(value, 25));
       document.documentElement.style.setProperty('--accent-bg', value + '1A'); // add 10% opacity for backgrounds
     } else if (key === 'market') {
       localStorage.setItem('swinglify_market', value);

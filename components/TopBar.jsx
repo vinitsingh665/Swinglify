@@ -2,6 +2,7 @@
 import { useSession, signIn } from 'next-auth/react';
 import { useMarketStatus, useIndices } from '../hooks/useStockData';
 import { formatNumber } from '../utils';
+import NotificationDropdown from './NotificationDropdown';
 
 export default function TopBar() {
   const { data: session, status } = useSession();
@@ -45,12 +46,7 @@ export default function TopBar() {
       </div>
 
       <div className="topbar-right">
-        <button className="topbar-icon-btn" title="Notifications">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-            <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" />
-            <path d="M13.73 21a2 2 0 01-3.46 0" />
-          </svg>
-        </button>
+        <NotificationDropdown />
         <div className="topbar-account">
           <span>
             {marketStatus.isOpen ? '🟢' : '🔴'}&nbsp;

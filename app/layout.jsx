@@ -106,6 +106,10 @@ export default function RootLayout({ children }) {
           var g = parseInt(accent.slice(3, 5), 16);
           var b = parseInt(accent.slice(5, 7), 16);
           document.documentElement.style.setProperty('--accent-bg', 'rgba('+r+','+g+','+b+',0.1)');
+          var rh = Math.min(255, r + 64);
+          var gh = Math.min(255, g + 64);
+          var bh = Math.min(255, b + 64);
+          document.documentElement.style.setProperty('--accent-hover', '#'+((1<<24)|(rh<<16)|(gh<<8)|bh).toString(16).slice(1));
         }
       } catch(e) {}
     })();

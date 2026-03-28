@@ -8,6 +8,15 @@ export default function OverviewCards({ theme, categoryName, onCategoryChange, o
   const nifty = indices.find(i => i.symbol === 'NIFTY' || (i.name && i.name.includes('Nifty 50')));
   const [activePeriod, setActivePeriod] = useState('1D');
   const [activeToggle, setActiveToggle] = useState('actual');
+  const [chartSymbol, setChartSymbol] = useState(null); // null = show index chart, string = show stock chart
+
+  const handleChartSymbol = useCallback((symbol) => {
+    setChartSymbol(symbol);
+  }, []);
+
+  const handleClearChartSymbol = useCallback(() => {
+    setChartSymbol(null);
+  }, []);
 
   return (
     <div className="overview-cards">
@@ -19,22 +28,75 @@ export default function OverviewCards({ theme, categoryName, onCategoryChange, o
         setActivePeriod={setActivePeriod}
         activeToggle={activeToggle}
         setActiveToggle={setActiveToggle}
-        onCategoryChange={onCategoryChange}
+        onCategoryChange={(id, label) => { handleClearChartSymbol(); onCategoryChange(id, label); }}
+        chartSymbol={chartSymbol}
+        onClearChartSymbol={handleClearChartSymbol}
       />
-      <SwapCard onOpenStock={onOpenStock} />
+      <SwapCard onOpenStock={onOpenStock} onChartSymbol={handleChartSymbol} />
     </div>
   );
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   BALANCE CARD — Market Overview with Chart
+   BALANCE CARD — Market Overview with Real Chart Data
    ═══════════════════════════════════════════════════════════════════════════ */
-function BalanceCard({ theme, categoryName, nifty, activePeriod, setActivePeriod, activeToggle, setActiveToggle, onCategoryChange }) {
+function BalanceCard({ theme, categoryName, nifty, activePeriod, setActivePeriod, activeToggle, setActiveToggle, onCategoryChange, chartSymbol, onClearChartSymbol }) {
   const canvasRef = useRef(null);
   const periods = ['1D', '1W', '1Y', 'Max'];
+  const [chartData, setChartData] = useState(null);
+  const [chartLoading, setChartLoading] = useState(true);
+  const timerRef = useRef(null);
 
-  const niftyValue = nifty ? formatNumber(nifty.value) : '—';
-  const niftyChange = nifty ? nifty.change : 0;
+  // Map category names to index keys for the chart API
+  const getIndexKey = useCallback(() => {
+    const cn = (categoryName || '').toLowerCase();
+    if (cn.includes('bank')) return 'banknifty';
+    if (cn.includes('mid')) return 'midcap100';
+    if (cn.includes('small')) return 'smallcap100';
+    return 'nifty50';
+  }, [categoryName]);
+
+  // Fetch chart data
+  const fetchChart = useCallback(async () => {
+    try {
+      let url;
+      if (chartSymbol) {
+        // Fetch individual stock chart
+        url = `/api/chart?symbol=${encodeURIComponent(chartSymbol)}&period=${activePeriod}`;
+      } else {
+        // Fetch index chart
+        const idx = getIndexKey();
+        url = `/api/chart?index=${idx}&period=${activePeriod}`;
+      }
+      const res = await fetch(url);
+      const data = await res.json();
+      if (data.success) {
+        setChartData(data);
+      }
+    } catch (e) {
+      console.warn('Chart fetch failed:', e);
+    } finally {
+      setChartLoading(false);
+    }
+  }, [getIndexKey, activePeriod, chartSymbol]);
+
+  // Initial fetch + 30s auto-refresh
+  useEffect(() => {
+    setChartLoading(true);
+    fetchChart();
+    
+    // Auto-refresh every 30 seconds
+    timerRef.current = setInterval(fetchChart, 30000);
+    return () => clearInterval(timerRef.current);
+  }, [fetchChart]);
+
+  // Derive chart values
+  const chartPrice = chartData?.currentPrice;
+  const prevClose = chartData?.previousClose;
+  const displayValue = chartPrice ? formatNumber(chartPrice) : (nifty ? formatNumber(nifty.value) : '—');
+  const changePercent = (chartPrice && prevClose)
+    ? Math.round(((chartPrice - prevClose) / prevClose) * 10000) / 100
+    : (nifty ? nifty.change : 0);
 
   // Draw the chart
   useEffect(() => {
@@ -48,24 +110,31 @@ function BalanceCard({ theme, categoryName, nifty, activePeriod, setActivePeriod
     ctx.scale(dpr, dpr);
     ctx.clearRect(0, 0, rect.width, rect.height);
 
-    // Generate realistic-looking chart data
-    const points = 80;
-    const data = [];
-    let val = 50 + Math.random() * 20;
-    for (let i = 0; i < points; i++) {
-      val += (Math.random() - 0.48) * 4;
-      val = Math.max(10, Math.min(90, val));
-      data.push(val);
-    }
-
+    const isLight = theme === 'light';
     const padding = { top: 10, right: 50, bottom: 30, left: 10 };
     const chartW = rect.width - padding.left - padding.right;
     const chartH = rect.height - padding.top - padding.bottom;
-    const minVal = Math.min(...data);
-    const maxVal = Math.max(...data);
+
+    // If no data yet, show loading placeholder
+    if (!chartData?.points?.length) {
+      ctx.fillStyle = isLight ? '#9ca3af' : '#444444';
+      ctx.font = '11px Inter';
+      ctx.textAlign = 'center';
+      ctx.fillText(chartLoading ? 'Loading chart data…' : 'No data available', rect.width / 2, rect.height / 2);
+      return;
+    }
+
+    const points = chartData.points;
+    const values = points.map(p => p.value);
+    const minVal = Math.min(...values);
+    const maxVal = Math.max(...values);
     const range = maxVal - minVal || 1;
 
-    const isLight = theme === 'light';
+    // Determine chart color based on performance
+    const isPositive = values[values.length - 1] >= values[0];
+    const lineColor = isPositive ? '#22c55e' : '#ef4444';
+    const fillColorTop = isPositive ? 'rgba(34, 197, 94, 0.12)' : 'rgba(239, 68, 68, 0.12)';
+    const fillColorBot = 'transparent';
 
     // Grid lines
     ctx.strokeStyle = isLight ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.04)';
@@ -78,64 +147,184 @@ function BalanceCard({ theme, categoryName, nifty, activePeriod, setActivePeriod
       ctx.stroke();
     }
 
+    // Previous close reference line (for 1D)
+    if (activePeriod === '1D' && prevClose && prevClose >= minVal && prevClose <= maxVal) {
+      const prevY = padding.top + chartH - ((prevClose - minVal) / range) * chartH;
+      ctx.strokeStyle = isLight ? 'rgba(0,0,0,0.15)' : 'rgba(255,255,255,0.12)';
+      ctx.setLineDash([4, 4]);
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(padding.left, prevY);
+      ctx.lineTo(rect.width - padding.right, prevY);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Label
+      ctx.fillStyle = isLight ? '#6b7280' : '#666666';
+      ctx.font = '8px Inter';
+      ctx.textAlign = 'right';
+      ctx.fillText('Prev', rect.width - 4, prevY - 4);
+    }
+
+    // Area fill gradient
+    const gradient = ctx.createLinearGradient(0, padding.top, 0, padding.top + chartH);
+    gradient.addColorStop(0, fillColorTop);
+    gradient.addColorStop(1, fillColorBot);
+
+    ctx.beginPath();
+    points.forEach((p, i) => {
+      const x = padding.left + (i / (points.length - 1)) * chartW;
+      const y = padding.top + chartH - ((p.value - minVal) / range) * chartH;
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    });
+    // Close the area path
+    const lastX = padding.left + chartW;
+    const firstX = padding.left;
+    ctx.lineTo(lastX, padding.top + chartH);
+    ctx.lineTo(firstX, padding.top + chartH);
+    ctx.closePath();
+    ctx.fillStyle = gradient;
+    ctx.fill();
+
     // Chart line
     ctx.beginPath();
-    ctx.strokeStyle = isLight ? '#121212' : '#ffffff';
-    ctx.lineWidth = 1.5;
+    ctx.strokeStyle = lineColor;
+    ctx.lineWidth = 1.8;
     ctx.lineJoin = 'round';
-    data.forEach((v, i) => {
-      const x = padding.left + (i / (points - 1)) * chartW;
-      const y = padding.top + chartH - ((v - minVal) / range) * chartH;
+    points.forEach((p, i) => {
+      const x = padding.left + (i / (points.length - 1)) * chartW;
+      const y = padding.top + chartH - ((p.value - minVal) / range) * chartH;
       if (i === 0) ctx.moveTo(x, y);
       else ctx.lineTo(x, y);
     });
     ctx.stroke();
 
-    // Y-axis labels
-    ctx.fillStyle = '#444444';
+    // Live dot on last point
+    const lastPoint = points[points.length - 1];
+    const dotX = padding.left + chartW;
+    const dotY = padding.top + chartH - ((lastPoint.value - minVal) / range) * chartH;
+    
+    // Glow
+    ctx.beginPath();
+    ctx.arc(dotX, dotY, 5, 0, Math.PI * 2);
+    ctx.fillStyle = isPositive ? 'rgba(34, 197, 94, 0.3)' : 'rgba(239, 68, 68, 0.3)';
+    ctx.fill();
+    // Dot
+    ctx.beginPath();
+    ctx.arc(dotX, dotY, 2.5, 0, Math.PI * 2);
+    ctx.fillStyle = lineColor;
+    ctx.fill();
+
+    // Y-axis labels (3 points: max, mid, min)
+    ctx.fillStyle = isLight ? '#6b7280' : '#444444';
     ctx.font = '9px Inter';
     ctx.textAlign = 'right';
-    const yLabels = nifty
-      ? [
-          (nifty.value * 1.02).toFixed(0),
-          nifty.value.toFixed(0),
-          (nifty.value * 0.98).toFixed(0)
-        ]
-      : ['$3k', '$2k', '$1k'];
-    yLabels.forEach((label, i) => {
-      const y = padding.top + (chartH / (yLabels.length - 1)) * i + 3;
-      ctx.fillText(label, rect.width - 4, y);
+    const yVals = [maxVal, (maxVal + minVal) / 2, minVal];
+    yVals.forEach((val, i) => {
+      const y = padding.top + (chartH / (yVals.length - 1)) * i + 3;
+      ctx.fillText(val.toFixed(0), rect.width - 4, y);
     });
 
-    // X-axis labels
-    ctx.fillStyle = '#444444';
+    // X-axis labels (time-based)
+    ctx.fillStyle = isLight ? '#6b7280' : '#444444';
     ctx.font = '9px Inter';
     ctx.textAlign = 'center';
-    const xLabels = ['9:15 am', '10:30 am', '12 pm', '1:30 pm', '3:30 pm'];
+    
+    const labelCount = 5;
+    const xLabels = [];
+    for (let i = 0; i < labelCount; i++) {
+      const idx = Math.floor((i / (labelCount - 1)) * (points.length - 1));
+      const pt = points[idx];
+      const d = new Date(pt.time);
+      
+      let label;
+      if (activePeriod === '1D') {
+        label = d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true });
+      } else if (activePeriod === '1W') {
+        label = d.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric' });
+      } else if (activePeriod === '1Y') {
+        label = d.toLocaleDateString('en-IN', { month: 'short', year: '2-digit' });
+      } else {
+        label = d.toLocaleDateString('en-IN', { month: 'short', year: '2-digit' });
+      }
+      xLabels.push(label);
+    }
+    
     xLabels.forEach((label, i) => {
       const x = padding.left + (i / (xLabels.length - 1)) * chartW;
       ctx.fillText(label, x, rect.height - 8);
     });
-  }, [nifty, activePeriod, theme]);
+  }, [chartData, activePeriod, theme, chartLoading, prevClose]);
+
+  // Index label for display
+  const indexLabels = {
+    'nifty50': 'NIFTY 50 • NSE',
+    'banknifty': 'BANK NIFTY • NSE',
+    'midcap100': 'NIFTY MIDCAP 100 • NSE',
+    'smallcap100': 'NIFTY SMALLCAP 100 • NSE',
+  };
+  const indexKey = getIndexKey();
+
+  // Determine display label
+  const chartLabel = chartSymbol
+    ? `${chartSymbol.toUpperCase()} • NSE`
+    : (indexLabels[indexKey] || 'NIFTY 50 • NSE');
 
   return (
     <div className="balance-card">
       <div className="balance-card-header">
-        <span className="balance-card-title">Market Overview</span>
-        <div className="balance-toggle">
-          <button
-            className={`balance-toggle-btn ${activeToggle === 'actual' ? 'active' : ''}`}
-            onClick={() => setActiveToggle('actual')}
-          >Actual</button>
-          <button
-            className={`balance-toggle-btn ${activeToggle === 'predicted' ? 'active' : ''}`}
-            onClick={() => setActiveToggle('predicted')}
-          >✨ AI predicted</button>
+        <span className="balance-card-title">
+          {chartSymbol ? 'Stock Chart' : 'Market Overview'}
+        </span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          {chartLoading && (
+            <span style={{ fontSize: '0.65rem', color: 'var(--text-dim)', fontStyle: 'italic' }}>
+              Updating…
+            </span>
+          )}
+          <div className="balance-toggle">
+            <button
+              className="balance-toggle-btn active"
+            >Actual</button>
+            <button
+              className="balance-toggle-btn"
+              onClick={() => {
+                setActiveToggle('predicted');
+                setTimeout(() => setActiveToggle('actual'), 2500);
+              }}
+            >✨ AI predicted</button>
+          </div>
         </div>
       </div>
 
-      <div className="balance-amount">{niftyValue}</div>
-      <div className="balance-sub">NIFTY 50 • NSE • {niftyChange >= 0 ? '+' : ''}{niftyChange}%</div>
+      {activeToggle === 'predicted' && (
+        <div style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+          padding: '6px 14px', margin: '4px 0',
+          borderRadius: 'var(--radius-sm)',
+          background: 'var(--accent-bg)',
+          border: '1px solid var(--accent)',
+          fontSize: '0.72rem', fontWeight: 600,
+          color: 'var(--accent)',
+          animation: 'notifSlideIn 0.2s ease',
+        }}>
+          🚀 AI Predicted Charts — Coming Soon!
+        </div>
+      )}
+
+      <div className="balance-amount">
+        {chartSymbol && '₹'}{displayValue}
+      </div>
+      <div className="balance-sub">
+        {chartLabel} • {' '}
+        <span style={{ color: changePercent >= 0 ? 'var(--green)' : 'var(--red)' }}>
+          {changePercent >= 0 ? '+' : ''}{changePercent}%
+        </span>
+        <span style={{ marginLeft: 6, fontSize: '0.62rem', color: 'var(--text-dim)' }}>
+          • refreshes every 30s
+        </span>
+      </div>
 
       <div className="balance-periods">
         {periods.map(p => (
@@ -178,7 +367,7 @@ function BalanceCard({ theme, categoryName, nifty, activePeriod, setActivePeriod
 /* ═══════════════════════════════════════════════════════════════════════════
    SWAP CARD — Quick Stock Lookup
    ═══════════════════════════════════════════════════════════════════════════ */
-function SwapCard({ onOpenStock }) {
+function SwapCard({ onOpenStock, onChartSymbol }) {
   const [symbol, setSymbol] = useState('');
   const { stock, loading, fetchStock } = useStockDetail();
   const { results, search, clearResults } = useSearch();
@@ -210,7 +399,9 @@ function SwapCard({ onOpenStock }) {
 
   const handleLookup = () => {
     if (inputVal.trim()) {
-      fetchStock(inputVal.trim().toUpperCase());
+      const sym = inputVal.trim().toUpperCase();
+      fetchStock(sym);
+      if (onChartSymbol) onChartSymbol(sym);
     }
   };
 
@@ -284,6 +475,7 @@ function SwapCard({ onOpenStock }) {
                     setInputVal(s.symbol);
                     setShowDropdown(false);
                     fetchStock(s.symbol);
+                    if (onChartSymbol) onChartSymbol(s.symbol);
                   }}
                   style={{
                     padding: '12px 16px',

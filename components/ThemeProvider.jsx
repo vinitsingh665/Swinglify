@@ -10,6 +10,15 @@ function hexToRgba(hex, alpha) {
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
 
+// Lighten a hex color by a percentage (0-100)
+function lightenHex(hex, percent) {
+  const num = parseInt(hex.replace('#', ''), 16);
+  const r = Math.min(255, (num >> 16) + Math.round(2.55 * percent));
+  const g = Math.min(255, ((num >> 8) & 0x00FF) + Math.round(2.55 * percent));
+  const b = Math.min(255, (num & 0x0000FF) + Math.round(2.55 * percent));
+  return `#${(1 << 24 | r << 16 | g << 8 | b).toString(16).slice(1)}`;
+}
+
 export default function ThemeProvider({ children }) {
   useEffect(() => {
     const applyTheme = () => {
@@ -29,6 +38,7 @@ export default function ThemeProvider({ children }) {
         }
         if (accent) {
           document.documentElement.style.setProperty('--accent', accent);
+          document.documentElement.style.setProperty('--accent-hover', lightenHex(accent, 25));
           document.documentElement.style.setProperty('--accent-bg', hexToRgba(accent, 0.1));
         }
       } catch (e) {

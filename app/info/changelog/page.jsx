@@ -7,6 +7,22 @@ import '../info.css';
 
 const CHANGELOG = [
   {
+    version: '1.2.0',
+    date: 'March 28, 2026',
+    title: 'Live Charts, Notifications & AI Preview ✨',
+    items: [
+      { type: 'new', text: 'Live Market Overview chart powered by real market data with 30-second auto-refresh' },
+      { type: 'new', text: 'Interactive Notification bell with dropdown showing recent alerts, pulse indicator for new alerts' },
+      { type: 'new', text: 'Quick Lookup now connects to Market Overview — search any stock to see its live chart instantly' },
+      { type: 'new', text: 'Period selector (1D / 1W / 1Y / Max) on chart with time-appropriate axis labels' },
+      { type: 'new', text: 'Chart supports NIFTY 50, Bank NIFTY, MidCap 100, SmallCap 100 indices and individual stocks' },
+      { type: 'new', text: 'Green/Red chart line dynamically reflects whether the stock/index is up or down' },
+      { type: 'new', text: 'SwinglifyAI — intelligent chatbot assistant for market queries, stock analysis, and trading guidance' },
+      { type: 'new', text: 'AI Insight on Screener — get AI-powered analysis for any stock directly from the screener results' },
+      { type: 'wip', text: 'AI Predicted chart overlay — coming soon! Will show AI-powered market forecasts' },
+    ],
+  },
+  {
     version: '1.1.0',
     date: 'March 27, 2026',
     title: 'Community Trading Hub 🧠',
@@ -115,7 +131,7 @@ export default function ChangelogPage() {
                   {entry.items.map((item, i) => (
                     <li key={i}>
                       <span className={`changelog-badge ${item.type}`}>
-                        {item.type === 'new' ? 'NEW' : item.type === 'fix' ? 'FIX' : 'IMPROVED'}
+                        {item.type === 'new' ? 'NEW' : item.type === 'fix' ? 'FIX' : item.type === 'wip' ? 'WIP' : 'IMPROVED'}
                       </span>
                       {item.text}
                     </li>
