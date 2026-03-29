@@ -45,6 +45,37 @@ export default function TopBar() {
         </div>
       </div>
 
+      <div className="topbar-center hide-on-mobile" style={{
+        position: 'absolute',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        pointerEvents: 'none',
+        zIndex: 10
+      }}>
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px'
+        }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ filter: 'drop-shadow(0 0 4px var(--accent))' }}>
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+          </svg>
+          <h1 style={{
+            margin: 0,
+            fontSize: '1.25rem',
+            fontWeight: 600,
+            color: '#ffffff',
+            fontFamily: '"Quicksand", sans-serif',
+            letterSpacing: '0.5px'
+          }}>
+            Swinglify
+          </h1>
+        </div>
+      </div>
+
       <div className="topbar-right">
         <NotificationDropdown />
         <div className="topbar-account">

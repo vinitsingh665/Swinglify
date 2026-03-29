@@ -1,5 +1,73 @@
 [
   {
+    "query": "HDFCBANK",
+    "timestamp": "2026-03-29T05:39:09.278Z"
+  },
+  {
+    "query": "HDF",
+    "timestamp": "2026-03-29T05:39:04.676Z"
+  },
+  {
+    "query": "HDFT",
+    "timestamp": "2026-03-29T05:39:02.795Z"
+  },
+  {
+    "query": "HD",
+    "timestamp": "2026-03-29T05:39:02.171Z"
+  },
+  {
+    "query": "YESBANK",
+    "timestamp": "2026-03-29T05:38:59.097Z"
+  },
+  {
+    "query": "YES",
+    "timestamp": "2026-03-29T05:38:50.265Z"
+  },
+  {
+    "query": "YE",
+    "timestamp": "2026-03-29T05:38:49.927Z"
+  },
+  {
+    "query": "YESS",
+    "timestamp": "2026-03-29T05:38:42.783Z"
+  },
+  {
+    "query": "YESSH",
+    "timestamp": "2026-03-29T05:38:42.164Z"
+  },
+  {
+    "query": "YESBANK",
+    "timestamp": "2026-03-29T05:38:39.199Z"
+  },
+  {
+    "query": "BANK",
+    "timestamp": "2026-03-29T05:38:20.748Z"
+  },
+  {
+    "query": "BAN",
+    "timestamp": "2026-03-29T05:38:20.311Z"
+  },
+  {
+    "query": "NIFT",
+    "timestamp": "2026-03-29T05:38:19.319Z"
+  },
+  {
+    "query": "NIFTY",
+    "timestamp": "2026-03-29T05:38:17.598Z"
+  },
+  {
+    "query": "NIF",
+    "timestamp": "2026-03-29T05:38:16.685Z"
+  },
+  {
+    "query": "RELIANC",
+    "timestamp": "2026-03-29T05:38:14.796Z"
+  },
+  {
+    "query": "RELIANCE",
+    "timestamp": "2026-03-29T05:38:13.812Z"
+  },
+  {
     "query": "RELIANCE",
     "timestamp": "2026-03-28T07:12:19.724Z"
   },
