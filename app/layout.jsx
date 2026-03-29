@@ -9,7 +9,7 @@ import Script from 'next/script';
 export const metadata = {
 
   title: {
-    default: 'Swinglify — Free Swing Trading Screener for Indian Stocks | NSE & BSE',
+    default: 'Swinglify — Simplifying your Swing Trades',
     template: '%s | Swinglify',
   },
   description: 'Swinglify is a free swing trading platform for Indian stocks. Screen NSE & BSE stocks with RSI, MACD, Bollinger Bands. Track your portfolio, set price alerts, and find the best swing trade opportunities — all in one place.',
@@ -53,7 +53,7 @@ export const metadata = {
     locale: 'en_IN',
     url: 'https://swinglify.online',
     siteName: 'Swinglify',
-    title: 'Swinglify — Free Swing Trading Screener for Indian Stocks',
+    title: 'Swinglify — Simplifying your Swing Trades',
     description: 'Screen NSE & BSE stocks with RSI, MACD & Bollinger Bands. Track portfolio, set alerts, find swing trade opportunities — free.',
     images: [
       {
@@ -68,7 +68,7 @@ export const metadata = {
     card: 'summary_large_image',
     site: '@swinglify',
     creator: '@swinglify',
-    title: 'Swinglify — Free Swing Trading Screener for Indian Stocks',
+    title: 'Swinglify — Simplifying your Swing Trades',
     description: 'Screen NSE & BSE stocks with RSI, MACD & Bollinger Bands. Track your portfolio and set price alerts — all free.',
     images: ['/og-image.png'],
   },
