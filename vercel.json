@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/market-wrap",
+      "schedule": "45 10 * * 1-5"
+    }
+  ]
+}
