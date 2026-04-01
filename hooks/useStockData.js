@@ -10,6 +10,9 @@ export function useStockData(category, limit = 50, exchange = 'NSE') {
     const [countdown, setCountdown] = useState(10);
     const timerRef = useRef(null);
     const countdownRef = useRef(null);
+    
+    // Utilize existing hook to check if the market is open
+    const marketStatus = useMarketStatus();
 
     const fetchStocks = useCallback(async () => {
         try {
@@ -38,24 +41,31 @@ export function useStockData(category, limit = 50, exchange = 'NSE') {
 
     useEffect(() => {
         fetchStocks();
-        setCountdown(10);
 
-        // Auto-refresh timer
-        timerRef.current = setInterval(() => {
-            fetchStocks();
+        // Only setup auto-refresh if market is OPEN or still LOADING
+        if (marketStatus.status === 'LOADING' || marketStatus.isOpen) {
             setCountdown(10);
-        }, 10 * 1000);
+            
+            // Auto-refresh timer
+            timerRef.current = setInterval(() => {
+                fetchStocks();
+                setCountdown(10);
+            }, 10 * 1000);
 
-        // Countdown timer
-        countdownRef.current = setInterval(() => {
-            setCountdown(prev => (prev <= 1 ? 10 : prev - 1));
-        }, 1000);
+            // Countdown timer
+            countdownRef.current = setInterval(() => {
+                setCountdown(prev => (prev <= 1 ? 10 : prev - 1));
+            }, 1000);
+        } else {
+            // Market is explicitly closed; stop countdown
+            setCountdown(null);
+        }
 
         return () => {
             clearInterval(timerRef.current);
             clearInterval(countdownRef.current);
         };
-    }, [fetchStocks]);
+    }, [fetchStocks, marketStatus.status, marketStatus.isOpen]);
 
     return { stocks, loading, error, lastUpdated, totalCount, countdown, refresh };
 }
