@@ -66,13 +66,13 @@ export default function MobileBottomNav() {
 
   return (
     <nav className="mob-bottom-nav">
-      {/* Home */}
-      <Link href="/" className={`mob-nav-item ${pathname === '/' ? 'active' : ''}`}>
+      {/* Dashboard */}
+      <Link href="/dashboard" className={`mob-nav-item ${pathname === '/dashboard' ? 'active' : ''}`}>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ overflow: 'visible' }}>
           <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
           <polyline points="9 22 9 12 15 12 15 22" />
         </svg>
-        <span>Home</span>
+        <span>Dashboard</span>
       </Link>
 
       {/* Screener */}
@@ -194,6 +194,7 @@ export default function MobileBottomNav() {
 
             <div className="mob-pm-divider" />
 
+            {/* === THEME TOGGLE — HIDDEN (uncomment to re-enable) ===
             <button className="mob-pm-item" onClick={toggleTheme}>
               {theme === 'dark' ? (
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="12" cy="12" r="5" /><line x1="12" y1="1" x2="12" y2="3" /><line x1="12" y1="21" x2="12" y2="23" /><line x1="4.22" y1="4.22" x2="5.64" y2="5.64" /><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" /><line x1="1" y1="12" x2="3" y2="12" /><line x1="21" y1="12" x2="23" y2="12" /><line x1="4.22" y1="19.78" x2="5.64" y2="18.36" /><line x1="18.36" y1="4.22" x2="19.78" y2="5.64" /></svg>
@@ -202,6 +203,7 @@ export default function MobileBottomNav() {
               )}
               {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
             </button>
+            === END THEME TOGGLE === */}
             <button className="mob-pm-item mob-pm-logout" onClick={() => signOut()}>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" /></svg>
               Logout

@@ -1,5 +1,6 @@
 "use client";
 import { useSession, signIn } from 'next-auth/react';
+import Link from 'next/link';
 import { useMarketStatus, useIndices } from '../hooks/useStockData';
 import { formatNumber } from '../utils';
 import NotificationDropdown from './NotificationDropdown';
@@ -17,8 +18,12 @@ export default function TopBar() {
   return (
     <div className="topbar">
       <div className="topbar-left">
+        {/* Mobile-only logo — left corner */}
+        <Link href="/" className="topbar-mobile-logo">
+          <img src="/logo.png" alt="Swinglify" />
+        </Link>
         {nifty && (
-          <div className="topbar-pill">
+          <div className="topbar-pill hide-on-mobile">
             <span className="pill-label">Nifty 50:</span>
             <span className={`pill-value ${(nifty.change || 0) >= 0 ? 'positive' : 'negative'}`}>
               {(nifty.change || 0) >= 0 ? '+' : ''}{nifty.change}%
@@ -26,7 +31,7 @@ export default function TopBar() {
           </div>
         )}
         {bankNifty && (
-          <div className="topbar-pill">
+          <div className="topbar-pill hide-on-mobile">
             <span className="pill-label">BankNifty:</span>
             <span className={`pill-value ${(bankNifty.change || 0) >= 0 ? 'positive' : 'negative'}`}>
               {(bankNifty.change || 0) >= 0 ? '+' : ''}{bankNifty.change}%
@@ -39,13 +44,13 @@ export default function TopBar() {
             <span className="pill-value">{formatNumber(vix.value)}</span>
           </div>
         )}
-        <div className="topbar-pill">
+        <div className="topbar-pill hide-on-mobile">
           <span className="pill-label">Exchange:</span>
           <span className="pill-value" style={{ color: 'var(--text-primary)', fontWeight: 600 }}>NSE</span>
         </div>
       </div>
 
-      <div className="topbar-center hide-on-mobile" style={{
+      <div className="topbar-center" style={{
         position: 'absolute',
         left: '50%',
         transform: 'translateX(-50%)',
@@ -55,10 +60,12 @@ export default function TopBar() {
         pointerEvents: 'none',
         zIndex: 10
       }}>
-        <div style={{
+        <Link href="/" style={{
           display: 'flex',
           alignItems: 'center',
-          gap: '8px'
+          gap: '8px',
+          textDecoration: 'none',
+          pointerEvents: 'auto'
         }}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ filter: 'drop-shadow(0 0 4px var(--accent))' }}>
             <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
@@ -73,7 +80,7 @@ export default function TopBar() {
           }}>
             Swinglify
           </h1>
-        </div>
+        </Link>
       </div>
 
       <div className="topbar-right">
@@ -84,6 +91,7 @@ export default function TopBar() {
             {marketStatus.isOpen ? 'Live' : 'Closed'}
           </span>
         </div>
+
         
         {/* Sign In Button for unauthenticated users */}
         {status !== 'loading' && !session && (

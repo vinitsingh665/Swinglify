@@ -54,10 +54,12 @@
   padding: 16px;
 }
 
+/* === LIGHT THEME — HIDDEN (uncomment to re-enable) ===
 [data-theme="light"] .panel-glass {
   background: rgba(255, 255, 255, 0.7);
   border: 1px solid rgba(0, 0, 0, 0.06);
 }
+=== END LIGHT THEME === */
 
 /* ═══════════════════════════════════════════════════════════════
    LEFT PANEL — Filter Insights

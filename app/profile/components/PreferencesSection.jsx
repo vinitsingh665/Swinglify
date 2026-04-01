@@ -65,7 +65,7 @@ export default function PreferencesSection({ theme, setTheme }) {
         </div>
       </div>
 
-      {/* Theme */}
+      {/* === THEME — HIDDEN (uncomment to re-enable) ===
       <div className="set-row">
         <div className="set-row-info">
           <span className="set-row-label">Theme</span>
@@ -76,6 +76,7 @@ export default function PreferencesSection({ theme, setTheme }) {
           <button className={`set-pill ${theme === 'light' ? 'active' : ''}`} onClick={() => setTheme('light')}>☀️ Light</button>
         </div>
       </div>
+      === END THEME === */}
 
       {/* Accent Color */}
       <div className={`set-row ${glow === 'accent' ? 'set-glow' : ''}`}>

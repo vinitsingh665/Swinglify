@@ -22,8 +22,8 @@ function lightenHex(hex, percent) {
 export default function ThemeProvider({ children }) {
   useEffect(() => {
     const applyTheme = () => {
-      // 1. Read Theme
-      const theme = localStorage.getItem('swinglify_theme') || 'dark';
+      // 1. Force Dark Theme (light theme disabled)
+      const theme = 'dark';
       document.documentElement.setAttribute('data-theme', theme);
 
       // 2. Read Accent Color

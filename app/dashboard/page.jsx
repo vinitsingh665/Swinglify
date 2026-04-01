@@ -56,7 +56,7 @@ export default function Page() {
         <div className="content">
           <div className="content-inner">
             <div className="overview-header">
-              <h1 className="overview-title">Overview</h1>
+              <h2 className="overview-title">Overview</h2>
               <SearchBar onOpenStock={setModalSymbol} />
             </div>
 

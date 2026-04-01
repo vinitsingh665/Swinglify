@@ -3,6 +3,7 @@ import ThemeProvider from '../components/ThemeProvider';
 import VisitorTracker from '../components/VisitorTracker';
 import AuthProvider from '../components/AuthProvider';
 import OnboardingModal from '../components/OnboardingModal';
+import StructuredData from '../components/StructuredData';
 
 import Script from 'next/script';
 
@@ -93,7 +94,7 @@ export default function RootLayout({ children }) {
   const themeScript = `
     (function() {
       try {
-        var t = localStorage.getItem('swinglify_theme') || 'dark';
+        var t = 'dark'; // Light theme disabled — always use dark
         document.documentElement.setAttribute('data-theme', t);
         
         if (window.location.pathname.startsWith('/vinit_admin')) {
@@ -120,6 +121,7 @@ export default function RootLayout({ children }) {
         <Script id="theme-init">{themeScript}</Script>
       </head>
       <body suppressHydrationWarning={true}>
+        <StructuredData />
         <AuthProvider>
           <ThemeProvider>
             <VisitorTracker />

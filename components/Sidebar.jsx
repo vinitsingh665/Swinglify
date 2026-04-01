@@ -2,33 +2,75 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import UserMenu from './UserMenu';
+
+const ACCENT_COLORS = [
+  { id: 'indigo', val: '#6366f1' },
+  { id: 'blue', val: '#3b82f6' },
+  { id: 'gold', val: '#d4af37' },
+  { id: 'orange', val: '#f97316' },
+  { id: 'green', val: '#22c55e' },
+  { id: 'cyan', val: '#06b6d4' },
+  { id: 'purple', val: '#a855f7' },
+  { id: 'rose', val: '#f43f5e' },
+];
+
+function lightenHex(hex, percent) {
+  const num = parseInt(hex.replace('#', ''), 16);
+  const r = Math.min(255, (num >> 16) + Math.round(2.55 * percent));
+  const g = Math.min(255, ((num >> 8) & 0x00FF) + Math.round(2.55 * percent));
+  const b = Math.min(255, (num & 0x0000FF) + Math.round(2.55 * percent));
+  return `#${(1 << 24 | r << 16 | g << 8 | b).toString(16).slice(1)}`;
+}
+
+function hexToRgba(hex, alpha) {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
 
 export default function Sidebar({ isOpen, setIsOpen }) {
   const pathname = usePathname();
-  const [theme, setTheme] = useState('dark');
+  const [accentOpen, setAccentOpen] = useState(false);
+  const [currentAccent, setCurrentAccent] = useState('#6366f1');
+  const accentRef = useRef(null);
 
   useEffect(() => {
-    const handleThemeEvent = () => {
-      const saved = localStorage.getItem('swinglify_theme') || 'dark';
-      setTheme(saved);
-    };
-    handleThemeEvent(); // Set initial theme
-    window.addEventListener('swinglify_settings_update', handleThemeEvent);
-    return () => window.removeEventListener('swinglify_settings_update', handleThemeEvent);
+    const saved = localStorage.getItem('swinglify_accent') || '#6366f1';
+    setCurrentAccent(saved);
   }, []);
+
+  // Close accent popup on outside click
+  useEffect(() => {
+    const handler = (e) => {
+      if (accentRef.current && !accentRef.current.contains(e.target)) setAccentOpen(false);
+    };
+    if (accentOpen) document.addEventListener('pointerdown', handler);
+    return () => document.removeEventListener('pointerdown', handler);
+  }, [accentOpen]);
+
+  const applyAccent = (color) => {
+    setCurrentAccent(color);
+    localStorage.setItem('swinglify_accent', color);
+    document.documentElement.style.setProperty('--accent', color);
+    document.documentElement.style.setProperty('--accent-hover', lightenHex(color, 25));
+    document.documentElement.style.setProperty('--accent-bg', hexToRgba(color, 0.1));
+    window.dispatchEvent(new Event('swinglify_settings_update'));
+    setAccentOpen(false);
+  };
 
   return (
     <aside className="sidebar">
-      <div className="sidebar-logo">
+      <Link href="/" className="sidebar-logo" style={{ display: 'block' }}>
         <img src="/logo.png" alt="Swinglify" />
-      </div>
+      </Link>
 
       <nav className="sidebar-nav">
         <div className="sidebar-nav-top">
           {/* Dashboard */}
-          <Link href="/" className={`sidebar-icon ${pathname === '/' ? 'active' : ''}`} title="Dashboard">
+          <Link href="/dashboard" className={`sidebar-icon ${pathname === '/dashboard' ? 'active' : ''}`} title="Dashboard">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
               <rect x="3" y="3" width="7" height="7" rx="1.5" />
               <rect x="14" y="3" width="7" height="7" rx="1.5" />
@@ -115,31 +157,37 @@ export default function Sidebar({ isOpen, setIsOpen }) {
             </svg>
           </Link>
 
-          {/* Theme */}
-          <button className="sidebar-icon" title="Theme" onClick={() => {
-            const next = theme === 'dark' ? 'light' : 'dark';
-            setTheme(next);
-            localStorage.setItem('swinglify_theme', next);
-            window.dispatchEvent(new Event('swinglify_settings_update'));
-          }}>
-            {theme === 'dark' ? (
+          {/* Accent Color Picker */}
+          <div className="sidebar-accent-wrapper" ref={accentRef}>
+            <button
+              className="sidebar-icon"
+              title="Accent Color"
+              onClick={() => setAccentOpen(o => !o)}
+              style={{ color: currentAccent }}
+            >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <circle cx="12" cy="12" r="5" />
-                <line x1="12" y1="1" x2="12" y2="3" />
-                <line x1="12" y1="21" x2="12" y2="23" />
-                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
-                <line x1="19.78" y1="19.78" x2="18.36" y2="18.36" />
-                <line x1="1" y1="12" x2="3" y2="12" />
-                <line x1="21" y1="12" x2="23" y2="12" />
-                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
-                <line x1="19.78" y1="4.22" x2="18.36" y2="5.64" />
+                <circle cx="12" cy="12" r="10" />
+                <circle cx="12" cy="12" r="4" fill="currentColor" stroke="none" />
               </svg>
-            ) : (
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
-              </svg>
+            </button>
+
+            {accentOpen && (
+              <div className="sidebar-accent-popup">
+                <div className="sidebar-accent-title">Accent Color</div>
+                <div className="sidebar-accent-grid">
+                  {ACCENT_COLORS.map(c => (
+                    <button
+                      key={c.id}
+                      className={`sidebar-accent-swatch ${currentAccent === c.val ? 'active' : ''}`}
+                      style={{ background: c.val }}
+                      title={c.id}
+                      onClick={() => applyAccent(c.val)}
+                    />
+                  ))}
+                </div>
+              </div>
             )}
-          </button>
+          </div>
 
           {/* User Account */}
           <UserMenu />

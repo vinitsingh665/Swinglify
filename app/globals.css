@@ -43,6 +43,7 @@
   --radius-xs: 6px;
 }
 
+/* === LIGHT THEME — HIDDEN (uncomment to re-enable) ===
 :root[data-theme="light"],
 [data-theme="light"] {
   --bg-base: #f5f6fa;
@@ -73,6 +74,7 @@
   --red-bright: #dc2626;
   --yellow: #f59e0b;
 }
+=== END LIGHT THEME === */
 
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -210,6 +212,83 @@ body {
   margin: 8px 0;
 }
 
+/* ─── Sidebar Accent Picker ────────────────────────────────────────────── */
+.sidebar-accent-wrapper {
+  position: relative;
+}
+
+.sidebar-accent-popup {
+  position: absolute;
+  left: calc(100% + 12px);
+  bottom: 0;
+  width: 172px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-hover);
+  border-radius: var(--radius);
+  padding: 12px;
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.4),
+    0 4px 12px rgba(0, 0, 0, 0.2),
+    0 0 0 1px var(--border);
+  z-index: 200;
+  animation: accentPopIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes accentPopIn {
+  from { opacity: 0; transform: translateX(-6px) scale(0.95); }
+  to { opacity: 1; transform: translateX(0) scale(1); }
+}
+
+.sidebar-accent-popup::before {
+  content: '';
+  position: absolute;
+  left: -6px;
+  bottom: 12px;
+  width: 10px;
+  height: 10px;
+  background: var(--bg-card);
+  border-left: 1px solid var(--border-hover);
+  border-bottom: 1px solid var(--border-hover);
+  transform: rotate(45deg);
+}
+
+.sidebar-accent-title {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 10px;
+}
+
+.sidebar-accent-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.sidebar-accent-swatch {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  outline: none;
+  position: relative;
+}
+
+.sidebar-accent-swatch:hover {
+  transform: scale(1.15);
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.15);
+}
+
+.sidebar-accent-swatch.active {
+  border-color: var(--text-primary);
+  box-shadow: 0 0 0 2px var(--bg-card), 0 0 0 4px currentColor;
+  transform: scale(1.1);
+}
+
 /* ═══════════════════════════════════════════════════════════════════════════
    MAIN AREA
    ═══════════════════════════════════════════════════════════════════════════ */
@@ -219,6 +298,8 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  min-width: 0;
+  max-width: calc(100vw - var(--sidebar-width));
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -315,6 +396,11 @@ body {
 .topbar-icon-btn svg {
   width: 16px;
   height: 16px;
+}
+
+/* Mobile-only logo — hidden on desktop */
+.topbar-mobile-logo {
+  display: none;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -1478,10 +1564,42 @@ body {
   .sidebar { display: none; }
   .main-area { margin-left: 0; }
   .content { padding: 16px 14px; }
-  .topbar { padding: 0 12px; overflow: hidden; }
+  .topbar { padding: 0 12px; overflow: hidden; position: relative; }
 
   /* ─── Topbar compact ─── */
   .topbar-pill { padding: 4px 8px; font-size: 0.68rem; }
+
+  /* Show topbar-left on mobile for the logo (pills are hidden via hide-on-mobile) */
+  .topbar-left {
+    display: flex;
+  }
+
+  /* Keep website name centered on mobile */
+  .topbar-center {
+    position: absolute !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    pointer-events: none !important;
+  }
+
+  .topbar-mobile-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    flex-shrink: 0;
+  }
+  .topbar-mobile-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
   .topbar-account { 
     display: flex;
     align-items: center;
@@ -1552,6 +1670,7 @@ body {
   flex-shrink: 0;
 }
 
+/* === LIGHT THEME SKELETON — HIDDEN (uncomment to re-enable) ===
 [data-theme="light"] .skeleton-base,
 :root[data-theme="light"] .skeleton-base {
   background-image: linear-gradient(
@@ -1562,6 +1681,7 @@ body {
     rgba(0, 0, 0, 0) 100%
   );
 }
+=== END LIGHT THEME SKELETON === */
 
 @keyframes shimmer {
   0% {

@@ -106,6 +106,7 @@ export default function PreferencesSection({ currentTheme }) {
         </div>
       </div>
 
+      {/* === THEME MODE — HIDDEN (uncomment to re-enable) ===
       <div className="set-row">
         <div className="set-row-info">
           <span className="set-row-label">Theme Mode</span>
@@ -122,6 +123,7 @@ export default function PreferencesSection({ currentTheme }) {
           ))}
         </div>
       </div>
+      === END THEME MODE === */}
 
       <div className="set-row">
         <div className="set-row-info">

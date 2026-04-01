@@ -1,0 +1,217 @@
+/* ═══════════════════════════════════════════════════════════════
+   SEO Hero Section — Server-rendered, keyword-rich landing section
+   Visible to all visitors (& Googlebot) above the dashboard
+   ═══════════════════════════════════════════════════════════════ */
+
+.seo-hero {
+  padding: 48px 28px 40px;
+  position: relative;
+  overflow: hidden;
+}
+
+.seo-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: 
+    radial-gradient(ellipse 60% 50% at 20% 50%, var(--accent-bg) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 60% at 80% 30%, rgba(139,92,246,0.06) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.seo-hero-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+/* ─── Heading ─── */
+.seo-hero h1 {
+  font-size: 2.2rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+  margin: 0 0 14px;
+  background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent, #818cf8) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.seo-hero-subtitle {
+  font-size: 1.05rem;
+  color: var(--text-secondary, rgba(255,255,255,0.6));
+  line-height: 1.7;
+  max-width: 720px;
+  margin: 0 0 32px;
+}
+
+/* ─── Feature Grid ─── */
+.seo-features-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.seo-feature-card {
+  background: var(--card-bg, rgba(255,255,255,0.04));
+  border: 1px solid var(--border, rgba(255,255,255,0.06));
+  border-radius: 16px;
+  padding: 20px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: all 0.25s ease;
+  text-decoration: none;
+  color: inherit;
+}
+
+.seo-feature-card:hover {
+  border-color: var(--accent, #6366f1);
+  background: var(--accent-bg, rgba(99,102,241,0.08));
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+}
+
+.seo-feature-icon {
+  font-size: 1.6rem;
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: var(--accent-bg, rgba(99,102,241,0.1));
+}
+
+.seo-feature-card h3 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--text-primary, #fff);
+}
+
+.seo-feature-card p {
+  font-size: 0.8rem;
+  margin: 0;
+  color: var(--text-secondary, rgba(255,255,255,0.5));
+  line-height: 1.5;
+}
+
+/* ─── CTA Row ─── */
+.seo-cta-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.seo-cta-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 28px;
+  border-radius: 12px;
+  background: var(--accent, #6366f1);
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.seo-cta-primary:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px var(--accent-bg);
+}
+
+.seo-cta-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 28px;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--text-primary, #fff);
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+  border: 1px solid var(--border, rgba(255,255,255,0.12));
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.seo-cta-secondary:hover {
+  border-color: var(--accent, #6366f1);
+  background: var(--accent-bg, rgba(99,102,241,0.08));
+}
+
+/* ─── Bottom text ─── */
+.seo-hero-bottom {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border, rgba(255,255,255,0.06));
+  color: var(--text-dim, rgba(255,255,255,0.35));
+  font-size: 0.78rem;
+  line-height: 1.7;
+  max-width: 800px;
+}
+
+/* ─── Collapsed state (logged-in users) ─── */
+.seo-hero.collapsed {
+  padding: 0;
+  max-height: 0;
+  overflow: hidden;
+  margin: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 900px) {
+  .seo-features-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .seo-hero h1 {
+    font-size: 1.7rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .seo-hero {
+    padding: 32px 16px 28px;
+  }
+  .seo-features-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .seo-feature-card {
+    flex-direction: row;
+    align-items: center;
+    padding: 14px 16px;
+    gap: 12px;
+  }
+  .seo-feature-card p {
+    display: none;
+  }
+  .seo-hero h1 {
+    font-size: 1.45rem;
+  }
+  .seo-hero-subtitle {
+    font-size: 0.92rem;
+  }
+  .seo-cta-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .seo-cta-primary,
+  .seo-cta-secondary {
+    justify-content: center;
+  }
+}

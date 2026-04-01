@@ -14,30 +14,39 @@ export async function GET(req) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // 0. Connect to our new centralized Market Status logic
-    const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3050';
-    try {
-      const statusRes = await fetch(`${baseUrl}/api/market-status`);
-      const statusData = await statusRes.json();
-      if (statusData && statusData.isTradingDay === false) {
-        return NextResponse.json({ message: 'Market is closed today (Weekend/Holiday). No market wrap-up generated.' }, { status: 200 });
-      }
-    } catch (e) {
-      console.error('Could not verify holiday status, proceeding anyway');
-    }
-
-    // 1. Fetch Today's Market Data
-    // We use absolute URL for fetch inside API routes or directly call the logic. For simplicity, we fetch our own route.
-    const indicesRes = await fetch(`${baseUrl}/api/indices`);
-    const indicesData = await indicesRes.json();
+    // 0. Native Market Status Logic
+    const now = new Date();
+    const istOffset = 5.5 * 60 * 60 * 1000;
+    const ist = new Date(now.getTime() + istOffset);
+    const day = ist.getUTCDay();
+    const isTradingDay = (day >= 1 && day <= 5);
     
-    if (!indicesData || !indicesData.data) {
-      return NextResponse.json({ error: 'Failed to fetch indices' }, { status: 500 });
+    if (!isTradingDay) {
+        return NextResponse.json({ message: 'Market is closed today (Weekend/Holiday). No market wrap-up generated.' }, { status: 200 });
     }
 
-    const nifty = indicesData.data.find(i => i.symbol === 'NIFTY') || { change: 0, value: 0 };
-    const bankNifty = indicesData.data.find(i => i.symbol === 'BANKNIFTY') || { change: 0, value: 0 };
-    const vix = indicesData.data.find(i => i.symbol === 'INDIA_VIX') || { change: 0, value: 0 };
+    // 1. Fetch Today's Market Data directly from TradingView
+    const indicesBody = {
+      symbols: { tickers: ['NSE:NIFTY', 'NSE:BANKNIFTY', 'BSE:SENSEX', 'NSE:NIFTY_MID_SELECT', 'NSE:INDIA_VIX'], query: { types: [] } },
+      columns: ['name', 'change']
+    };
+
+    const indicesRes = await fetch('https://scanner.tradingview.com/india/scan', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'User-Agent': 'Mozilla/5.0' },
+      body: JSON.stringify(indicesBody)
+    });
+    
+    const indicesData = await indicesRes.json();
+    if (!indicesData || !indicesData.data) {
+      return NextResponse.json({ error: 'Failed to fetch indices from TV' }, { status: 500 });
+    }
+
+    // Map indices Data
+    const mappedIndices = indicesData.data.map(item => ({ symbol: item.d[0], change: item.d[1] ? Math.round(item.d[1]*100)/100 : 0 }));
+    const nifty = mappedIndices.find(i => i.symbol === 'NSE:NIFTY') || { change: 0 };
+    const bankNifty = mappedIndices.find(i => i.symbol === 'NSE:BANKNIFTY') || { change: 0 };
+    const vix = mappedIndices.find(i => i.symbol === 'NSE:INDIA_VIX') || { change: 0 };
 
     // 1b. Fetch Top Volume Movers (so the AI can talk about individual stocks)
     const tvBody = {
@@ -58,7 +67,7 @@ export async function GET(req) {
     }).join('\n');
 
     // 2. Generate AI Wrap-up
-    const article = await generateMarketWrapUp(nifty.change, bankNifty.change, `VIX at ${vix.value}`, topMoversText);
+    const article = await generateMarketWrapUp(nifty.change, bankNifty.change, `VIX Change: ${vix.change}%`, topMoversText);
 
     if (!article) {
       return NextResponse.json({ error: 'AI generation failed' }, { status: 500 });
@@ -100,6 +109,6 @@ export async function GET(req) {
     return NextResponse.json({ success: true, post: newPost._id });
   } catch (error) {
     console.error('Cron Market Wrap Error:', error);
-    return NextResponse.json({ error: 'Failed to run market wrap cron' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to run market wrap cron', details: error.message, stack: error.stack }, { status: 500 });
   }
 }
