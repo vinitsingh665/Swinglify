@@ -64,11 +64,12 @@ export default function MarketsPage() {
     filters.quickTag === 'Top Gainers' ? 'gainers' : 
     filters.quickTag === 'Top Losers' ? 'losers' : 
     filters.quickTag === 'High Volume' ? 'mostactive' :
+    filters.quickTag === 'Breakouts' ? 'breakouts' :
     filters.marketCap === 'Large' ? 'nifty100' :
     filters.marketCap === 'Mid' ? 'midcap150' :
     filters.marketCap === 'Small' ? 'smallcap250' : 'nifty500';
 
-  const { stocks, loading, error, refresh } = useStockData(baseCategory, 250, filters.exchange);
+  const { stocks, loading, error, refresh } = useStockData(baseCategory, 1000, filters.exchange);
 
   // Reset pagination if filters change or data refreshes
   useEffect(() => {

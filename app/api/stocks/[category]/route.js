@@ -23,9 +23,19 @@ export async function GET(request, { params }) {
         if (cached) return NextResponse.json({ ...cached, cached: true });
 
         // Deep copy filter to safely modify the exchange logic per-request
-        const customFilter = JSON.parse(JSON.stringify(config.filter));
-        const exFilter = customFilter.find(f => f.left === 'exchange');
-        if (exFilter) exFilter.right = exchange;
+        let customFilter = JSON.parse(JSON.stringify(config.filter));
+        
+        // Update exchange filter
+        const exFilterIdx = customFilter.findIndex(f => f.left === 'exchange');
+        if (exFilterIdx !== -1) {
+            customFilter[exFilterIdx].right = exchange;
+        }
+
+        // Fix: If exchange is BSE, relax the is_primary constraint which often filters out secondary BSE listings 
+        // that are actually primary on NSE but still important on BSE.
+        if (exchange === 'BSE') {
+            customFilter = customFilter.filter(f => f.left !== 'is_primary');
+        }
 
         const body = {
             filter: customFilter,
