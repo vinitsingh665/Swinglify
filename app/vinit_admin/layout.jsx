@@ -2,16 +2,19 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, notFound } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import './admin.css';
 
+const ADMIN_EMAILS = [
+  "vinitsingh665@gmail.com",
+  "vinits.7kushwaha@gmail.com"
+];
+
 export default function AdminLayout({ children }) {
+  const { data: session, status } = useSession();
   const [theme, setThemeState] = useState('dark');
   const pathname = usePathname();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [pin, setPin] = useState('');
-  const [error, setError] = useState('');
-  const [authChecking, setAuthChecking] = useState(true);
   
   // Force dark mode for admin dashboard or respect system
   useEffect(() => {
@@ -19,12 +22,6 @@ export default function AdminLayout({ children }) {
     document.documentElement.style.setProperty('--accent', '#6366f1'); // Different accent for Admin (Indigo)
     document.documentElement.style.setProperty('--accent-bg', 'rgba(99, 102, 241, 0.1)');
     
-    // Check Auth session
-    if (sessionStorage.getItem('swinglify_admin_auth') === 'true') {
-      setIsAuthenticated(true);
-    }
-    setAuthChecking(false);
-
     return () => {
       // Cleanup when leaving admin
       const t = localStorage.getItem('swinglify_theme') || 'dark';
@@ -46,63 +43,14 @@ export default function AdminLayout({ children }) {
     };
   }, []);
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setError('');
-    
-    try {
-      const res = await fetch('/api/vinit_admin/auth', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password: pin })
-      });
-
-      if (res.ok) {
-        sessionStorage.setItem('swinglify_admin_auth', 'true');
-        setIsAuthenticated(true);
-      } else {
-        const data = await res.json();
-        setError(data.error || 'Invalid Password. Access Denied.');
-        setPin('');
-      }
-    } catch(err) {
-      setError('Connection error while authenticating.');
-      setPin('');
-    }
-  };
-
-  if (authChecking) {
+  // Ensure hydration logic waits for NextAuth session
+  if (status === 'loading') {
     return <div style={{ height: '100vh', background: '#0a0a0a' }}></div>;
   }
 
-  if (!isAuthenticated) {
-    return (
-      <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0a0a0a', color: '#fff', flexDirection: 'column' }}>
-        <div style={{ background: '#111', padding: '40px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)', textAlign: 'center', width: '90%', maxWidth: '400px', boxShadow: '0 20px 40px rgba(0,0,0,0.5)' }}>
-          <div className="admin-logo" style={{ margin: '0 auto 20px auto', width: '60px', height: '60px', fontSize: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--accent)', borderRadius: '12px' }}>S</div>
-          <h1 style={{ margin: '0 0 8px 0', fontSize: '1.5rem', fontWeight: 600 }}>Command Center</h1>
-          <p style={{ margin: '0 0 24px 0', color: '#888', fontSize: '0.9rem' }}>Enter authorized password to proceed</p>
-          
-          <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <input 
-              type="password" 
-              value={pin}
-              onChange={(e) => { setPin(e.target.value); setError(''); }}
-              placeholder="Enter Password"
-              style={{ padding: '12px 16px', borderRadius: '8px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', fontSize: '1rem', textAlign: 'center', letterSpacing: '2px', outline: 'none' }}
-              autoFocus
-            />
-            {error && <div style={{ color: '#ef4444', fontSize: '0.85rem' }}>{error}</div>}
-            <button type="submit" style={{ padding: '12px', borderRadius: '8px', background: 'var(--accent)', color: '#fff', border: 'none', fontWeight: 600, cursor: 'pointer', transition: '0.2s' }}>
-              Authenticate
-            </button>
-            <Link href="/" style={{ color: '#666', fontSize: '0.85rem', textDecoration: 'none', marginTop: '8px', transition: '0.2s' }}>
-              ← Return to public site
-            </Link>
-          </form>
-        </div>
-      </div>
-    );
+  // If unauthenticated or email is not recognized, immediately trigger Next.js 404
+  if (status === 'unauthenticated' || !session?.user?.email || !ADMIN_EMAILS.includes(session.user.email)) {
+    notFound(); 
   }
 
   return (

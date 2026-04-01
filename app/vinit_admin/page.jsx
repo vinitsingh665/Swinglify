@@ -59,7 +59,7 @@ export default function AdminDashboard() {
       const data = await res.json();
       if (data.success) {
         // Update local state instead of full refetch
-        setFeedback(prev => prev.map(f => f.id === id ? { ...f, status: 'resolved' } : f));
+        setFeedback(prev => prev.map(f => f._id === id ? { ...f, status: 'resolved' } : f));
       }
     } catch (e) {
       console.error('Failed to resolve', e);
@@ -234,7 +234,7 @@ export default function AdminDashboard() {
             </thead>
             <tbody>
               {feedback.slice(0, 4).map(item => (
-                <tr key={item.id}>
+                <tr key={item._id}>
                   <td>
                     <span className={`ad-status ${item.status}`}>
                       {item.status}
@@ -256,7 +256,7 @@ export default function AdminDashboard() {
                   </td>
                   <td style={{ textAlign: 'right' }}>
                     {item.status === 'new' ? (
-                      <button className="ad-action-btn" onClick={() => handleResolve(item.id)}>
+                      <button className="ad-action-btn" onClick={() => handleResolve(item._id)}>
                         Resolve
                       </button>
                     ) : (
