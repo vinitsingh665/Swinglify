@@ -18,7 +18,7 @@ export const metadata = {
     'stock comparison watchlist nse',
     'sector watchlist india free',
   ],
-  alternates: { canonical: '/watchlist' },
+  alternates: { canonical: 'https://swinglify.online/watchlist' },
   openGraph: {
     title: 'Free Stock Watchlist for NSE & BSE — Swinglify',
     description: 'Create and manage your stock watchlist with live prices for Indian markets.',

@@ -44,10 +44,18 @@ export async function DELETE(request, { params }) {
       return NextResponse.json({ error: 'Post not found' }, { status: 404 });
     }
 
-    // Only the author can delete their post
+    // Define admin emails
+    const ADMIN_EMAILS = [
+      "vinitsingh665@gmail.com",
+      "vinits.7kushwaha@gmail.com"
+    ];
+    const isAdmin = ADMIN_EMAILS.includes(session.user.email);
+
+    // Only the author or an admin can delete their post
     // Resolve the MongoDB user ID from the session email
     const dbUser = await (await import('../../../../../models/User')).default.findOne({ email: session.user.email });
-    if (!dbUser || post.author.toString() !== dbUser._id.toString()) {
+    
+    if (!isAdmin && (!dbUser || post.author.toString() !== dbUser._id.toString())) {
       return NextResponse.json({ error: 'You can only delete your own posts' }, { status: 403 });
     }
 

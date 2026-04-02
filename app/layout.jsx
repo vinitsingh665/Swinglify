@@ -47,7 +47,7 @@ export const metadata = {
   publisher: 'Swinglify',
   metadataBase: new URL('https://swinglify.online'),
   alternates: {
-    canonical: '/',
+    canonical: 'https://swinglify.online',
   },
   openGraph: {
     type: 'website',

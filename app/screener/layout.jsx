@@ -19,7 +19,7 @@ export const metadata = {
     'overbought oversold stocks today',
     'best stocks to buy today india screener',
   ],
-  alternates: { canonical: '/screener' },
+  alternates: { canonical: 'https://swinglify.online/screener' },
   openGraph: {
     title: 'Free Stock Screener for NSE & BSE — Filter by RSI, MACD, Volume',
     description: 'Screen Indian stocks with technical indicators. Find oversold, volume breakout, and trending stocks.',

@@ -18,7 +18,7 @@ export const metadata = {
     'nse stock chart live free',
     'indian share market today live update',
   ],
-  alternates: { canonical: '/markets' },
+  alternates: { canonical: 'https://swinglify.online/markets' },
   openGraph: {
     title: 'Live NSE & BSE Stock Prices — Swinglify Markets',
     description: 'Real-time stock prices, volume, buy/sell signals for all NSE & BSE listed stocks.',
