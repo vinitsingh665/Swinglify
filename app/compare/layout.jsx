@@ -13,11 +13,11 @@ export const metadata = {
     'multi stock analyzer nse',
     'share market comparison app',
   ],
-  alternates: { canonical: 'https://swinglify.online/compare' },
+  alternates: { canonical: 'https://www.swinglify.online/compare' },
   openGraph: {
     title: 'Side-by-Side Stock Comparison — Swinglify',
     description: 'Analyze and compare multiple Indian stocks in real-time.',
-    url: 'https://swinglify.online/compare',
+    url: 'https://www.swinglify.online/compare',
   },
 };
 

@@ -6,7 +6,7 @@ export const metadata = {
   openGraph: {
     title: 'Swinglify Help Center & Guides',
     description: 'Learn how to master technical analysis and swing trading with our comprehensive guides.',
-    url: 'https://swinglify.online/info/help',
+    url: 'https://www.swinglify.online/info/help',
   },
 };
 

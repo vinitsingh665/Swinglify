@@ -4,13 +4,23 @@ import Post from '../../../../models/Post';
 import User from '../../../../models/User';
 import { generateMarketWrapUp } from '../../../../lib/ai';
 
-// Optional: Security to ensure only a cron job can trigger this
+// Security: accepts Bearer token (Vercel cron) OR ?secret= query param (external cron services)
 const CRON_SECRET = process.env.CRON_SECRET || 'swinglify_cron_run';
+
+export const maxDuration = 60; // Allow up to 60s for AI generation
 
 export async function GET(req) {
   try {
     const authHeader = req.headers.get('authorization');
-    if (authHeader !== `Bearer ${CRON_SECRET}` && process.env.NODE_ENV === 'production') {
+    const { searchParams } = new URL(req.url);
+    const querySecret = searchParams.get('secret');
+
+    // Auth: accept either Bearer header (Vercel) or ?secret= query param (external cron)
+    const isAuthorized =
+      authHeader === `Bearer ${CRON_SECRET}` ||
+      querySecret === CRON_SECRET;
+
+    if (!isAuthorized && process.env.NODE_ENV === 'production') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -23,6 +33,19 @@ export async function GET(req) {
     
     if (!isTradingDay) {
         return NextResponse.json({ message: 'Market is closed today (Weekend/Holiday). No market wrap-up generated.' }, { status: 200 });
+    }
+
+    // 0b. Duplicate protection: check if a wrap-up was already posted today
+    await dbConnect();
+    const todayStart = new Date();
+    todayStart.setUTCHours(0, 0, 0, 0);
+    const existingPost = await Post.findOne({
+      authorUsername: 'SwinglifyAI',
+      flair: 'News',
+      createdAt: { $gte: todayStart },
+    });
+    if (existingPost) {
+      return NextResponse.json({ message: 'Market wrap-up already posted today.', postId: existingPost._id }, { status: 200 });
     }
 
     // 1. Fetch Today's Market Data directly from TradingView
@@ -74,7 +97,7 @@ export async function GET(req) {
     }
 
     // 3. Save to Database as AI Analyst
-    await dbConnect();
+    // dbConnect() already called above for duplicate check
 
     // Find or create the AI Analyst User
     let aiUser = await User.findOne({ email: 'ai@swinglify.online' });

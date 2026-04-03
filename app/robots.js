@@ -19,6 +19,6 @@ export default function robots() {
         ],
       },
     ],
-    sitemap: 'https://swinglify.online/sitemap.xml',
+    sitemap: 'https://www.swinglify.online/sitemap.xml',
   };
 }
