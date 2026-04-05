@@ -8,8 +8,8 @@ const CHART_CACHE_TTL = 20 * 1000; // 20 seconds
 const INDEX_TICKERS = {
   'nifty50':     '^NSEI',
   'banknifty':   '^NSEBANK',
-  'midcap100':   '^CNXMID',
-  'smallcap100': '^CNXSC',
+  'midcap100':   '^CRSMID',
+  'smallcap100': 'HDFCSML250.NS', // Proxy ETF for Smallcap because ^CNXSC lacks history on Yahoo
   'sensex':      '^BSESN',
 };
 
