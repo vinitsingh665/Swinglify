@@ -14,7 +14,8 @@ const DEFAULT_STOCKS = ['RELIANCE', 'TCS', 'HDFCBANK'];
 
 export default function ComparePage() {
   const [theme, setThemeState] = useState('dark');
-  const [symbols, setSymbols] = useState(DEFAULT_STOCKS);
+  const [symbols, setSymbols] = useState([]);
+  const [initialLoaded, setInitialLoaded] = useState(false);
   const [data, setData] = useState({});
   const [loading, setLoading] = useState(true);
 
@@ -26,26 +27,33 @@ export default function ComparePage() {
 
   // Symbol persistence
   useEffect(() => {
+    let currentSymbols = DEFAULT_STOCKS;
     // 1. Try local storage first
     const savedSymbols = localStorage.getItem('compare_symbols');
     if (savedSymbols) {
       try {
         const parsed = JSON.parse(savedSymbols);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          setSymbols(parsed);
+          currentSymbols = parsed;
         }
       } catch (e) {
         console.error('Failed to parse compare_symbols', e);
       }
     }
 
+    setSymbols(currentSymbols);
+    setInitialLoaded(true);
+
     // 2. Try fetching from user's synced data
     fetch('/api/user/sync')
       .then(res => res.json())
       .then(json => {
         if (json.success && json.data?.compareSymbols?.length > 0) {
-          setSymbols(json.data.compareSymbols);
-          localStorage.setItem('compare_symbols', JSON.stringify(json.data.compareSymbols));
+          const synced = json.data.compareSymbols;
+          if (JSON.stringify(synced) !== JSON.stringify(currentSymbols)) {
+            setSymbols(synced);
+            localStorage.setItem('compare_symbols', JSON.stringify(synced));
+          }
         }
       })
       .catch(err => {
@@ -72,6 +80,7 @@ export default function ComparePage() {
 
   // Fetch data for selected symbols
   const fetchData = useCallback(async () => {
+    if (!initialLoaded) return;
     if (symbols.length === 0) { setData({}); setLoading(false); return; }
     setLoading(true);
     try {
@@ -94,7 +103,7 @@ export default function ComparePage() {
     } finally {
       setLoading(false);
     }
-  }, [symbols]);
+  }, [symbols, initialLoaded]);
 
   useEffect(() => { fetchData(); }, [fetchData]);
 
