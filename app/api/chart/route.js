@@ -8,8 +8,8 @@ const CHART_CACHE_TTL = 20 * 1000; // 20 seconds
 const INDEX_TICKERS = {
   'nifty50':     '^NSEI',
   'banknifty':   '^NSEBANK',
-  'midcap100':   'NIFTYMID100.NS',
-  'smallcap100': 'NIFTYSML100.NS',
+  'midcap100':   '^CNXMID',
+  'smallcap100': '^CNXSC',
   'sensex':      '^BSESN',
 };
 

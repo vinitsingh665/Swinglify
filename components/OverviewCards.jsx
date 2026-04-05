@@ -72,9 +72,12 @@ function BalanceCard({ theme, categoryName, nifty, activePeriod, setActivePeriod
       const data = await res.json();
       if (data.success) {
         setChartData(data);
+      } else {
+        setChartData(null); // Clear chart to prevent sticky data
       }
     } catch (e) {
       console.warn('Chart fetch failed:', e);
+      setChartData(null);
     } finally {
       setChartLoading(false);
     }
