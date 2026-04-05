@@ -1,14 +1,16 @@
 "use client";
 import { useState, useEffect } from 'react';
 
-function MetricBar({ label, value, displayValue, min = 0, max = 100, invertColor = false }) {
+function MetricBar({ label, value, displayValue, min = 0, max = 100, invertColor = false, explicitCls }) {
   const pct = Math.min(100, Math.max(0, ((value - min) / (max - min)) * 100));
   let cls = 'neutral';
-  if (!invertColor) {
+  
+  if (explicitCls) {
+    cls = explicitCls;
+  } else if (!invertColor) {
     if (pct >= 60) cls = 'bullish';
     else if (pct <= 40) cls = 'bearish';
   } else {
-    // For RSI: <30 = bullish (oversold = buy opportunity), >70 = bearish
     if (value < 30) cls = 'bullish';
     else if (value > 70) cls = 'bearish';
   }
@@ -43,7 +45,48 @@ export default function QuickInsights({ stock }) {
 
   const s = stock;
   const volRatio = s.avgVolume10d ? ((s.volume / s.avgVolume10d) * 100).toFixed(0) : null;
-  const emaAbove = s.ema50 ? (s.price > s.ema50 ? 'Above' : 'Below') : null;
+  
+  // Context-aware variables
+  const isUptrend = s.price > (s.sma200 || s.sma50 || s.ema20 || s.price);
+  const isBullTrend = s.price > (s.sma50 || s.ema20 || s.price);
+  
+  // RSI Logic
+  let rsiCls = 'neutral', rsiDisplay = 'Neutral';
+  if (s.rsi != null) {
+      if (s.rsi < 30) {
+          rsiCls = isUptrend ? 'bullish' : 'neutral';
+          rsiDisplay = isUptrend ? 'Dip Buying' : 'Oversold (Downtrend)';
+      } else if (s.rsi > 70) {
+          rsiCls = isUptrend ? 'neutral' : 'bearish';
+          rsiDisplay = isUptrend ? 'Riding Trend' : 'Overbought (Downtrend)';
+      } else if (s.rsi < 45) {
+          rsiCls = 'bearish'; rsiDisplay = 'Bearish Mo';
+      } else if (s.rsi > 55) {
+          rsiCls = 'bullish'; rsiDisplay = 'Bullish Mo';
+      }
+  }
+
+  // ADX Logic
+  let adxCls = 'neutral', adxDisplay = 'Sideways';
+  if (s.adx != null) {
+      if (s.adx > 35) {
+          adxCls = isBullTrend ? 'bullish' : 'bearish';
+          adxDisplay = `Strong ${isBullTrend ? 'Uptrend' : 'Downtrend'}`;
+      } else if (s.adx > 25) {
+          adxCls = isBullTrend ? 'bullish' : 'bearish';
+          adxDisplay = `${isBullTrend ? 'Uptrending' : 'Downtrending'}`;
+      }
+  }
+
+  // EMA Logic
+  let emaLabel = 'Pending', emaCls = 'neutral', emaValue = 50;
+  if (s.ema50 && s.price) {
+      const diff50 = ((s.price - s.ema50) / s.ema50) * 100;
+      if (diff50 > 8) { emaCls = 'neutral'; emaLabel = 'Overextended Top'; emaValue = 90; } // Caution
+      else if (diff50 > 0) { emaCls = 'bullish'; emaLabel = 'Riding Above EMA50'; emaValue = 75; }
+      else if (diff50 > -5) { emaCls = 'neutral'; emaLabel = 'Testing Support'; emaValue = 35; }
+      else { emaCls = 'bearish'; emaLabel = 'Below EMA50'; emaValue = 15; }
+  }
 
   // Overall verdict
   const score = s.indicatorScore?.score || 50;
@@ -71,8 +114,8 @@ export default function QuickInsights({ stock }) {
           <MetricBar
             label="RSI"
             value={s.rsi}
-            displayValue={`${s.rsi.toFixed(1)} → ${s.rsi < 30 ? 'Oversold' : s.rsi > 70 ? 'Overbought' : 'Neutral'}`}
-            invertColor
+            displayValue={`${s.rsi.toFixed(1)} → ${rsiDisplay}`}
+            explicitCls={rsiCls}
           />
         )}
 
@@ -90,11 +133,12 @@ export default function QuickInsights({ stock }) {
         <div className="qi-divider" />
 
         {/* EMA position */}
-        {emaAbove && (
+        {s.ema50 && (
           <MetricBar
             label="Price vs 50 EMA"
-            value={s.price > s.ema50 ? 75 : 25}
-            displayValue={emaAbove}
+            value={emaValue}
+            displayValue={emaLabel}
+            explicitCls={emaCls}
           />
         )}
 
@@ -112,7 +156,8 @@ export default function QuickInsights({ stock }) {
           <MetricBar
             label="ADX (Trend Strength)"
             value={s.adx}
-            displayValue={`${s.adx.toFixed(1)} → ${s.adx > 25 ? 'Strong' : 'Weak'}`}
+            displayValue={`${s.adx.toFixed(1)} → ${adxDisplay}`}
+            explicitCls={adxCls}
           />
         )}
 
