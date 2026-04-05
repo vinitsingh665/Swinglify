@@ -103,16 +103,22 @@ function IndicatorSignals({ s }) {
 
   if (s.rsi != null) {
     let signal, desc, strength;
+    const isUptrend = s.price > (s.sma200 || s.sma50 || s.ema20 || s.price);
+    
     if (s.rsi < 30) {
-      signal = 'BUY'; desc = `RSI ${s.rsi.toFixed(1)} — Oversold`; strength = ((30 - s.rsi) / 30 * 100);
+      signal = isUptrend ? 'STRONG BUY' : 'NEUTRAL'; 
+      desc = isUptrend ? `RSI ${s.rsi.toFixed(1)} — Dip in Uptrend` : `RSI ${s.rsi.toFixed(1)} — Oversold in Downtrend`; 
+      strength = isUptrend ? 90 : 30;
     } else if (s.rsi > 70) {
-      signal = 'SELL'; desc = `RSI ${s.rsi.toFixed(1)} — Overbought`; strength = ((s.rsi - 70) / 30 * 100);
+      signal = isUptrend ? 'HOLD' : 'SELL'; 
+      desc = isUptrend ? `RSI ${s.rsi.toFixed(1)} — Overbought (Strong Trend)` : `RSI ${s.rsi.toFixed(1)} — Overbought (Downtrend)`; 
+      strength = isUptrend ? 60 : 90;
     } else if (s.rsi < 45) {
-      signal = 'WEAK SELL'; desc = `RSI ${s.rsi.toFixed(1)} — Bearish momentum`; strength = ((45 - s.rsi) / 15 * 60);
+      signal = 'WEAK SELL'; desc = `RSI ${s.rsi.toFixed(1)} — Bearish momentum`; strength = 40;
     } else if (s.rsi > 55) {
-      signal = 'WEAK BUY'; desc = `RSI ${s.rsi.toFixed(1)} — Bullish momentum`; strength = ((s.rsi - 55) / 15 * 60);
+      signal = 'WEAK BUY'; desc = `RSI ${s.rsi.toFixed(1)} — Bullish momentum`; strength = 60;
     } else {
-      signal = 'NEUTRAL'; desc = `RSI ${s.rsi.toFixed(1)} — No signal`; strength = 30;
+      signal = 'NEUTRAL'; desc = `RSI ${s.rsi.toFixed(1)} — No clear signal`; strength = 10;
     }
     indicators.push({ name: 'RSI (14)', signal, desc, strength });
   }
@@ -120,30 +126,33 @@ function IndicatorSignals({ s }) {
   if (s.ema20 != null && s.price != null) {
     const diff = ((s.price - s.ema20) / s.ema20 * 100);
     let signal, desc, strength;
-    if (diff > 3) {
-      signal = 'BUY'; desc = `${diff.toFixed(1)}% above EMA20`; strength = Math.min(diff * 10, 100);
-    } else if (diff < -3) {
-      signal = 'SELL'; desc = `${Math.abs(diff).toFixed(1)}% below EMA20`; strength = Math.min(Math.abs(diff) * 10, 100);
-    } else if (diff > 0) {
-      signal = 'WEAK BUY'; desc = `Slightly above EMA20`; strength = diff * 15;
+    if (diff > 5) {
+      signal = 'CAUTION'; desc = `Overextended ${diff.toFixed(1)}% above EMA20`; strength = 80;
+    } else if (diff > 1) {
+      signal = 'HOLD'; desc = `Riding above EMA20`; strength = 60;
+    } else if (diff > -1) {
+      signal = 'WEAK BUY'; desc = `Testing EMA20 support`; strength = 40;
+    } else if (diff < -5) {
+      signal = 'STRONG BUY'; desc = `Oversold ${Math.abs(diff).toFixed(1)}% below EMA20`; strength = 85;
     } else {
-      signal = 'WEAK SELL'; desc = `Slightly below EMA20`; strength = Math.abs(diff) * 15;
+      signal = 'SELL'; desc = `Trending below EMA20`; strength = 70;
     }
     indicators.push({ name: 'EMA 20', signal, desc, strength });
   }
 
   if (s.adx != null) {
     let signal, desc, strength;
-    const trend = s.change >= 0 ? 'Bullish' : 'Bearish';
-    const trendSignal = s.change >= 0 ? 'BUY' : 'SELL';
-    if (s.adx > 40) {
-      signal = trendSignal; desc = `ADX ${s.adx.toFixed(1)} — Strong ${trend.toLowerCase()} trend`; strength = Math.min(s.adx * 1.5, 100);
+    // Context-aware trend (fallback to Daily Change if no SMAs exist to be safe, but ideally uses SMAs)
+    const isBullTrend = s.price > (s.sma50 || s.ema20 || s.price);
+    const trendName = isBullTrend ? 'Bullish' : 'Bearish';
+    const trendSignal = isBullTrend ? 'BUY' : 'SELL';
+    
+    if (s.adx > 35) {
+      signal = trendSignal; desc = `ADX ${s.adx.toFixed(1)} — Strong ${trendName}`; strength = Math.min(s.adx * 1.5, 100);
     } else if (s.adx > 25) {
-      signal = trendSignal; desc = `ADX ${s.adx.toFixed(1)} — ${trend} confirmed`; strength = s.adx * 2;
-    } else if (s.adx > 15) {
-      signal = 'NEUTRAL'; desc = `ADX ${s.adx.toFixed(1)} — Weak trend`; strength = s.adx;
+      signal = isBullTrend ? 'WEAK BUY' : 'WEAK SELL'; desc = `ADX ${s.adx.toFixed(1)} — ${trendName} Trend`; strength = s.adx * 2;
     } else {
-      signal = 'NEUTRAL'; desc = `ADX ${s.adx.toFixed(1)} — Sideways`; strength = 10;
+      signal = 'NEUTRAL'; desc = `ADX ${s.adx.toFixed(1)} — Sideways/No Trend`; strength = 10;
     }
     indicators.push({ name: 'ADX', signal, desc, strength });
   }
@@ -151,10 +160,13 @@ function IndicatorSignals({ s }) {
   if (indicators.length === 0) return null;
 
   const getColor = (sig) => {
+    if (sig === 'STRONG BUY') return { bg: 'var(--green-bg)', border: 'var(--green-border)', text: 'var(--green)', bar: 'var(--green)' };
     if (sig === 'BUY') return { bg: 'var(--green-bg)', border: 'var(--green-border)', text: 'var(--green)', bar: 'var(--green)' };
     if (sig === 'SELL') return { bg: 'var(--red-bg)', border: 'var(--red-border)', text: 'var(--red)', bar: 'var(--red)' };
     if (sig === 'WEAK BUY') return { bg: 'rgba(34,197,94,0.05)', border: 'rgba(34,197,94,0.12)', text: 'var(--green-bright)', bar: 'var(--green-bright)' };
     if (sig === 'WEAK SELL') return { bg: 'rgba(239,68,68,0.05)', border: 'rgba(239,68,68,0.12)', text: 'var(--red-bright)', bar: 'var(--red-bright)' };
+    if (sig === 'CAUTION') return { bg: 'rgba(234, 179, 8, 0.1)', border: 'rgba(234, 179, 8, 0.3)', text: 'var(--yellow)', bar: 'var(--yellow)' };
+    if (sig === 'HOLD') return { bg: 'rgba(255,255,255,0.05)', border: 'rgba(255,255,255,0.1)', text: 'var(--text-secondary)', bar: 'var(--text-secondary)' };
     return { bg: 'rgba(255,255,255,0.02)', border: 'var(--border-subtle)', text: 'var(--text-muted)', bar: 'var(--text-dim)' };
   };
 
