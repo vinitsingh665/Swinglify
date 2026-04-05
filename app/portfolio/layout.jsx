@@ -18,11 +18,11 @@ export const metadata = {
     'stock cagr calculator india',
     'multi stock portfolio manager free',
   ],
-  alternates: { canonical: 'https://www.swinglify.online/portfolio' },
+  alternates: { canonical: 'https://swinglify.online/portfolio' },
   openGraph: {
     title: 'Free Stock Portfolio Tracker for Indian Markets — Swinglify',
     description: 'Track your NSE & BSE holdings, monitor P&L, and view allocation charts.',
-    url: 'https://www.swinglify.online/portfolio',
+    url: 'https://swinglify.online/portfolio',
   },
 };
 

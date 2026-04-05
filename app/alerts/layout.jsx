@@ -13,11 +13,11 @@ export const metadata = {
     'best stock alert app india',
     'mobile stock notifications india',
   ],
-  alternates: { canonical: 'https://www.swinglify.online/alerts' },
+  alternates: { canonical: 'https://swinglify.online/alerts' },
   openGraph: {
-    title: 'Real-Time Stock Price Alerts — Swinglify',
-    description: 'Never miss a trade. Set price and indicator alerts for Indian stocks.',
-    url: 'https://www.swinglify.online/alerts',
+    title: 'Stock Price Alerts — Free NSE & BSE Alerts | Swinglify',
+    description: 'Set custom price alerts for Indian stocks and receive email notifications when targets hit.',
+    url: 'https://swinglify.online/alerts',
   },
 };
 

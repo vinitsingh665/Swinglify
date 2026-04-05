@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <a href="https://www.swinglify.online">🌐 Live App</a> &nbsp;·&nbsp;
+  <a href="https://swinglify.online">🌐 Live App</a> &nbsp;·&nbsp;
   <a href="#-key-features">✨ Features</a> &nbsp;·&nbsp;
   <a href="#-getting-started">🚀 Get Started</a> &nbsp;·&nbsp;
   <a href="#-technology-stack">🛠 Tech Stack</a>
