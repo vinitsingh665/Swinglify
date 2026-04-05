@@ -24,6 +24,43 @@ export default function ComparePage() {
     if (saved) setThemeState(saved);
   }, []);
 
+  // Symbol persistence
+  useEffect(() => {
+    // 1. Try local storage first
+    const savedSymbols = localStorage.getItem('compare_symbols');
+    if (savedSymbols) {
+      try {
+        const parsed = JSON.parse(savedSymbols);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setSymbols(parsed);
+        }
+      } catch (e) {
+        console.error('Failed to parse compare_symbols', e);
+      }
+    }
+
+    // 2. Try fetching from user's synced data
+    fetch('/api/user/sync')
+      .then(res => res.json())
+      .then(json => {
+        if (json.success && json.data?.compareSymbols?.length > 0) {
+          setSymbols(json.data.compareSymbols);
+          localStorage.setItem('compare_symbols', JSON.stringify(json.data.compareSymbols));
+        }
+      })
+      .catch(err => {
+        // Likely unauthenticated or offline
+      });
+  }, []);
+
+  const syncSymbolsToBackend = (newSymbols) => {
+    fetch('/api/user/sync', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ compareSymbols: newSymbols })
+    }).catch(e => {});
+  };
+
   const setTheme = (newTheme) => {
     setThemeState(newTheme);
     localStorage.setItem('theme', newTheme);
@@ -63,12 +100,22 @@ export default function ComparePage() {
 
   const handleAdd = (sym) => {
     if (!symbols.includes(sym) && symbols.length < 4) {
-      setSymbols(prev => [...prev, sym]);
+      setSymbols(prev => {
+        const newSymbols = [...prev, sym];
+        localStorage.setItem('compare_symbols', JSON.stringify(newSymbols));
+        syncSymbolsToBackend(newSymbols);
+        return newSymbols;
+      });
     }
   };
 
   const handleRemove = (sym) => {
-    setSymbols(prev => prev.filter(s => s !== sym));
+    setSymbols(prev => {
+      const newSymbols = prev.filter(s => s !== sym);
+      localStorage.setItem('compare_symbols', JSON.stringify(newSymbols));
+      syncSymbolsToBackend(newSymbols);
+      return newSymbols;
+    });
   };
 
   return (

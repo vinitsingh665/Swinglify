@@ -13,7 +13,7 @@ export async function GET(request) {
     }
 
     await dbConnect();
-    const dbUser = await User.findOne({ email: session.user.email }).select('watchlist portfolio').lean();
+    const dbUser = await User.findOne({ email: session.user.email }).select('watchlist portfolio compareSymbols').lean();
     
     if (!dbUser) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
@@ -23,7 +23,8 @@ export async function GET(request) {
       success: true,
       data: {
         watchlist: dbUser.watchlist || [],
-        portfolio: dbUser.portfolio || []
+        portfolio: dbUser.portfolio || [],
+        compareSymbols: dbUser.compareSymbols || []
       }
     });
   } catch (error) {
@@ -51,6 +52,9 @@ export async function POST(request) {
     if (body.portfolio !== undefined) {
       updateData.portfolio = body.portfolio;
     }
+    if (body.compareSymbols !== undefined) {
+      updateData.compareSymbols = body.compareSymbols;
+    }
 
     // Only update if there's actually data to update
     if (Object.keys(updateData).length === 0) {
@@ -67,7 +71,8 @@ export async function POST(request) {
       success: true, 
       data: {
         watchlist: updatedUser?.watchlist || [],
-        portfolio: updatedUser?.portfolio || []
+        portfolio: updatedUser?.portfolio || [],
+        compareSymbols: updatedUser?.compareSymbols || []
       }
     });
   } catch (error) {

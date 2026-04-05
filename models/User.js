@@ -46,6 +46,10 @@ const UserSchema = new mongoose.Schema({
     type: Array, // Flexible array of holding objects
     default: []
   },
+  compareSymbols: {
+    type: [String],
+    default: []
+  },
   createdAt: {
     type: Date,
     default: Date.now
