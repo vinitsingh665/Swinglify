@@ -9,6 +9,11 @@ const CRON_SECRET = process.env.CRON_SECRET || 'swinglify_cron_run';
 
 export const maxDuration = 60; // Allow up to 60s for AI generation
 
+function round2(value) {
+  if (value === null || value === undefined) return null;
+  return Math.round(value * 100) / 100;
+}
+
 export async function GET(req) {
   try {
     const authHeader = req.headers.get('authorization');
@@ -51,7 +56,7 @@ export async function GET(req) {
     // 1. Fetch Today's Market Data directly from TradingView
     const indicesBody = {
       symbols: { tickers: ['NSE:NIFTY', 'NSE:BANKNIFTY', 'BSE:SENSEX', 'NSE:NIFTY_MID_SELECT', 'NSE:INDIA_VIX'], query: { types: [] } },
-      columns: ['name', 'change']
+      columns: ['name', 'description', 'close', 'change', 'change_abs']
     };
 
     const indicesRes = await fetch('https://scanner.tradingview.com/india/scan', {
@@ -59,17 +64,53 @@ export async function GET(req) {
       headers: { 'Content-Type': 'application/json', 'User-Agent': 'Mozilla/5.0' },
       body: JSON.stringify(indicesBody)
     });
-    
+
     const indicesData = await indicesRes.json();
     if (!indicesData || !indicesData.data) {
       return NextResponse.json({ error: 'Failed to fetch indices from TV' }, { status: 500 });
     }
 
     // Map indices Data
-    const mappedIndices = indicesData.data.map(item => ({ symbol: item.d[0], change: item.d[1] ? Math.round(item.d[1]*100)/100 : 0 }));
-    const nifty = mappedIndices.find(i => i.symbol === 'NSE:NIFTY') || { change: 0 };
-    const bankNifty = mappedIndices.find(i => i.symbol === 'NSE:BANKNIFTY') || { change: 0 };
-    const vix = mappedIndices.find(i => i.symbol === 'NSE:INDIA_VIX') || { change: 0 };
+    const mappedIndices = indicesData.data.map(item => {
+      const d = item.d || [];
+      return {
+        symbol: d[0],
+        name: d[1] || d[0],
+        value: round2(d[2]),
+        change: round2(d[3]),
+        changeAbs: round2(d[4])
+      };
+    });
+    const nifty = mappedIndices.find(i => i.symbol === 'NIFTY') || { change: 0 };
+    const bankNifty = mappedIndices.find(i => i.symbol === 'BANKNIFTY') || { change: 0 };
+    const vix = mappedIndices.find(i => i.symbol === 'INDIA_VIX') || { change: 0 };
+
+    // 1a. Fetch broad market breadth so the AI gets actual A/D data, not proxy text
+    const breadthBody = {
+      filter: [
+        { left: 'is_primary', operation: 'equal', right: true },
+        { left: 'exchange', operation: 'equal', right: 'NSE' },
+        { left: 'market_cap_basic', operation: 'greater', right: 5000000000 }
+      ],
+      symbols: { query: { types: ['stock'] } },
+      columns: ['change'],
+      sort: { sortBy: 'market_cap_basic', sortOrder: 'desc' },
+      range: [0, 500]
+    };
+    const breadthRes = await fetch('https://scanner.tradingview.com/india/scan', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'User-Agent': 'Mozilla/5.0' },
+      body: JSON.stringify(breadthBody)
+    });
+    const breadthData = await breadthRes.json();
+    const breadthChanges = (breadthData.data || [])
+      .map(item => item?.d?.[0])
+      .filter(change => change !== null && change !== undefined);
+    const advancing = breadthChanges.filter(change => change > 0).length;
+    const declining = breadthChanges.filter(change => change < 0).length;
+    const unchanged = breadthChanges.length - advancing - declining;
+    const advDecRatio = declining > 0 ? round2(advancing / declining) : advancing;
+    const breadthSummary = `${advancing} advancing / ${declining} declining / ${unchanged} unchanged (A/D Ratio: ${advDecRatio})`;
 
     // 1b. Fetch Top Volume Movers (so the AI can talk about individual stocks)
     const tvBody = {
@@ -86,11 +127,11 @@ export async function GET(req) {
     const tvData = await tvRes.json();
     const topMoversText = (tvData.data || []).filter(item => item.d && item.d.length >= 4).map(item => {
       const sym = item.s?.replace('NSE:', '') || '';
-      return `${sym}: ${Math.round(item.d[1] * 100) / 100}%, RSI ${Math.round(item.d[3] * 10) / 10}`;
+      return `${sym}: ${round2(item.d[1])}%, RSI ${Math.round((item.d[3] || 0) * 10) / 10}`;
     }).join('\n');
 
     // 2. Generate AI Wrap-up
-    const article = await generateMarketWrapUp(nifty.change, bankNifty.change, `VIX Change: ${vix.change}%`, topMoversText);
+    const article = await generateMarketWrapUp(nifty.change ?? 0, bankNifty.change ?? 0, breadthSummary, topMoversText);
 
     if (!article) {
       return NextResponse.json({ error: 'AI generation failed' }, { status: 500 });
