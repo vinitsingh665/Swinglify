@@ -13,11 +13,11 @@ export const metadata = {
     'stock trade ideas india',
     'traders forum india',
   ],
-  alternates: { canonical: 'https://www.swinglify.online/community' },
+  alternates: { canonical: 'https://swinglify.online/community' },
   openGraph: {
     title: 'Swinglify Community — Stocks, Analysis & Insights',
     description: 'Discuss Indian stocks and share trading insights with the community.',
-    url: 'https://www.swinglify.online/community',
+    url: 'https://swinglify.online/community',
   },
 };
 

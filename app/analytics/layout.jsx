@@ -13,11 +13,11 @@ export const metadata = {
     'share market analysis platform india',
     'financial data visualization stocks',
   ],
-  alternates: { canonical: 'https://www.swinglify.online/analytics' },
+  alternates: { canonical: 'https://swinglify.online/analytics' },
   openGraph: {
     title: 'Advanced Stock Analytics — Swinglify',
     description: 'Master technical analysis with our advanced stock analytics for Indian markets.',
-    url: 'https://www.swinglify.online/analytics',
+    url: 'https://swinglify.online/analytics',
   },
 };
 
