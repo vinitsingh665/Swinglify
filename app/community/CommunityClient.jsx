@@ -671,10 +671,9 @@ export default function CommunityClient({
               </div>
             ) : (
               posts.map(post => (
-                <div key={post._id} className={`insight-card sentiment-border-${(post.sentiment || 'neutral').toLowerCase()}`} style={{ cursor: 'pointer' }} onClick={(e) => {
+                <Link key={post._id} href={`/community/${post._id}`} className={`insight-card sentiment-border-${(post.sentiment || 'neutral').toLowerCase()}`} onClick={(e) => {
                   // Don't navigate if clicking on a button or inside .insight-actions
-                  if (e.target.closest('button') || e.target.closest('.insight-actions') || e.target.closest('.insight-vote-group')) return;
-                  window.location.href = `/community/${post._id}`;
+                  if (e.target.closest('button') || e.target.closest('.insight-actions') || e.target.closest('.insight-vote-group')) e.preventDefault();
                 }}>
                     {/* Card Header */}
                     <div className="insight-card-header">
@@ -759,7 +758,7 @@ export default function CommunityClient({
                         )}
                       </div>
                     </div>
-                  </div>
+                  </Link>
               ))
             )}
           </div>

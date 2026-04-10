@@ -1,4 +1,6 @@
 import { fetchFromTradingView } from '../lib/api-core';
+import dbConnect from '../lib/mongodb';
+import Post from '../models/Post';
 
 export default async function sitemap() {
   const baseUrl = 'https://swinglify.online';
@@ -69,7 +71,25 @@ export default async function sitemap() {
     // Sitemap will still work with static pages only
   }
 
-  console.log(`Sitemap generated: ${staticPages.length} static + ${stockPages.length} stock pages`);
+  // ─── Dynamic community post pages ──────────────────────────────────────────
+  let communityPages = [];
+  try {
+    await dbConnect();
+    const posts = await Post.find({}, { _id: 1, createdAt: 1 })
+      .sort({ createdAt: -1 })
+      .limit(200)
+      .lean();
+    communityPages = posts.map(post => ({
+      url: `${baseUrl}/community/${post._id}`,
+      lastModified: post.createdAt ? new Date(post.createdAt) : new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.6,
+    }));
+  } catch (e) {
+    console.error('Sitemap: Failed to fetch community posts:', e);
+  }
 
-  return [...staticPages, ...stockPages];
+  console.log(`Sitemap generated: ${staticPages.length} static + ${stockPages.length} stock + ${communityPages.length} community pages`);
+
+  return [...staticPages, ...stockPages, ...communityPages];
 }

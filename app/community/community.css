@@ -811,6 +811,10 @@
   cursor: pointer;
   transition: all 0.2s;
   border-left: 3px solid transparent;
+  /* Reset anchor styles so Link wrapper doesn't break card look */
+  display: block;
+  text-decoration: none;
+  color: inherit;
 }
 
 .insight-card:hover {

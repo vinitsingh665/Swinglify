@@ -3,8 +3,8 @@ import Post from '../../models/Post';
 import Signal from '../../models/Signal';
 import CommunityClient from './CommunityClient';
 
-// Force dynamic so data is always fresh on each request
-export const dynamic = 'force-dynamic';
+// ISR: revalidate every 60 seconds — fast for bots, fresh enough for users
+export const revalidate = 60;
 
 export default async function CommunityPage() {
   let initialPosts = [];
@@ -208,13 +208,50 @@ export default async function CommunityPage() {
     console.error('[Community SSR] Error fetching data:', error);
   }
 
+  // ─── Build JSON-LD structured data ───
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'DiscussionForumPosting',
+    name: 'Swinglify Community — Stock Market Discussion Forum',
+    url: 'https://swinglify.online/community',
+    description: 'Join the Swinglify community to discuss Indian stocks, share technical analysis, and get trading insights from experienced swing traders.',
+    about: {
+      '@type': 'Thing',
+      name: 'Indian Stock Market Trading',
+    },
+    author: {
+      '@type': 'Organization',
+      name: 'Swinglify',
+      url: 'https://swinglify.online',
+    },
+    ...(initialPosts.length > 0 && {
+      comment: initialPosts.slice(0, 10).map((post) => ({
+        '@type': 'Comment',
+        text: post.title || '',
+        author: {
+          '@type': 'Person',
+          name: post.authorUsername || post.authorName || 'Anonymous',
+        },
+        dateCreated: post.createdAt,
+        url: `https://swinglify.online/community/${post._id}`,
+      })),
+    }),
+  };
+
   return (
-    <CommunityClient
-      initialPosts={initialPosts}
-      initialTrending={initialTrending}
-      initialSignals={initialSignals}
-      initialSentiment={initialSentiment}
-      initialAnalysts={initialAnalysts}
-    />
+    <>
+      {/* JSON-LD Structured Data for SEO */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <CommunityClient
+        initialPosts={initialPosts}
+        initialTrending={initialTrending}
+        initialSignals={initialSignals}
+        initialSentiment={initialSentiment}
+        initialAnalysts={initialAnalysts}
+      />
+    </>
   );
 }
