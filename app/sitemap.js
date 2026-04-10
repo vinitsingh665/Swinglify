@@ -1,7 +1,10 @@
-export default function sitemap() {
+import { fetchFromTradingView } from '../lib/api-core';
+
+export default async function sitemap() {
   const baseUrl = 'https://swinglify.online';
 
-  return [
+  // ─── Static pages ────────────────────────────────────────────────────────────
+  const staticPages = [
     { url: baseUrl, lastModified: new Date(), changeFrequency: 'daily', priority: 1.0 },
     { url: `${baseUrl}/dashboard`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.95 },
     { url: `${baseUrl}/markets`, lastModified: new Date(), changeFrequency: 'hourly', priority: 0.9 },
@@ -19,4 +22,54 @@ export default function sitemap() {
     { url: `${baseUrl}/info/privacy`, lastModified: new Date(), changeFrequency: 'yearly', priority: 0.3 },
     { url: `${baseUrl}/info/changelog`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.4 },
   ];
+
+  // ─── Dynamic stock pages ─────────────────────────────────────────────────────
+  let stockPages = [];
+  try {
+    // Fetch all NSE & BSE primary stocks
+    const body = {
+      filter: [
+        { left: 'is_primary', operation: 'equal', right: true },
+      ],
+      symbols: { query: { types: ['stock'] } },
+      columns: ['name', 'market_cap_basic'],
+      sort: { sortBy: 'market_cap_basic', sortOrder: 'desc' },
+      range: [0, 3000],
+    };
+
+    const tvData = await fetchFromTradingView(body);
+
+    if (tvData?.data) {
+      stockPages = tvData.data
+        .filter(item => {
+          const sym = item.d[0];
+          // Skip symbols with special chars that break XML (M&M, L&T, etc.)
+          return sym && /^[A-Z0-9_-]+$/i.test(sym);
+        })
+        .map(item => {
+          const symbol = item.d[0];
+          const marketCap = item.d[1] || 0;
+
+          // Higher priority for large-cap stocks (more searched)
+          let priority = 0.5;
+          if (marketCap >= 500000000000) priority = 0.8;       // Large cap (₹50K Cr+)
+          else if (marketCap >= 100000000000) priority = 0.7;   // Mid cap (₹10K Cr+)
+          else if (marketCap >= 10000000000) priority = 0.6;    // Small cap (₹1K Cr+)
+
+          return {
+            url: `${baseUrl}/stock/${encodeURIComponent(symbol)}`,
+            lastModified: new Date(),
+            changeFrequency: 'daily',
+            priority,
+          };
+        });
+    }
+  } catch (e) {
+    console.error('Sitemap: Failed to fetch stock symbols:', e);
+    // Sitemap will still work with static pages only
+  }
+
+  console.log(`Sitemap generated: ${staticPages.length} static + ${stockPages.length} stock pages`);
+
+  return [...staticPages, ...stockPages];
 }

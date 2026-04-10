@@ -2,9 +2,17 @@
 
 function renderMarkdown(text) {
   if (!text) return '';
-  return text
-    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*(.+?)\*/g, '<em>$1</em>');
+  let html = text.replace(/^([^\n]+)\n={3,}\s*$/gm, '<h3 style="margin-top:1em; margin-bottom:0.5em;">$1</h3>');
+  html = html.replace(/^([^\n]+)\n-{3,}\s*$/gm, '<h4 style="margin-top:1em; margin-bottom:0.5em;">$1</h4>');
+  html = html.replace(/^#### (.*$)/gim, '<h4 style="margin-top:1em; margin-bottom:0.5em;">$1</h4>');
+  html = html.replace(/^### (.*$)/gim, '<h3 style="margin-top:1em; margin-bottom:0.5em;">$1</h3>');
+  html = html.replace(/^## (.*$)/gim, '<h2 style="margin-top:1em; margin-bottom:0.5em;">$1</h2>');
+  html = html.replace(/^# (.*$)/gim, '<h1 style="margin-top:1em; margin-bottom:0.5em;">$1</h1>');
+  html = html.replace(/\*\*(.*?\S)\*\*/g, '<strong>$1</strong>');
+  html = html.replace(/\*([^\*\n]+)\*/g, '<em>$1</em>');
+  html = html.replace(/(<\/[hH][1-6]>)\n/g, '$1');
+  html = html.replace(/\n/g, '<br />');
+  return html;
 }
 
 import { useState, useEffect, useRef, useCallback } from 'react';
@@ -498,10 +506,10 @@ export default function CommunityPage() {
                 {/* Row 1: Stock + Sentiment */}
                 <div className="insight-form-row">
                   <div className="insight-form-field flex-2">
-                    <label>Stock Name *</label>
+                    <label>Title / Ticker *</label>
                     <input
                       type="text"
-                      placeholder="e.g. RELIANCE"
+                      placeholder="e.g. RELIANCE or IT Sector Outlook"
                       value={formData.stockName}
                       onChange={e => setFormData(p => ({ ...p, stockName: e.target.value.toUpperCase() }))}
                       className="insight-stock-input"

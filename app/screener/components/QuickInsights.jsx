@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 
 function MetricBar({ label, value, displayValue, min = 0, max = 100, invertColor = false, explicitCls }) {
   const pct = Math.min(100, Math.max(0, ((value - min) / (max - min)) * 100));
@@ -103,6 +104,20 @@ export default function QuickInsights({ stock }) {
             {(s.change || 0) >= 0 ? '+' : ''}{s.change?.toFixed(2)}%
           </span>
         </div>
+        <Link
+          href={`/stock/${s.symbol}`}
+          style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+            padding: '8px 14px', borderRadius: 8, marginTop: 10,
+            background: 'var(--accent)', color: '#fff', textDecoration: 'none',
+            fontSize: '0.75rem', fontWeight: 700, transition: 'opacity 0.2s',
+            border: 'none', cursor: 'pointer', width: '100%',
+          }}
+          onMouseOver={e => e.currentTarget.style.opacity = '0.85'}
+          onMouseOut={e => e.currentTarget.style.opacity = '1'}
+        >
+          View Full Analysis →
+        </Link>
       </div>
 
       <div className="qi-metrics">

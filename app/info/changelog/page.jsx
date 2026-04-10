@@ -7,6 +7,19 @@ import '../info.css';
 
 const CHANGELOG = [
   {
+    version: '1.3.0',
+    date: 'April 10, 2026',
+    title: 'SEO & Performance Overhaul ⚡',
+    items: [
+      { type: 'new', text: 'Dynamic stock pages with Server-Side Rendering (SSR) for over 3,000 NSE/BSE stocks' },
+      { type: 'new', text: 'Auto-generating XML sitemap to ensure all 2,000+ stock pages are indexed by Google' },
+      { type: 'improve', text: 'Screener page converted to Hybrid SSR architecture, ensuring search engines can read the initial stock table' },
+      { type: 'improve', text: 'Major image compression: optimized logos and OG images to reduce load times by over 90%' },
+      { type: 'fix', text: 'Resolved chart layout shift: Stock charts no longer jump when hovering over tooltips' },
+      { type: 'fix', text: 'Screener default state updated to clear all filters automatically on first visit' }
+    ],
+  },
+  {
     version: '1.2.0',
     date: 'March 28, 2026',
     title: 'Live Charts, Notifications & AI Preview ✨',

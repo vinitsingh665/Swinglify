@@ -16,6 +16,7 @@ export default function LandingFooter() {
       </Link>
 
       <div className="footer-links">
+        <Link href="/all-stocks">A-Z Stock Directory</Link>
         <Link href="/info/privacy">Privacy Policy</Link>
         <Link href="/info/terms">Terms of Service</Link>
         <Link href="/info/contact">Contact Us</Link>

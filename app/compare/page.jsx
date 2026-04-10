@@ -1,6 +1,6 @@
 "use client";
-
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import './compare.css';
 import Sidebar from '../../components/Sidebar';
 import TopBar from '../../components/TopBar';
@@ -12,7 +12,9 @@ import WinnerInsight from './components/WinnerInsight';
 
 const DEFAULT_STOCKS = ['RELIANCE', 'TCS', 'HDFCBANK'];
 
-export default function ComparePage() {
+function CompareContent() {
+  const searchParams = useSearchParams();
+  const queryStock = searchParams.get('stock');
   const [theme, setThemeState] = useState('dark');
   const [symbols, setSymbols] = useState([]);
   const [initialLoaded, setInitialLoaded] = useState(false);
@@ -107,6 +109,21 @@ export default function ComparePage() {
 
   useEffect(() => { fetchData(); }, [fetchData]);
 
+  useEffect(() => {
+    if (initialLoaded && queryStock) {
+      const sym = queryStock.toUpperCase();
+      if (!symbols.includes(sym) && symbols.length < 4) {
+        setSymbols(prev => {
+          if (prev.includes(sym)) return prev;
+          const newSymbols = [...prev, sym];
+          localStorage.setItem('compare_symbols', JSON.stringify(newSymbols));
+          syncSymbolsToBackend(newSymbols);
+          return newSymbols;
+        });
+      }
+    }
+  }, [initialLoaded, queryStock, symbols.length]);
+
   const handleAdd = (sym) => {
     if (!symbols.includes(sym) && symbols.length < 4) {
       setSymbols(prev => {
@@ -155,5 +172,13 @@ export default function ComparePage() {
 
       </div>
     </div>
+  );
+}
+
+export default function ComparePage() {
+  return (
+    <Suspense fallback={<div style={{ padding: '40px', color: '#888', textAlign: 'center', fontFamily: 'Inter' }}>Loading compare data...</div>}>
+      <CompareContent />
+    </Suspense>
   );
 }

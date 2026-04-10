@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { useStockDetail } from '../hooks/useStockData';
 import { formatNumber, formatVolume, formatMarketCap, getSignalClass, formatSignal } from '../utils';
 
@@ -45,6 +46,22 @@ export default function StockModal({ symbol, onClose }) {
                   {changeSign}{(s.change || 0).toFixed(2)}% ({changeSign}₹{formatNumber(Math.abs(s.changeAbs || 0))})
                 </div>
               </div>
+
+              {/* Full Page Link */}
+              <Link
+                href={`/stock/${s.symbol}`}
+                style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                  padding: '10px 20px', borderRadius: 10, marginBottom: 12,
+                  background: 'var(--accent)', color: '#fff', textDecoration: 'none',
+                  fontSize: '0.82rem', fontWeight: 700, transition: 'opacity 0.2s',
+                  border: 'none', cursor: 'pointer',
+                }}
+                onMouseOver={e => e.currentTarget.style.opacity = '0.85'}
+                onMouseOut={e => e.currentTarget.style.opacity = '1'}
+              >
+                View Full Analysis →
+              </Link>
 
               {/* AI Insight */}
               <AIInsight ticker={s.symbol} s={s} />

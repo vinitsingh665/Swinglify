@@ -95,7 +95,17 @@ export default function MarketTable({ stocks, loading, onOpenStock }) {
                          <div className="m-logo-placeholder">{stock.symbol.charAt(0)}</div>
                        )}
                        <div className="c-text">
-                         <span className="c-sym">{stock.symbol}</span>
+                         <span className="c-sym">
+                           <a
+                             href={`/stock/${stock.symbol}`}
+                             onClick={e => e.stopPropagation()}
+                             title={`View full ${stock.symbol} analysis`}
+                             style={{ color: 'inherit', textDecoration: 'none' }}
+                           >
+                             {stock.symbol}
+                             <span style={{ display: 'inline-block', marginLeft: 4, fontSize: '0.6rem', opacity: 0.5, verticalAlign: 'middle' }}>↗</span>
+                           </a>
+                         </span>
                          <span className="c-name">
                            {stock.name}
                            <span className={`ex-badge ${stock.exchange?.toLowerCase()}`}>{stock.exchange}</span>

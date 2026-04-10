@@ -11,7 +11,8 @@ export async function GET() {
     const trending = await Post.aggregate([
       { $match: { 
         createdAt: { $gte: oneDayAgo },
-        stockName: { $exists: true, $ne: '' }
+        stockName: { $exists: true, $ne: '' },
+        authorUsername: { $ne: 'SwinglifyAI' }
       } },
       {
         $group: {

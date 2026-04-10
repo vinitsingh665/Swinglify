@@ -92,6 +92,13 @@ export default function TopBar() {
           </span>
         </div>
 
+        <Link href="/all-stocks" className="hide-on-mobile" style={{
+          marginLeft: '8px', padding: '6px 12px', fontSize: '0.8rem', 
+          fontWeight: 600, color: 'var(--text-muted)', textDecoration: 'none',
+          border: '1px solid var(--border)', borderRadius: '6px', transition: 'all 0.2s'
+        }} onMouseOver={e => { e.currentTarget.style.color = 'var(--text-primary)'; e.currentTarget.style.borderColor = 'var(--text-dim)' }} onMouseOut={e => { e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.borderColor = 'var(--border)' }}>
+          A-Z Stocks
+        </Link>
         
         {/* Sign In Button for unauthenticated users */}
         {status !== 'loading' && !session && (

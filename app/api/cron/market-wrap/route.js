@@ -2,17 +2,14 @@ import { NextResponse } from 'next/server';
 import dbConnect from '../../../../lib/mongodb';
 import Post from '../../../../models/Post';
 import User from '../../../../models/User';
-import { generateMarketWrapUp } from '../../../../lib/ai';
+import { generateSectorAnalysis, generateMoversAnalysis, generateSensexUpdate, generateTomorrowForecast } from '../../../../lib/ai';
+import { GET as getAnalytics } from '../../analytics/route';
 
 // Security: accepts Bearer token (Vercel cron) OR ?secret= query param (external cron services)
 const CRON_SECRET = process.env.CRON_SECRET || 'swinglify_cron_run';
 
-export const maxDuration = 60; // Allow up to 60s for AI generation
-
-function round2(value) {
-  if (value === null || value === undefined) return null;
-  return Math.round(value * 100) / 100;
-}
+// Allow highest timeout since we run 4 AI parallel queries
+export const maxDuration = 60; 
 
 export async function GET(req) {
   try {
@@ -20,159 +17,79 @@ export async function GET(req) {
     const { searchParams } = new URL(req.url);
     const querySecret = searchParams.get('secret');
 
-    // Auth: accept either Bearer header (Vercel) or ?secret= query param (external cron)
-    const isAuthorized =
-      authHeader === `Bearer ${CRON_SECRET}` ||
-      querySecret === CRON_SECRET;
-
+    // Auth
+    const isAuthorized = authHeader === `Bearer ${CRON_SECRET}` || querySecret === CRON_SECRET;
     if (!isAuthorized && process.env.NODE_ENV === 'production') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // 0. Native Market Status Logic
+    // Weekend Check
     const now = new Date();
     const istOffset = 5.5 * 60 * 60 * 1000;
     const ist = new Date(now.getTime() + istOffset);
-    const day = ist.getUTCDay();
-    const isTradingDay = (day >= 1 && day <= 5);
-    
-    if (!isTradingDay) {
-        return NextResponse.json({ message: 'Market is closed today (Weekend/Holiday). No market wrap-up generated.' }, { status: 200 });
+    if (ist.getUTCDay() < 1 || ist.getUTCDay() > 5) {
+        return NextResponse.json({ message: 'Market is closed today. No posts generated.' }, { status: 200 });
     }
 
-    // 0b. Duplicate protection: check if a wrap-up was already posted today
+    // Duplicate Check
     await dbConnect();
     const todayStart = new Date();
     todayStart.setUTCHours(0, 0, 0, 0);
-    const existingPost = await Post.findOne({
-      authorUsername: 'SwinglifyAI',
-      flair: 'News',
-      createdAt: { $gte: todayStart },
-    });
-    if (existingPost) {
-      return NextResponse.json({ message: 'Market wrap-up already posted today.', postId: existingPost._id }, { status: 200 });
+    const existingPosts = await Post.find({ authorUsername: 'SwinglifyAI', createdAt: { $gte: todayStart } });
+    // Require that all 4 scripts haven't run today
+    if (existingPosts.length >= 4) {
+      return NextResponse.json({ message: 'Market bots already posted all 4 updates today.' }, { status: 200 });
     }
 
-    // 1. Fetch Today's Market Data directly from TradingView
-    const indicesBody = {
-      symbols: { tickers: ['NSE:NIFTY', 'NSE:BANKNIFTY', 'BSE:SENSEX', 'NSE:NIFTY_MID_SELECT', 'NSE:INDIA_VIX'], query: { types: [] } },
-      columns: ['name', 'description', 'close', 'change', 'change_abs']
-    };
-
-    const indicesRes = await fetch('https://scanner.tradingview.com/india/scan', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'User-Agent': 'Mozilla/5.0' },
-      body: JSON.stringify(indicesBody)
-    });
-
-    const indicesData = await indicesRes.json();
-    if (!indicesData || !indicesData.data) {
-      return NextResponse.json({ error: 'Failed to fetch indices from TV' }, { status: 500 });
+    // 1. Fetch Analytics Intelligence internally
+    const analyticsRes = await getAnalytics();
+    const analyticsData = await analyticsRes.json();
+    
+    if (!analyticsData || !analyticsData.success) {
+      return NextResponse.json({ error: 'Failed to access internal Analytics API' }, { status: 500 });
     }
 
-    // Map indices Data
-    const mappedIndices = indicesData.data.map(item => {
-      const d = item.d || [];
-      return {
-        symbol: d[0],
-        name: d[1] || d[0],
-        value: round2(d[2]),
-        change: round2(d[3]),
-        changeAbs: round2(d[4])
-      };
-    });
-    const nifty = mappedIndices.find(i => i.symbol === 'NIFTY') || { change: 0 };
-    const bankNifty = mappedIndices.find(i => i.symbol === 'BANKNIFTY') || { change: 0 };
-    const vix = mappedIndices.find(i => i.symbol === 'INDIA_VIX') || { change: 0 };
+    // Format Data for AI Contexts
+    const sectorsString = analyticsData.sectors.map(s => `${s.name}: ${s.change1D}% (${s.advancing} Adv, ${s.declining} Dec)`).join('\n');
+    const moversString = (analyticsData.opportunities?.topMovers || []).slice(0,3).map(s => `${s.symbol}: ${s.change}% (Price: ${s.price}, RSI: ${s.rsi})`).join('\n');
+    const indicesString = analyticsData.indices.map(i => `${i.symbol}: ${i.change}% (Abs: ${i.changeAbs})`).join('\n');
+    const breadthString = `Advancing: ${analyticsData.marketPulse.advancing}, Declining: ${analyticsData.marketPulse.declining}`;
+    const emaString = `Prices above 50 EMA: ${analyticsData.emaBreadth?.ema50?.abovePct}%`;
 
-    // 1a. Fetch broad market breadth so the AI gets actual A/D data, not proxy text
-    const breadthBody = {
-      filter: [
-        { left: 'is_primary', operation: 'equal', right: true },
-        { left: 'exchange', operation: 'equal', right: 'NSE' },
-        { left: 'market_cap_basic', operation: 'greater', right: 5000000000 }
-      ],
-      symbols: { query: { types: ['stock'] } },
-      columns: ['change'],
-      sort: { sortBy: 'market_cap_basic', sortOrder: 'desc' },
-      range: [0, 500]
-    };
-    const breadthRes = await fetch('https://scanner.tradingview.com/india/scan', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'User-Agent': 'Mozilla/5.0' },
-      body: JSON.stringify(breadthBody)
-    });
-    const breadthData = await breadthRes.json();
-    const breadthChanges = (breadthData.data || [])
-      .map(item => item?.d?.[0])
-      .filter(change => change !== null && change !== undefined);
-    const advancing = breadthChanges.filter(change => change > 0).length;
-    const declining = breadthChanges.filter(change => change < 0).length;
-    const unchanged = breadthChanges.length - advancing - declining;
-    const advDecRatio = declining > 0 ? round2(advancing / declining) : advancing;
-    const breadthSummary = `${advancing} advancing / ${declining} declining / ${unchanged} unchanged (A/D Ratio: ${advDecRatio})`;
+    // 2. Parallel Generation (Massive performance boost)
+    const [sectorBody, moversBody, sensexBody, forecastBody] = await Promise.all([
+      generateSectorAnalysis(sectorsString),
+      generateMoversAnalysis(moversString),
+      generateSensexUpdate(indicesString),
+      generateTomorrowForecast(breadthString, emaString)
+    ]);
 
-    // 1b. Fetch Top Volume Movers (so the AI can talk about individual stocks)
-    const tvBody = {
-      symbols: { query: { types: ['stock'], exchanges: ['NSE'] } },
-      columns: ['name', 'change', 'volume', 'RSI'],
-      sort: { sortBy: 'volume', sortOrder: 'desc' },
-      range: [0, 5]
-    };
-    const tvRes = await fetch('https://scanner.tradingview.com/india/scan', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'User-Agent': 'Mozilla/5.0' },
-      body: JSON.stringify(tvBody)
-    });
-    const tvData = await tvRes.json();
-    const topMoversText = (tvData.data || []).filter(item => item.d && item.d.length >= 4).map(item => {
-      const sym = item.s?.replace('NSE:', '') || '';
-      return `${sym}: ${round2(item.d[1])}%, RSI ${Math.round((item.d[3] || 0) * 10) / 10}`;
-    }).join('\n');
-
-    // 2. Generate AI Wrap-up
-    const article = await generateMarketWrapUp(nifty.change ?? 0, bankNifty.change ?? 0, breadthSummary, topMoversText);
-
-    if (!article) {
-      return NextResponse.json({ error: 'AI generation failed' }, { status: 500 });
-    }
-
-    // 3. Save to Database as AI Analyst
-    // dbConnect() already called above for duplicate check
-
-    // Find or create the AI Analyst User
+    // Ensure AI User Exists
     let aiUser = await User.findOne({ email: 'ai@swinglify.online' });
     if (!aiUser) {
       aiUser = await User.create({
-        name: 'Swinglify AI Analyst',
-        displayName: 'Swinglify AI 🤖',
-        username: 'swinglifyai',
-        email: 'ai@swinglify.online',
-        googleId: 'ai_bot_001',
-        isProfileComplete: true,
+        name: 'Swinglify AI Analyst', displayName: 'Swinglify AI 🤖', username: 'swinglifyai',
+        email: 'ai@swinglify.online', googleId: 'ai_bot_001', isProfileComplete: true,
         image: 'https://api.dicebear.com/7.x/bottts/svg?seed=SwinglifyAI&backgroundColor=6366f1'
       });
-    } else if (!aiUser.username) {
-      // Ensure username is set on existing AI user
-      aiUser.username = 'swinglifyai';
-      await aiUser.save();
     }
 
-    const newPost = await Post.create({
-      author: aiUser._id,
-      authorName: aiUser.displayName,
-      authorImage: aiUser.image,
-      authorUsername: 'SwinglifyAI',
-      title: `Daily Market Wrap-Up: ${new Date().toLocaleDateString('en-IN')}`,
-      body: article,
-      flair: 'News',
-      stockName: 'NIFTY50',
-      sentiment: nifty.change >= 0 ? 'Bullish' : 'Bearish',
-    });
+    // 3. Save ALL 4 Posts
+    const dateStr = new Date().toLocaleDateString('en-IN');
+    const postsToInsert = [];
 
-    return NextResponse.json({ success: true, post: newPost._id });
+    if (sectorBody) postsToInsert.push({ author: aiUser._id, authorName: aiUser.displayName, authorImage: aiUser.image, authorUsername: 'SwinglifyAI', flair: 'Discussion', title: `Sector Money Flow: ${dateStr}`, body: sectorBody, stockName: 'SECTOR FLOW', strategyTag: 'Momentum', timeframe: 'Swing', confidence: 'High', sentiment: analyticsData.sectors[0]?.change1D > 0 ? 'Bullish' : 'Bearish' });
+    if (moversBody) postsToInsert.push({ author: aiUser._id, authorName: aiUser.displayName, authorImage: aiUser.image, authorUsername: 'SwinglifyAI', flair: 'News', title: `Top Momentum Gainers: ${dateStr}`, body: moversBody, stockName: 'TOP GAINERS', strategyTag: 'Breakout', timeframe: 'Intraday', confidence: 'Medium', sentiment: 'Bullish' });
+    if (sensexBody) postsToInsert.push({ author: aiUser._id, authorName: aiUser.displayName, authorImage: aiUser.image, authorUsername: 'SwinglifyAI', flair: 'News', title: `Sensex & Nifty Breakdown: ${dateStr}`, body: sensexBody, stockName: 'INDEX UPDATE', strategyTag: 'Reversal', timeframe: 'Swing', confidence: 'Medium', sentiment: analyticsData.marketPulse?.niftyTrend === 'up' ? 'Bullish' : 'Bearish' });
+    if (forecastBody) postsToInsert.push({ author: aiUser._id, authorName: aiUser.displayName, authorImage: aiUser.image, authorUsername: 'SwinglifyAI', flair: 'Strategy', title: `Tomorrow's Forecast: Prep for the Open`, body: forecastBody, stockName: 'FORECAST', strategyTag: 'SupportBounce', timeframe: 'Swing', confidence: 'High', sentiment: (analyticsData.marketPulse?.sentiment || '').includes('Bullish') ? 'Bullish' : 'Bearish' });
+
+    if (postsToInsert.length === 0) return NextResponse.json({ error: 'All AI generations failed' }, { status: 500 });
+
+    const inserted = await Post.insertMany(postsToInsert);
+
+    return NextResponse.json({ success: true, postsGenerated: inserted.length });
   } catch (error) {
-    console.error('Cron Market Wrap Error:', error);
-    return NextResponse.json({ error: 'Failed to run market wrap cron', details: error.message, stack: error.stack }, { status: 500 });
+    console.error('Multi-Post Cron Error:', error);
+    return NextResponse.json({ error: 'Failed to run market wrap cron', details: error.message }, { status: 500 });
   }
 }
