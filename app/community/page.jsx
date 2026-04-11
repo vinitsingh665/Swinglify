@@ -212,9 +212,14 @@ export default async function CommunityPage() {
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'DiscussionForumPosting',
+    headline: 'Swinglify Community — Stock Market Discussion Forum',
     name: 'Swinglify Community — Stock Market Discussion Forum',
+    text: 'Join the Swinglify community to discuss Indian stocks, share technical analysis, and get trading insights from experienced swing traders.',
     url: 'https://swinglify.online/community',
+    datePublished: '2025-03-01T00:00:00Z',
+    dateModified: new Date().toISOString(),
     description: 'Join the Swinglify community to discuss Indian stocks, share technical analysis, and get trading insights from experienced swing traders.',
+    image: 'https://swinglify.online/og-image.png',
     about: {
       '@type': 'Thing',
       name: 'Indian Stock Market Trading',
@@ -227,10 +232,11 @@ export default async function CommunityPage() {
     ...(initialPosts.length > 0 && {
       comment: initialPosts.slice(0, 10).map((post) => ({
         '@type': 'Comment',
-        text: post.title || '',
+        text: post.title || post.body || 'Trading insight',
         author: {
           '@type': 'Person',
           name: post.authorUsername || post.authorName || 'Anonymous',
+          url: `https://swinglify.online/community`,
         },
         dateCreated: post.createdAt,
         url: `https://swinglify.online/community/${post._id}`,
