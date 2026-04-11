@@ -65,6 +65,7 @@ export default function MarketTable({ stocks, loading, onOpenStock }) {
     <div className="market-table-card border-glass">
       <div className="market-table-wrapper">
         <table className="market-table">
+          <caption className="sr-only" style={{ position: 'absolute', width: '1px', height: '1px', padding: 0, margin: '-1px', overflow: 'hidden', clip: 'rect(0,0,0,0)', whiteSpace: 'nowrap', borderWidth: 0 }}>Live stock prices with buy/sell signals for NSE and BSE listed stocks</caption>
           <thead>
             <tr>
               <th className="th-company">Asset</th>
@@ -90,7 +91,7 @@ export default function MarketTable({ stocks, loading, onOpenStock }) {
                   <td className="td-company">
                     <div className="company-info" onClick={() => onOpenStock(stock.symbol)}>
                        {stock.logo ? (
-                         <img src={stock.logo} alt={stock.symbol} className="m-logo" />
+                         <img src={stock.logo} alt={`${stock.symbol} logo`} className="m-logo" width="32" height="32" loading="lazy" />
                        ) : (
                          <div className="m-logo-placeholder">{stock.symbol.charAt(0)}</div>
                        )}

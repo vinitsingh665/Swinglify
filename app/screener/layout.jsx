@@ -1,6 +1,6 @@
 export const metadata = {
   title: 'Stock Screener — Filter NSE & BSE Stocks by RSI, MACD, Volume',
-  description: 'Free stock screener for Indian markets. Filter NSE & BSE stocks by RSI, MACD, Bollinger Bands, volume breakout, market cap, and more. Find the best swing trading opportunities with technical analysis.',
+  description: 'Free stock screener for Indian markets. Filter NSE & BSE stocks by RSI, MACD, Bollinger Bands, volume breakout, and market cap.',
   keywords: [
     'stock screener india',
     'nse stock screener free',
@@ -24,6 +24,13 @@ export const metadata = {
     title: 'Free Stock Screener for NSE & BSE — Filter by RSI, MACD, Volume',
     description: 'Screen Indian stocks with technical indicators. Find oversold, volume breakout, and trending stocks.',
     url: 'https://swinglify.online/screener',
+    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'Swinglify Stock Screener' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Free Stock Screener for NSE & BSE — Swinglify',
+    description: 'Screen Indian stocks with technical indicators. Find oversold, breakout, and trending stocks.',
+    images: ['/og-image.png'],
   },
 };
 

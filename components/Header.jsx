@@ -45,7 +45,7 @@ export default function Header({ countdown, onRefresh, onOpenStock }) {
             <img src="/logo.png" alt="Swinglify" style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: '8px' }} />
           </div>
           <div className="logo-text">
-            <h1>Swinglify</h1>
+            <span className="logo-brand-text">Swinglify</span>
           </div>
         </div>
 

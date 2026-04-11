@@ -1,6 +1,6 @@
 export const metadata = {
   title: 'Stock Analytics — Advanced Technical Analysis for Indian Stocks',
-  description: 'In-depth stock analytics for NSE & BSE. View RSI trends, MACD histograms, volume analysis, and historical performance charts for Indian stocks.',
+  description: 'In-depth stock analytics for NSE & BSE. View RSI trends, MACD histograms, volume analysis, and performance charts for Indian stocks.',
   keywords: [
     'stock analytics price chart india',
     'advanced analysis stocks nse',
@@ -18,6 +18,13 @@ export const metadata = {
     title: 'Advanced Stock Analytics — Swinglify',
     description: 'Master technical analysis with our advanced stock analytics for Indian markets.',
     url: 'https://swinglify.online/analytics',
+    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'Swinglify Stock Analytics' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Advanced Stock Analytics — Swinglify',
+    description: 'Master technical analysis with our advanced stock analytics for Indian markets.',
+    images: ['/og-image.png'],
   },
 };
 

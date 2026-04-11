@@ -27,7 +27,7 @@ export default function Loading() {
           <div className="content-inner">
             
             <div className="overview-header">
-              <h1 className="overview-title">Overview</h1>
+              <h2 className="overview-title">Overview</h2>
               <div style={{ marginLeft: 'auto', width: '320px', height: '42px', borderRadius: '100px', overflow: 'hidden' }}>
                 <Skeleton />
               </div>

@@ -55,7 +55,7 @@ export default function SignInPage() {
         <div className="signin-card">
           <div className="signin-logo">
             <img src="/logo.png" alt="Swinglify Logo" className="signin-logo-img" />
-            <h1>Swinglify</h1>
+            <span style={{ fontSize: '1.5rem', fontWeight: 700 }}>Swinglify</span>
             <p>Loading...</p>
           </div>
         </div>

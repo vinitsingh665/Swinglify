@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation';
+import Link from 'next/link';
 import { fetchFromTradingView, parseStockData, FIELDS } from '../../../lib/api-core';
 import StockStructuredData from './components/StockStructuredData';
 import StockChart from './components/StockChart';
@@ -273,7 +274,7 @@ export default async function StockPage({ params }) {
           <div className="stock-hero">
             <div className="stock-hero-left">
               {s.logo ? (
-                <img className="stock-hero-logo" src={s.logo} alt={s.symbol} />
+                <img className="stock-hero-logo" src={s.logo} alt={`${s.symbol} company logo`} width="48" height="48" />
               ) : (
                 <div className="stock-hero-logo-placeholder">{s.symbol?.charAt(0)}</div>
               )}
@@ -334,7 +335,7 @@ export default async function StockPage({ params }) {
           </div>
 
           {/* Key Stats */}
-          <h3 className="stock-section-title">Key Statistics</h3>
+          <h2 className="stock-section-title">Key Statistics</h2>
           <div className="stock-indicators-grid">
             <RichStatCard label="Open" value={`₹${formatNumber(s.open)}`} desc={s.open && s.price ? (s.price > s.open ? `Trading ${((s.price - s.open) / s.open * 100).toFixed(1)}% above open` : `Trading ${((s.open - s.price) / s.open * 100).toFixed(1)}% below open`) : null} signal={s.open && s.price ? (s.price > s.open ? 'bullish' : 'bearish') : 'neutral'} strength={s.open && s.price ? Math.min(100, Math.abs((s.price - s.open) / s.open * 100) * 10) : 0} />
             <RichStatCard label="Day High" value={`₹${formatNumber(s.high)}`} desc={s.high && s.price ? `${((s.high - s.price) / s.price * 100).toFixed(1)}% from current` : null} signal="bullish" strength={s.high && s.low && s.price ? ((s.price - s.low) / (s.high - s.low) * 100) : 50} />
@@ -353,7 +354,7 @@ export default async function StockPage({ params }) {
           {/* Indicator Signals */}
           {indicators.length > 0 && (
             <>
-              <h3 className="stock-section-title">Indicator Signals</h3>
+              <h2 className="stock-section-title">Indicator Signals</h2>
               <div className="stock-indicators-grid">
                 {indicators.map(ind => {
                   const c = getIndicatorColor(ind.signal);
@@ -380,7 +381,7 @@ export default async function StockPage({ params }) {
           )}
 
           {/* Performance */}
-          <h3 className="stock-section-title">Performance</h3>
+          <h2 className="stock-section-title">Performance</h2>
           <div className="stock-perf-grid">
             {perfData.map(p => {
               const isUp = p.value > 0;
@@ -411,7 +412,7 @@ export default async function StockPage({ params }) {
           </div>
 
           {/* Moving Averages */}
-          <h3 className="stock-section-title">Moving Averages</h3>
+          <h2 className="stock-section-title">Moving Averages</h2>
           <div className="stock-indicators-grid">
             {maData.map(ma => {
               const above = ma.value && ma.price ? ma.price > ma.value : null;
@@ -441,7 +442,7 @@ export default async function StockPage({ params }) {
           </div>
 
           {/* Technical summary for SEO — visible text that search engines can index */}
-          <h3 className="stock-section-title">About {s.symbol}</h3>
+          <h2 className="stock-section-title">About {s.symbol}</h2>
           <div className="stock-stat-card" style={{ padding: '20px', marginBottom: 28 }}>
             <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', lineHeight: 1.7, margin: 0 }}>
               <strong>{s.symbol}</strong> ({s.name}) is listed on {s.exchange || 'NSE'}{s.sector ? ` in the ${s.sector} sector` : ''}{s.industry ? `, ${s.industry} industry` : ''}.
@@ -452,6 +453,23 @@ export default async function StockPage({ params }) {
               {s.week52High && s.week52Low ? ` The 52-week range is ₹${formatNumber(s.week52Low)} — ₹${formatNumber(s.week52High)}.` : ''}
               {' '}Analyze {s.symbol} with RSI, MACD, Bollinger Bands, and 40+ technical indicators on Swinglify — the free swing trading platform for Indian stocks.
             </p>
+          </div>
+
+          {/* Related Links for Internal Linking (SEO) */}
+          <h2 className="stock-section-title">Explore More</h2>
+          <div className="stock-related-links" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px', marginBottom: 28 }}>
+            <Link href="/screener" className="stock-cta-btn" style={{ textAlign: 'center', padding: '12px 16px', borderRadius: '10px', background: 'var(--bg-card)', border: '1px solid var(--border)', color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '0.85rem', transition: 'all 0.2s' }}>
+              Browse Stock Screener
+            </Link>
+            <Link href={`/compare?stock=${s.symbol}`} className="stock-cta-btn" style={{ textAlign: 'center', padding: '12px 16px', borderRadius: '10px', background: 'var(--bg-card)', border: '1px solid var(--border)', color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '0.85rem', transition: 'all 0.2s' }}>
+              Compare {s.symbol} with Others
+            </Link>
+            <Link href="/community" className="stock-cta-btn" style={{ textAlign: 'center', padding: '12px 16px', borderRadius: '10px', background: 'var(--bg-card)', border: '1px solid var(--border)', color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '0.85rem', transition: 'all 0.2s' }}>
+              Discuss in Community
+            </Link>
+            <Link href="/all-stocks" className="stock-cta-btn" style={{ textAlign: 'center', padding: '12px 16px', borderRadius: '10px', background: 'var(--bg-card)', border: '1px solid var(--border)', color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '0.85rem', transition: 'all 0.2s' }}>
+              All Stocks A–Z Directory
+            </Link>
           </div>
 
         </div>

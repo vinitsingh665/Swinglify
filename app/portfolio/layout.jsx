@@ -1,6 +1,6 @@
 export const metadata = {
   title: 'Portfolio Tracker — Track Your Indian Stock Holdings & Returns',
-  description: 'Free portfolio tracker for Indian stocks. Monitor your NSE & BSE holdings, track profit/loss, view allocation charts, and manage your investments in one dashboard.',
+  description: 'Free portfolio tracker for Indian stocks. Monitor NSE & BSE holdings, track profit/loss, view allocation charts in one dashboard.',
   keywords: [
     'stock portfolio tracker india',
     'free portfolio tracker nse',
@@ -23,6 +23,13 @@ export const metadata = {
     title: 'Free Stock Portfolio Tracker for Indian Markets — Swinglify',
     description: 'Track your NSE & BSE holdings, monitor P&L, and view allocation charts.',
     url: 'https://swinglify.online/portfolio',
+    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'Swinglify Portfolio Tracker' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Free Stock Portfolio Tracker — Swinglify',
+    description: 'Track your NSE & BSE holdings, monitor P&L, and view allocation charts.',
+    images: ['/og-image.png'],
   },
 };
 

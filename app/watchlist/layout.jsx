@@ -1,6 +1,6 @@
 export const metadata = {
   title: 'Watchlist — Track Your Favourite NSE & BSE Stocks',
-  description: 'Create a free stock watchlist for NSE & BSE. Track your favourite Indian stocks with live prices, percentage changes, and quick access to charts and analysis.',
+  description: 'Create a free stock watchlist for NSE & BSE. Track your favourite Indian stocks with live prices, changes, and quick access to analysis.',
   keywords: [
     'stock watchlist india',
     'nse stock watchlist',
@@ -23,6 +23,13 @@ export const metadata = {
     title: 'Free Stock Watchlist for NSE & BSE — Swinglify',
     description: 'Create and manage your stock watchlist with live prices for Indian markets.',
     url: 'https://swinglify.online/watchlist',
+    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'Swinglify Stock Watchlist' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Free Stock Watchlist for NSE & BSE — Swinglify',
+    description: 'Create and manage your stock watchlist with live prices for Indian markets.',
+    images: ['/og-image.png'],
   },
 };
 

@@ -119,6 +119,7 @@ export default function MarketsPage() {
       <div className="main-area">
         <TopBar />
         <div className="markets-content">
+          <h1 className="sr-only" style={{ position: 'absolute', width: '1px', height: '1px', padding: 0, margin: '-1px', overflow: 'hidden', clip: 'rect(0,0,0,0)', whiteSpace: 'nowrap', borderWidth: 0 }}>Live NSE & BSE Stock Prices — Market Data</h1>
           <MarketControlBar 
             searchQuery={searchQuery} setSearchQuery={setSearchQuery}
             filters={filters} setFilters={setFilters} 

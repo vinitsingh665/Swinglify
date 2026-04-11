@@ -1,6 +1,6 @@
 export const metadata = {
   title: 'Community — Discuss Stocks, Share Analysis & Insights',
-  description: 'Join the Swinglify community. Discuss Indian stocks, share your technical analysis, get feedback on trades, and learn from experienced swing traders in India.',
+  description: 'Join the Swinglify community. Discuss Indian stocks, share analysis, get feedback on trades, and learn from swing traders.',
   keywords: [
     'indian stock market community',
     'stock analysis forum india',
@@ -18,6 +18,13 @@ export const metadata = {
     title: 'Swinglify Community — Stocks, Analysis & Insights',
     description: 'Discuss Indian stocks and share trading insights with the community.',
     url: 'https://swinglify.online/community',
+    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'Swinglify Trading Community' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Swinglify Community — Stocks, Analysis & Insights',
+    description: 'Discuss Indian stocks and share trading insights with the community.',
+    images: ['/og-image.png'],
   },
 };
 

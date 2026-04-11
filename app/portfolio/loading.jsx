@@ -27,7 +27,7 @@ export default function PortfolioLoading() {
         <div className="portfolio-layout">
           
           <div className="portfolio-header">
-            <h1 className="portfolio-title">Portfolio</h1>
+            <h2 className="portfolio-title">Portfolio</h2>
             <Skeleton width="120px" height="42px" borderRadius="12px" />
           </div>
 

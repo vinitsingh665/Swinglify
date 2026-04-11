@@ -1,6 +1,6 @@
 export const metadata = {
   title: 'Markets — Live NSE & BSE Stock Prices, Volume & Signals',
-  description: 'Track live stock prices for NSE & BSE. View real-time price changes, volume data, buy/sell signals, and mini charts for Nifty 50, Nifty 200, and all listed Indian stocks.',
+  description: 'Track live stock prices for NSE & BSE. View real-time price changes, volume data, buy/sell signals for Nifty 50, 200, and all listed stocks.',
   keywords: [
     'nse live stock prices',
     'bse stock prices today',
@@ -23,6 +23,13 @@ export const metadata = {
     title: 'Live NSE & BSE Stock Prices — Swinglify Markets',
     description: 'Real-time stock prices, volume, buy/sell signals for all NSE & BSE listed stocks.',
     url: 'https://swinglify.online/markets',
+    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'Swinglify Live Markets' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Live NSE & BSE Stock Prices — Swinglify Markets',
+    description: 'Real-time stock prices, volume, buy/sell signals for all NSE & BSE listed stocks.',
+    images: ['/og-image.png'],
   },
 };
 

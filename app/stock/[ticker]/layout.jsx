@@ -6,7 +6,7 @@ export async function generateMetadata({ params }) {
 
   return {
     title: `${symbol} Share Price, RSI, MACD & Technical Analysis`,
-    description: `${symbol} live share price, RSI, MACD, Bollinger Bands, EMA crossover analysis. Free technical analysis and swing trading signals for ${symbol} on NSE & BSE — Swinglify.`,
+    description: `${symbol} live share price, RSI, MACD, Bollinger Bands & EMA analysis. Free swing trading signals for ${symbol} on NSE & BSE — Swinglify.`.slice(0, 155),
     keywords: [
       `${symbol} share price`,
       `${symbol} share price today`,
@@ -26,14 +26,16 @@ export async function generateMetadata({ params }) {
     },
     openGraph: {
       title: `${symbol} — Live Price & Technical Analysis | Swinglify`,
-      description: `Real-time ${symbol} technical analysis with RSI, MACD, Bollinger Bands, EMA, and AI-powered swing trading signals. Free on Swinglify.`,
+      description: `Real-time ${symbol} analysis with RSI, MACD, Bollinger Bands & AI swing trading signals. Free on Swinglify.`,
       url: `https://swinglify.online/stock/${symbol}`,
       type: 'website',
+      images: [{ url: '/og-image.png', width: 1200, height: 630, alt: `${symbol} stock analysis on Swinglify` }],
     },
     twitter: {
       card: 'summary',
       title: `${symbol} Share Price & Analysis | Swinglify`,
       description: `${symbol} live price, RSI, MACD analysis. Free swing trading signals.`,
+      images: ['/og-image.png'],
     },
   };
 }

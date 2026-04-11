@@ -332,6 +332,7 @@ export default function CommunityClient({
         </div>
 
         <div className="community-page">
+          <h1 className="sr-only" style={{ position: 'absolute', width: '1px', height: '1px', padding: 0, margin: '-1px', overflow: 'hidden', clip: 'rect(0,0,0,0)', whiteSpace: 'nowrap', borderWidth: 0 }}>Community — Discuss Stocks, Share Analysis & Insights</h1>
 
           {/* ═══════════════════════════════════════════════════════════
              LEFT PANEL — Filter Insights

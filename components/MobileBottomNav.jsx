@@ -67,7 +67,7 @@ export default function MobileBottomNav() {
   return (
     <nav className="mob-bottom-nav">
       {/* Dashboard */}
-      <Link href="/dashboard" className={`mob-nav-item ${pathname === '/dashboard' ? 'active' : ''}`}>
+      <Link href="/dashboard" className={`mob-nav-item ${pathname === '/dashboard' ? 'active' : ''}`} aria-label="Stock Trading Dashboard">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ overflow: 'visible' }}>
           <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
           <polyline points="9 22 9 12 15 12 15 22" />
@@ -76,7 +76,7 @@ export default function MobileBottomNav() {
       </Link>
 
       {/* Screener */}
-      <Link href="/screener" className={`mob-nav-item ${pathname?.startsWith('/screener') ? 'active' : ''}`}>
+      <Link href="/screener" className={`mob-nav-item ${pathname?.startsWith('/screener') ? 'active' : ''}`} aria-label="Stock Screener with Filters">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
           <rect x="2" y="3" width="20" height="14" rx="2" />
           <line x1="8" y1="21" x2="16" y2="21" />
@@ -86,7 +86,7 @@ export default function MobileBottomNav() {
       </Link>
 
       {/* Community */}
-      <Link href="/community" className={`mob-nav-item ${pathname?.startsWith('/community') ? 'active' : ''}`}>
+      <Link href="/community" className={`mob-nav-item ${pathname?.startsWith('/community') ? 'active' : ''}`} aria-label="Stock Trading Community">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
           <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
           <circle cx="9" cy="7" r="4" />

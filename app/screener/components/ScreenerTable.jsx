@@ -217,6 +217,7 @@ export default function ScreenerTable({ stocks, loading, sortBy, sortOrder, onSo
 
       <div className="sr-table-wrap">
         <table className="sr-table">
+          <caption className="sr-only" style={{ position: 'absolute', width: '1px', height: '1px', padding: 0, margin: '-1px', overflow: 'hidden', clip: 'rect(0,0,0,0)', whiteSpace: 'nowrap', borderWidth: 0 }}>Filtered stock screener results with technical indicators</caption>
           <thead>
             <tr>
               <th onClick={() => handleSort('name')}>Stock{arrow('name')}</th>
@@ -235,7 +236,7 @@ export default function ScreenerTable({ stocks, loading, sortBy, sortOrder, onSo
                   <td>
                     <div className="sr-stock">
                       {s.logo ? (
-                        <img className="sr-logo" src={s.logo} alt="" onError={e => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }} />
+                        <img className="sr-logo" src={s.logo} alt={`${s.symbol} logo`} width="28" height="28" loading="lazy" onError={e => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }} />
                       ) : null}
                       <div className="sr-logo-fallback" style={s.logo ? { display: 'none' } : {}}>{(s.symbol || '?')[0]}</div>
                       <div>

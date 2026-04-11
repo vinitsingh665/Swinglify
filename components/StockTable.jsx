@@ -112,9 +112,10 @@ export default function StockTable({ stocks, loading, onOpenStock }) {
                   <td>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                       {s.logo && (
-                        <img className="stock-logo" src={s.logo} alt={s.symbol}
+                        <img className="stock-logo" src={s.logo} alt={`${s.symbol} logo`}
                           onError={(e) => e.target.style.display = 'none'}
                           style={{ width: 28, height: 28, borderRadius: '50%', background: 'rgba(255,255,255,0.04)' }}
+                          width="28" height="28" loading="lazy"
                         />
                       )}
                       <div>

@@ -72,9 +72,9 @@ function SettingsContent() {
         <TopBar />
         
         <div className="settings-layout">
-          <div className="settings-header">
+          <h1 className="settings-header">
             Settings
-          </div>
+          </h1>
 
           <div className="settings-body">
             {/* Left Nav Tabs */}

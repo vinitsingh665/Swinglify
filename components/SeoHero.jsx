@@ -25,25 +25,25 @@ export default function SeoHero() {
         <div className="seo-features-grid">
           <Link href="/screener" className="seo-feature-card">
             <span className="seo-feature-icon">📊</span>
-            <h3>Stock Screener</h3>
+            <h2>Stock Screener</h2>
             <p>Filter NSE &amp; BSE stocks by RSI, MACD, volume breakout, EMA crossovers, and market cap with real-time data.</p>
           </Link>
 
           <Link href="/markets" className="seo-feature-card">
             <span className="seo-feature-icon">📈</span>
-            <h3>Live Market Data</h3>
+            <h2>Live Market Data</h2>
             <p>Real-time stock prices, buy/sell signals, mini charts, and sector heatmaps for Nifty 50, 200, and all listed stocks.</p>
           </Link>
 
           <Link href="/portfolio" className="seo-feature-card">
             <span className="seo-feature-icon">💼</span>
-            <h3>Portfolio Tracker</h3>
+            <h2>Portfolio Tracker</h2>
             <p>Track your holdings with live P&amp;L, daily gains, allocation charts, and unrealized profit analytics.</p>
           </Link>
 
           <Link href="/community" className="seo-feature-card">
             <span className="seo-feature-icon">💬</span>
-            <h3>Trading Community</h3>
+            <h2>Trading Community</h2>
             <p>Share trading insights, discuss strategies, follow trending stocks, and see what other traders are watching.</p>
           </Link>
         </div>

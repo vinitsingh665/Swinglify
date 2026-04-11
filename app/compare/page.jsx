@@ -151,6 +151,7 @@ function CompareContent() {
         <TopBar />
 
         <div className="compare-layout">
+          <h1 style={{ fontSize: '1.3rem', fontWeight: 700, marginBottom: '16px', color: 'var(--text-primary)' }}>Compare Stocks Side-by-Side</h1>
           {/* Stock Selector Strip */}
           <StockSelector symbols={symbols} onAdd={handleAdd} onRemove={handleRemove} />
 

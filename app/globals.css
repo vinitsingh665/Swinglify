@@ -1,4 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300..800&display=swap');
+
+/* Ensure text remains visible during webfont load */
+@font-face { font-family: 'Inter'; font-display: swap; src: local('Inter'); }
+@font-face { font-family: 'Quicksand'; font-display: swap; src: local('Quicksand'); }
+@font-face { font-family: 'JetBrains Mono'; font-display: swap; src: local('JetBrains Mono'); }
 
 /* ═══════════════════════════════════════════════════════════════════════════
    SWINGLIFY — Phenomenon Studio Exact Clone
