@@ -9,9 +9,9 @@ import './landing.css';
 import '../components/seo-hero.css';
 
 export const metadata = {
-  title: 'Swinglify — Award-Winning Swing Trading Platform for India',
-  description: 'Free premium swing trading platform for NSE & BSE stocks. Advanced stock screener with 40+ technical indicators (RSI, MACD, Bollinger Bands), real-time portfolio tracking, and instant alerts. Build your wealth with the best swing trading tool in India.',
-  keywords: 'swing trading india, nse stock screener, bse stock analysis, technical analysis app, rsi macd scanner, free trading tools india, stock alerts nse, swinglify',
+  title: 'Swinglify — Swing Trading, Stock Screener & Portfolio Tracker',
+  description: 'Free premium swing trading platform for NSE & BSE stocks. Advanced stock screener, real-time portfolio tracker, stock comparison tool, and instant alerts. Build your wealth with the best trading tool in India.',
+  keywords: 'swing trading india, portfolio tracker, stock comparison, stock compare tool, stock comparisons, stock comparison tool, stock comparison chart, stock broker comparison india, stock broker comparison, nse stock screener, bse stock analysis, free trading tools india',
 };
 
 export default function HomePage() {
