@@ -41,6 +41,8 @@ export default function PrivacyPolicyPage() {
               <li><strong>Portfolio Data:</strong> Stock holdings, quantities, and purchase prices you manually enter</li>
               <li><strong>Preferences:</strong> Theme settings, default exchange, chart timeframes, and notification preferences</li>
               <li><strong>Alert Configurations:</strong> Price alerts and conditions you set up</li>
+              <li><strong>Community Content:</strong> Posts, comments, likes, and profile information you share publicly in our forums</li>
+              <li><strong>AI Interactions:</strong> Prompts, questions, and stock context you submit to SwinglifyAI</li>
             </ul>
 
             <h2>2. Information Collected Automatically</h2>
@@ -61,11 +63,14 @@ export default function PrivacyPolicyPage() {
               <li>Analyze usage patterns to improve features</li>
               <li>Respond to your support requests</li>
               <li>Protect against fraud and unauthorized access</li>
+              <li>Generate AI-driven insights and market summaries via SwinglifyAI</li>
+              <li>Moderate and display user-generated content within the Community forums</li>
             </ul>
 
-            <h2>4. Data Storage</h2>
+            <h2>4. Data Storage & Retention</h2>
             <p>Your portfolio and alert data is stored locally in your browser's localStorage. We do not store your portfolio holdings on our servers unless you explicitly opt in to cloud sync (if available).</p>
             <p>Market data is fetched in real-time from third-party API providers and is not stored permanently on our servers.</p>
+            <p>When you request account deletion, your personal data and community posts will be irrevocably deleted or anonymized from our active servers within 30 days, except for data we are legally required to retain.</p>
 
             <h2>5. Data Sharing</h2>
             <p>We do <strong>not</strong> sell, rent, or trade your personal information. We may share information only in the following limited circumstances:</p>
@@ -73,7 +78,8 @@ export default function PrivacyPolicyPage() {
               <li>With your explicit consent</li>
               <li>To comply with legal obligations or court orders</li>
               <li>To protect the rights and safety of Swinglify, our users, or the public</li>
-              <li>With service providers who assist in operating the Platform (under strict data protection agreements)</li>
+              <li>With service providers who assist in operating the Platform</li>
+              <li><strong>With AI Providers:</strong> Queries submitted to SwinglifyAI are sent securely to our LLM partners. We ensure these partners are prohibited from using your data to train their public models.</li>
             </ul>
 
             <h2>6. Cookies & Local Storage</h2>
@@ -95,11 +101,18 @@ export default function PrivacyPolicyPage() {
             <h2>9. Third-Party Services</h2>
             <p>The Platform may integrate with third-party services for market data, authentication (Google OAuth), and analytics. These services have their own privacy policies, and we encourage you to review them.</p>
 
-            <h2>10. Changes to This Policy</h2>
+            <h2>10. Public Community Data</h2>
+            <p>Information you post in the Swinglify Community (posts, symbols, comments) is visible to other users. Please exercise caution and do not share sensitive financial information in public forums. You can request the removal of your community content by contacting us.</p>
+
+            <h2>11. Children's Privacy</h2>
+            <p>Our Platform is not intended for use by individuals under the age of 18. We do not knowingly collect personal information from children.</p>
+
+            <h2>12. Changes to This Policy</h2>
             <p>We may update this Privacy Policy from time to time. We will notify you of any material changes through the Platform or via email. Your continued use constitutes acceptance of the updated policy.</p>
 
-            <h2>11. Contact Us</h2>
-            <p>For any privacy-related questions or requests, contact us at <strong>team@swinglify.online</strong>.</p>
+            <h2>13. Contact Us & Grievance Officer</h2>
+            <p>For any privacy-related questions, data deletion requests, or grievances under the Digital Personal Data Protection Act (DPDP), contact our Grievance Officer at:</p>
+            <p><strong>Email:</strong> team@swinglify.online</p>
           </div>
         </div>
       </div>

@@ -13,7 +13,7 @@ export default function AboutSection() {
       <h2 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: 8 }}>Swinglify</h2>
       
       <div className="set-about-version" style={{ marginBottom: 32 }}>
-        v1.0.0 (Beta)
+        v1.3.0
       </div>
 
       <div style={{ display: 'flex', gap: 16, marginBottom: 40 }}>
