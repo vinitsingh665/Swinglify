@@ -10,33 +10,57 @@ export async function GET() {
     const day = ist.getUTCDay();
     const timeInMinutes = hours * 60 + minutes;
 
-    const dateString = ist.toISOString().split('T')[0];
-    
-    // Add known NSE market holidays here (Format: 'YYYY-MM-DD')
-    const TRADING_HOLIDAYS = [
-      '2026-01-26', // Republic Day
-      '2026-03-20', // Example Festival
-      '2026-05-01', // Maharashtra Day
-      '2026-08-15', // Independence Day
-      '2026-10-02', // Gandhi Jayanti
-      '2026-11-09', // Diwali
-      '2026-12-25', // Christmas
-    ];
-
     const isWeekday = day >= 1 && day <= 5;
-    const isTradingDay = isWeekday && !TRADING_HOLIDAYS.includes(dateString);
-
     const marketOpen = 9 * 60 + 15;
     const marketClose = 15 * 60 + 30;
-    const isOpen = isTradingDay && timeInMinutes >= marketOpen && timeInMinutes <= marketClose;
-
+    const timeIsOpen = isWeekday && timeInMinutes >= marketOpen && timeInMinutes <= marketClose;
+    
     const preMarketOpen = 9 * 60;
-    const isPreMarket = isTradingDay && timeInMinutes >= preMarketOpen && timeInMinutes < marketOpen;
+    const isPreMarket = isWeekday && timeInMinutes >= preMarketOpen && timeInMinutes < marketOpen;
+
+    let isTradingDay = isWeekday; // Base assumption
+    let tvIsOpen = null;
+
+    // Fetch market status dynamically from TradingView via NIFTY update time
+    try {
+        const response = await fetch('https://scanner.tradingview.com/india/scan', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'User-Agent': 'Mozilla/5.0'
+            },
+            body: JSON.stringify({
+                symbols: { tickers: ["NSE:NIFTY"] },
+                columns: ["update_time"]
+            }),
+            next: { revalidate: 30 }
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            if (data?.data?.[0]?.d?.[0]) {
+                const updateTime = data.data[0].d[0];
+                const currentUnix = Math.floor(Date.now() / 1000);
+                
+                // If NIFTY has updated in the last 15 minutes, market is actively trading
+                tvIsOpen = (currentUnix - updateTime) < 900; 
+                
+                // If it should be open but NIFTY hasn't updated, it must be a holiday/closed
+                if (timeIsOpen && !tvIsOpen) {
+                    isTradingDay = false;
+                }
+            }
+        }
+    } catch (err) {
+        console.error('TradingView status fetch error:', err);
+    }
+
+    const isOpen = tvIsOpen !== null ? (timeIsOpen && tvIsOpen) : timeIsOpen;
 
     return NextResponse.json({
         success: true,
         isOpen,
-        isPreMarket,
+        isPreMarket: isPreMarket && isTradingDay,
         isTradingDay,
         status: isOpen ? 'OPEN' : isPreMarket ? 'PRE_MARKET' : 'CLOSED',
         currentTimeIST: ist.toISOString().replace('Z', '+05:30'),
