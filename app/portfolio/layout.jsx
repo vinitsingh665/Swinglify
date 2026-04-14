@@ -2,6 +2,8 @@ export const metadata = {
   title: 'Portfolio Tracker | Track Your Indian Stock Holdings & Returns',
   description: 'Free portfolio tracker for Indian stocks. Fast and accurate portfolio tracker to monitor NSE & BSE holdings, track profit/loss, and view allocation charts.',
   keywords: [
+    'screener portfolio',
+    'stock watcher',
     'portfolio tracker',
     'stock portfolio tracker india',
     'free portfolio tracker nse',
