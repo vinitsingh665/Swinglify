@@ -6,13 +6,15 @@ export default function AboutSection() {
 
   return (
     <div className="set-card" style={{ alignItems: 'center', textAlign: 'center', padding: '40px 20px' }}>
-      <div style={{ width: 64, height: 64, background: '#ffffff', borderRadius: 16, marginBottom: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 20px rgba(0,0,0,0.08)' }}>
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
-        </svg>
+      <div style={{ width: 64, height: 64, background: 'var(--accent)', borderRadius: 16, marginBottom: 16, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ width: 40, height: 40, background: '#ffffff', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+          </svg>
+        </div>
       </div>
       
-      <h2 style={{ fontSize: '1.75rem', fontWeight: 700, fontFamily: '"Quicksand", sans-serif', letterSpacing: '0.5px', marginBottom: 8 }}>Swinglify</h2>
+      <h2 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: 8 }}>Swinglify</h2>
       
       <div className="set-about-version" style={{ marginBottom: 32 }}>
         v1.3.0
