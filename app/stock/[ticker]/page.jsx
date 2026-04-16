@@ -61,7 +61,7 @@ async function getStockData(ticker) {
     return exactMatch || stocks[0];
   } catch (error) {
     console.error(`[Stock Page] Error fetching ${ticker}:`, error);
-    return null;
+    throw error;
   }
 }
 
@@ -209,21 +209,7 @@ export default async function StockPage({ params }) {
   const stock = await getStockData(ticker);
 
   if (!stock) {
-    return (
-      <div className="app-layout">
-        <Sidebar />
-        <div className="main-area">
-          <TopBar />
-          <div className="stock-page">
-            <div className="stock-not-found">
-              <h2>Stock Not Found</h2>
-              <p>We couldn't find data for "{ticker.toUpperCase()}". It may not be listed on NSE/BSE.</p>
-              <a href="/screener" className="stock-cta-btn primary">Browse All Stocks →</a>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+    notFound();
   }
 
   const s = stock;
