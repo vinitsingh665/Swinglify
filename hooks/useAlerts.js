@@ -1,9 +1,10 @@
 "use client";
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 
-export function useAlerts() {
+export function useAlerts({ pollInterval = 0 } = {}) {
   const [alerts, setAlerts] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
+  const pollRef = useRef(null);
 
   // Fetch alerts from MongoDB on mount
   const fetchAlerts = useCallback(async () => {
@@ -23,6 +24,14 @@ export function useAlerts() {
   useEffect(() => {
     fetchAlerts();
   }, [fetchAlerts]);
+
+  // Optional polling: auto-refresh to pick up triggered alerts from cron
+  useEffect(() => {
+    if (pollInterval > 0) {
+      pollRef.current = setInterval(fetchAlerts, pollInterval);
+      return () => clearInterval(pollRef.current);
+    }
+  }, [pollInterval, fetchAlerts]);
 
   const addAlert = async (alert) => {
     try {
@@ -72,5 +81,5 @@ export function useAlerts() {
     await updateAlert(id, { triggered: true, triggerPrice });
   };
 
-  return { alerts, isLoaded, addAlert, updateAlert, removeAlert, markTriggered };
+  return { alerts, isLoaded, fetchAlerts, addAlert, updateAlert, removeAlert, markTriggered };
 }

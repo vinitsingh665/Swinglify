@@ -31,6 +31,10 @@ const AlertSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+  triggeredAt: {
+    type: Date,
+    default: null
+  },
   expired: {
     type: Boolean,
     default: false

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
 import './alerts.css';
 import Sidebar from '../../components/Sidebar';
@@ -26,7 +26,92 @@ export default function AlertsPage() {
   
   const [toastMessage, setToastMessage] = useState('');
 
-  const { alerts, isLoaded, addAlert, updateAlert, removeAlert } = useAlerts();
+  const { alerts, isLoaded, addAlert, updateAlert, removeAlert, markTriggered } = useAlerts();
+
+  // ── Client-side alert checker: fetches live prices every 30s and evaluates conditions ──
+  const checkerRef = useRef(null);
+
+  const checkAlerts = useCallback(async () => {
+    // Get active (non-triggered) alerts
+    const activeAlerts = alerts.filter(a => !a.triggered && !a.expired);
+    if (activeAlerts.length === 0) return;
+
+    // Collect unique symbols
+    const uniqueSymbols = [...new Set(activeAlerts.map(a => a.symbol.toUpperCase()))];
+
+    try {
+      // Fetch live prices via portfolio-quotes API (batch)
+      const res = await fetch('/api/portfolio-quotes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ symbols: uniqueSymbols })
+      });
+      const data = await res.json();
+      if (!data.success || !data.data) return;
+
+      // Build symbol → stock data lookup
+      const priceMap = {};
+      for (const stock of data.data) {
+        priceMap[stock.symbol.toUpperCase()] = stock;
+      }
+
+      // Evaluate each active alert
+      for (const alert of activeAlerts) {
+        const stock = priceMap[alert.symbol.toUpperCase()];
+        if (!stock) continue;
+
+        let currentValue;
+        if (alert.type === 'volume') {
+          currentValue = stock.volume;
+        } else if (alert.type === 'rsi') {
+          currentValue = stock.rsi;
+        } else {
+          currentValue = stock.price; // default: price
+        }
+
+        if (currentValue === null || currentValue === undefined) continue;
+
+        const targetValue = parseFloat(alert.value);
+        if (isNaN(targetValue)) continue;
+
+        let isTriggered = false;
+
+        switch (alert.comparison) {
+          case 'Above':
+            isTriggered = currentValue >= targetValue;
+            break;
+          case 'Below':
+            isTriggered = currentValue <= targetValue;
+            break;
+          case 'Crosses':
+            // Trigger if price is within 1% of target
+            isTriggered = Math.abs(currentValue - targetValue) / targetValue <= 0.01;
+            break;
+          default:
+            isTriggered = currentValue >= targetValue;
+        }
+
+        if (isTriggered) {
+          await markTriggered(alert.id, currentValue);
+          const label = alert.type === 'price' ? '₹' : '';
+          setToastMessage(`🔔 Alert triggered! ${alert.symbol} ${alert.type} is now ${label}${currentValue} (${alert.comparison} ${label}${targetValue})`);
+        }
+      }
+    } catch (e) {
+      console.warn('Alert check failed:', e);
+    }
+  }, [alerts, markTriggered]);
+
+  // Run checker every 30 seconds
+  useEffect(() => {
+    if (!isLoaded) return;
+
+    // Run once immediately
+    checkAlerts();
+
+    checkerRef.current = setInterval(checkAlerts, 30000);
+    return () => clearInterval(checkerRef.current);
+  }, [isLoaded, checkAlerts]);
 
   // Auto-open create panel if ?symbol=XYZ
   useEffect(() => {
