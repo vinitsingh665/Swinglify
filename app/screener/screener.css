@@ -299,6 +299,37 @@
 .sr-signal.sell { color: var(--red-bright); background: var(--red-bg); border: 1px solid rgba(239,68,68,0.2); }
 .sr-signal.neutral { color: var(--text-muted); background: var(--bg-input); border: 1px solid var(--border); }
 
+/* TradingView hover action */
+.sr-tv-action {
+  position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+  opacity: 0; pointer-events: none; transition: opacity 0.2s;
+  background: linear-gradient(90deg, transparent, var(--bg-surface) 30%);
+  padding-left: 24px; height: 100%; display: flex; align-items: center;
+}
+.sr-row:hover .sr-tv-action { opacity: 1; pointer-events: auto; }
+.sr-row.selected .sr-tv-action { background: linear-gradient(90deg, transparent, var(--bg-hover) 30%); }
+
+.sr-tv-btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 5px 12px; border-radius: 7px;
+  border: 1px solid rgba(41, 98, 255, 0.3);
+  background: rgba(41, 98, 255, 0.08);
+  color: #5b9cf6;
+  font-size: 0.72rem; font-weight: 700;
+  text-decoration: none; white-space: nowrap;
+  transition: all 0.2s;
+  letter-spacing: 0.2px;
+}
+.sr-tv-btn:hover {
+  background: rgba(41, 98, 255, 0.18);
+  border-color: rgba(41, 98, 255, 0.5);
+  color: #7db4ff;
+  transform: scale(1.03);
+}
+.sr-tv-btn svg { flex-shrink: 0; }
+
+.sr-row { position: relative; }
+
 /* Pagination */
 .sr-pagination {
   display: flex; align-items: center; justify-content: center; gap: 16px;

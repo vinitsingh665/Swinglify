@@ -52,7 +52,7 @@ export default function StockModal({ symbol, onClose }) {
                 href={`/stock/${s.symbol}`}
                 style={{
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                  padding: '10px 20px', borderRadius: 10, marginBottom: 12,
+                  padding: '10px 20px', borderRadius: 10, marginBottom: 8,
                   background: 'var(--accent)', color: '#fff', textDecoration: 'none',
                   fontSize: '0.82rem', fontWeight: 700, transition: 'opacity 0.2s',
                   border: 'none', cursor: 'pointer',
@@ -62,6 +62,27 @@ export default function StockModal({ symbol, onClose }) {
               >
                 View Full Analysis →
               </Link>
+
+              {/* TradingView Link */}
+              <a
+                href={`https://www.tradingview.com/chart/?symbol=NSE%3A${s.symbol}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                  padding: '10px 20px', borderRadius: 10, marginBottom: 12,
+                  background: 'rgba(41, 98, 255, 0.1)', color: '#5b9cf6', textDecoration: 'none',
+                  fontSize: '0.82rem', fontWeight: 700, transition: 'all 0.2s',
+                  border: '1px solid rgba(41, 98, 255, 0.25)', cursor: 'pointer',
+                }}
+                onMouseOver={e => { e.currentTarget.style.background = 'rgba(41, 98, 255, 0.2)'; e.currentTarget.style.borderColor = 'rgba(41, 98, 255, 0.5)'; }}
+                onMouseOut={e => { e.currentTarget.style.background = 'rgba(41, 98, 255, 0.1)'; e.currentTarget.style.borderColor = 'rgba(41, 98, 255, 0.25)'; }}
+              >
+                <svg width="16" height="16" viewBox="0 0 36 28" fill="none">
+                  <path d="M14 22H7V11h7v11zm11 0h-7V6h7v16zm11 0h-7V0h7v22zM3 28H0V0h3v28z" fill="currentColor"/>
+                </svg>
+                View on TradingView ↗
+              </a>
 
               {/* AI Insight */}
               <AIInsight ticker={s.symbol} s={s} />

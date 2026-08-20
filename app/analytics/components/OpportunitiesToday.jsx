@@ -27,7 +27,7 @@ function OppTable({ stocks, showRatio }) {
         {stocks.map(s => {
           const isUp = (s.change || 0) >= 0;
           return (
-            <tr key={s.symbol}>
+            <tr key={s.symbol} className="opp-row-hover">
               <td>
                 <div className="opp-stock">
                   {s.logo ? <img src={s.logo} className="opp-logo" alt="" /> : <div className="opp-logo" style={{display:'flex',alignItems:'center',justifyContent:'center',fontSize:'10px',color:'var(--text-dim)',background:'var(--bg-input)'}}>{s.symbol[0]}</div>}
@@ -44,6 +44,23 @@ function OppTable({ stocks, showRatio }) {
               {showRatio && (
                 <td className="opp-vol-ratio">{s.volumeRatio}x</td>
               )}
+              {/* TradingView hover action */}
+              <td style={{ padding: 0, width: 0, border: 'none' }}>
+                <div className="opp-tv-action">
+                  <a
+                    href={`https://www.tradingview.com/chart/?symbol=NSE%3A${s.symbol}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="opp-tv-btn"
+                    title={`View ${s.symbol} on TradingView`}
+                  >
+                    <svg width="14" height="14" viewBox="0 0 36 28" fill="none">
+                      <path d="M14 22H7V11h7v11zm11 0h-7V6h7v16zm11 0h-7V0h7v22zM3 28H0V0h3v28z" fill="currentColor"/>
+                    </svg>
+                    <span>TradingView</span>
+                  </a>
+                </div>
+              </td>
             </tr>
           );
         })}

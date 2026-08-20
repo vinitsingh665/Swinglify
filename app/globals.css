@@ -2367,3 +2367,57 @@ body {
     font-size: 0.9rem;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TRADINGVIEW HOVER ACTIONS (Global — used by StockTable, MarketTable, WatchlistTable)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Dashboard StockTable hover overlay */
+.stock-table tbody tr { position: relative; }
+
+.st-tv-action {
+  position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+  opacity: 0; pointer-events: none; transition: opacity 0.2s;
+  background: linear-gradient(90deg, transparent, var(--bg-surface) 30%);
+  padding-left: 24px; height: 100%; display: flex; align-items: center;
+}
+.stock-table tbody tr:hover .st-tv-action { opacity: 1; pointer-events: auto; }
+
+.st-tv-btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 5px 12px; border-radius: 7px;
+  border: 1px solid rgba(41, 98, 255, 0.3);
+  background: rgba(41, 98, 255, 0.08);
+  color: #5b9cf6;
+  font-size: 0.72rem; font-weight: 700;
+  text-decoration: none; white-space: nowrap;
+  transition: all 0.2s;
+  letter-spacing: 0.2px;
+}
+.st-tv-btn:hover {
+  background: rgba(41, 98, 255, 0.18);
+  border-color: rgba(41, 98, 255, 0.5);
+  color: #7db4ff;
+  transform: scale(1.03);
+}
+.st-tv-btn svg { flex-shrink: 0; }
+
+/* Shared TradingView icon link button (MarketTable, WatchlistTable) */
+.tv-link-btn {
+  color: #5b9cf6 !important;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+.tv-link-btn:hover {
+  color: #7db4ff !important;
+  background: rgba(41, 98, 255, 0.15) !important;
+  border-color: rgba(41, 98, 255, 0.4) !important;
+}
+
+/* Hide TradingView hover labels on mobile — keep icon only */
+@media (max-width: 768px) {
+  .sr-tv-action,
+  .st-tv-action { display: none; }
+  .sr-tv-btn span,
+  .st-tv-btn span { display: none; }
+}

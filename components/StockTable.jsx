@@ -163,6 +163,24 @@ export default function StockTable({ stocks, loading, onOpenStock }) {
                       ))}
                     </div>
                   </td>
+
+                  {/* TradingView hover action */}
+                  <td style={{ padding: 0, width: 0, border: 'none' }}>
+                    <div className="st-tv-action" onClick={(e) => e.stopPropagation()}>
+                      <a
+                        href={`https://www.tradingview.com/chart/?symbol=NSE%3A${s.symbol}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="st-tv-btn"
+                        title={`View ${s.symbol} on TradingView`}
+                      >
+                        <svg width="14" height="14" viewBox="0 0 36 28" fill="none">
+                          <path d="M14 22H7V11h7v11zm11 0h-7V6h7v16zm11 0h-7V0h7v22zM3 28H0V0h3v28z" fill="currentColor"/>
+                        </svg>
+                        <span>TradingView</span>
+                      </a>
+                    </div>
+                  </td>
                 </tr>
               );
             })}

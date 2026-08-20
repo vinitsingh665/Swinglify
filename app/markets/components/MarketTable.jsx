@@ -141,17 +141,29 @@ export default function MarketTable({ stocks, loading, onOpenStock }) {
                          <MiniChart change={stock.change} />
                        </div>
                        <div className="action-view">
-                         <button 
-                           className={`ra-btn ${inWatchlist ? 'active' : ''}`} 
-                           title={inWatchlist ? 'Remove from Watchlist' : 'Add to Watchlist'}
-                           onClick={(e) => handleToggleWatchlist(e, stock.symbol)}
-                           style={inWatchlist ? { background: 'var(--accent-bg)', borderColor: 'var(--accent)' } : {}}
-                         >
-                           {inWatchlist ? '★' : '⭐'}
-                         </button>
-                         <button className="ra-btn" title="Set Alert" onClick={(e) => { e.stopPropagation(); window.location.href = '/alerts?symbol=' + stock.symbol; }}>🔔</button>
-                         <button className="ra-btn" title="Add to Portfolio" onClick={(e) => { e.stopPropagation(); window.location.href = '/portfolio?symbol=' + stock.symbol; }}>💼</button>
-                       </div>
+                          <a
+                            href={`https://www.tradingview.com/chart/?symbol=NSE%3A${stock.symbol}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="ra-btn tv-link-btn"
+                            title={`View ${stock.symbol} on TradingView`}
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <svg width="14" height="14" viewBox="0 0 36 28" fill="none">
+                              <path d="M14 22H7V11h7v11zm11 0h-7V6h7v16zm11 0h-7V0h7v22zM3 28H0V0h3v28z" fill="currentColor"/>
+                            </svg>
+                          </a>
+                          <button 
+                            className={`ra-btn ${inWatchlist ? 'active' : ''}`} 
+                            title={inWatchlist ? 'Remove from Watchlist' : 'Add to Watchlist'}
+                            onClick={(e) => handleToggleWatchlist(e, stock.symbol)}
+                            style={inWatchlist ? { background: 'var(--accent-bg)', borderColor: 'var(--accent)' } : {}}
+                          >
+                            {inWatchlist ? '★' : '⭐'}
+                          </button>
+                          <button className="ra-btn" title="Set Alert" onClick={(e) => { e.stopPropagation(); window.location.href = '/alerts?symbol=' + stock.symbol; }}>🔔</button>
+                          <button className="ra-btn" title="Add to Portfolio" onClick={(e) => { e.stopPropagation(); window.location.href = '/portfolio?symbol=' + stock.symbol; }}>💼</button>
+                        </div>
                      </div>
                   </td>
                 </tr>

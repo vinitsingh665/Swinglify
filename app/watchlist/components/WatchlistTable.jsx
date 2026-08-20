@@ -118,6 +118,18 @@ export default function WatchlistTable({ stocks, loading, symbolsCount, onRemove
 
                 <td style={{ padding: 0, width: 0, border: 'none' }}>
                   <div className="wl-actions" onClick={(e) => e.stopPropagation()}>
+                    <a
+                      href={`https://www.tradingview.com/chart/?symbol=NSE%3A${s.symbol}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="wl-btn tv-link-btn"
+                      title={`View ${s.symbol} on TradingView`}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <svg width="13" height="13" viewBox="0 0 36 28" fill="none">
+                        <path d="M14 22H7V11h7v11zm11 0h-7V6h7v16zm11 0h-7V0h7v22zM3 28H0V0h3v28z" fill="currentColor"/>
+                      </svg>
+                    </a>
                     <button className="wl-btn" title="Add to Portfolio" onClick={(e) => { e.stopPropagation(); window.location.href = `/portfolio?symbol=${s.symbol}`; }}>💼</button>
                     <button className="wl-btn" title="Set Alert" onClick={(e) => { e.stopPropagation(); window.location.href = `/alerts?symbol=${s.symbol}`; }}>🔔</button>
                     <button className="wl-btn danger" title="Remove" onClick={(e) => { e.stopPropagation(); onRemove(s.symbol); }}>⭐</button>

@@ -267,6 +267,23 @@ export default function ScreenerTable({ stocks, loading, sortBy, sortOrder, onSo
                       {s.marketCap ? (s.marketCap >= 10000000000000 ? `${(s.marketCap/10000000000000).toFixed(1)}L Cr` : s.marketCap >= 100000000000 ? `${(s.marketCap/10000000).toFixed(0)} Cr` : s.marketCap >= 10000000 ? `${(s.marketCap/10000000).toFixed(0)} Cr` : '—') : '—'}
                     </span>
                   </td>
+                  {/* TradingView hover action */}
+                  <td style={{ padding: 0, width: 0, border: 'none' }}>
+                    <div className="sr-tv-action" onClick={(e) => e.stopPropagation()}>
+                      <a
+                        href={`https://www.tradingview.com/chart/?symbol=NSE%3A${s.symbol}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="sr-tv-btn"
+                        title={`View ${s.symbol} on TradingView`}
+                      >
+                        <svg width="16" height="16" viewBox="0 0 36 28" fill="none">
+                          <path d="M14 22H7V11h7v11zm11 0h-7V6h7v16zm11 0h-7V0h7v22zM3 28H0V0h3v28z" fill="currentColor"/>
+                        </svg>
+                        <span>TradingView</span>
+                      </a>
+                    </div>
+                  </td>
                 </tr>
                 {selectedSymbol === s.symbol && <InlineInsights stock={s} />}
               </React.Fragment>

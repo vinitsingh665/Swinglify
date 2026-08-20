@@ -194,6 +194,36 @@
 .opp-vol { font-family: var(--font-mono); color: var(--text-secondary); font-size: 0.78rem; }
 .opp-vol-ratio { font-family: var(--font-mono); color: var(--accent); font-weight: 700; font-size: 0.78rem; }
 
+/* TradingView hover action */
+.opp-row-hover { position: relative; cursor: pointer; }
+
+.opp-tv-action {
+  position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+  opacity: 0; pointer-events: none; transition: opacity 0.2s;
+  background: linear-gradient(90deg, transparent, var(--bg-surface) 30%);
+  padding-left: 24px; height: 100%; display: flex; align-items: center;
+}
+.opp-row-hover:hover .opp-tv-action { opacity: 1; pointer-events: auto; }
+
+.opp-tv-btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 5px 12px; border-radius: 7px;
+  border: 1px solid rgba(41, 98, 255, 0.3);
+  background: rgba(41, 98, 255, 0.08);
+  color: #5b9cf6;
+  font-size: 0.72rem; font-weight: 700;
+  text-decoration: none; white-space: nowrap;
+  transition: all 0.2s;
+  letter-spacing: 0.2px;
+}
+.opp-tv-btn:hover {
+  background: rgba(41, 98, 255, 0.18);
+  border-color: rgba(41, 98, 255, 0.5);
+  color: #7db4ff;
+  transform: scale(1.03);
+}
+.opp-tv-btn svg { flex-shrink: 0; }
+
 /* ─── Market Trends ─── */
 .mkt-trends {
   background: var(--bg-surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px;
