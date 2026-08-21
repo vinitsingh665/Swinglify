@@ -7,6 +7,19 @@ import '../info.css';
 
 const CHANGELOG = [
   {
+    version: '1.4.0',
+    date: 'August 21, 2026',
+    title: 'TradingView Integration & AI Engine Upgrade 🧠📈',
+    items: [
+      { type: 'new', text: 'View on TradingView — hover over any stock row to instantly open its live chart on TradingView' },
+      { type: 'new', text: 'TradingView button available across Screener, Markets, Watchlist, Dashboard, Analytics, and Stock Modal' },
+      { type: 'new', text: 'Smooth fade-in hover animation with gradient background, matching the platform\'s design language' },
+      { type: 'improve', text: 'AI Engine upgraded from Llama 3.1 8B to OpenAI GPT-OSS-120B — a 120B parameter Mixture-of-Experts model' },
+      { type: 'improve', text: 'Significantly smarter and more detailed AI-powered stock insights, sector analysis, and market forecasts' },
+      { type: 'improve', text: 'AI-generated smart alert suggestions are now more accurate and context-aware' },
+    ],
+  },
+  {
     version: '1.3.0',
     date: 'April 10, 2026',
     title: 'SEO & Performance Overhaul ⚡',
