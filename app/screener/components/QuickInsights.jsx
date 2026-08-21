@@ -233,7 +233,7 @@ function AIInsight({ ticker, s }) {
       <div className="ai-insight-header">
         <span className="ai-param-icon">✨</span> 
         <span className="ai-insight-title">AI Insight</span>
-        <span className="ai-insight-badge" style={{ fontSize: '0.6rem', padding: '1px 5px' }}>Llama 3</span>
+        <span className="ai-insight-badge" style={{ fontSize: '0.6rem', padding: '1px 5px' }}>GPT-OSS</span>
       </div>
       <div className="ai-insight-body">
         {loading ? (

@@ -36,7 +36,7 @@ export function AIInsightWidget({ ticker, price, rsi, recommendation }) {
       <div className="ai-insight-header">
         <span className="ai-param-icon">✨</span>
         <span className="ai-insight-title">AI Insight</span>
-        <span className="ai-insight-badge">Llama 3</span>
+        <span className="ai-insight-badge">GPT-OSS</span>
       </div>
       <div className="ai-insight-body">
         {loading ? (
