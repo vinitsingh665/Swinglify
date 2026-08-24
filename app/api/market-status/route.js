@@ -22,6 +22,7 @@ export async function GET() {
     let tvIsOpen = null;
 
     // Fetch market status dynamically from TradingView via NIFTY update time
+    // Used ONLY to detect holidays — not to override the time-based open/closed check
     try {
         const response = await fetch('https://scanner.tradingview.com/india/scan', {
             method: 'POST',
@@ -41,17 +42,15 @@ export async function GET() {
             if (data?.data?.[0]?.d?.[0]) {
                 const updateTime = data.data[0].d[0];
                 const currentUnix = Math.floor(Date.now() / 1000);
+                const staleness = currentUnix - updateTime;
                 
-                // If NIFTY has updated in the last 60 minutes, market is actively trading
-                tvIsOpen = (currentUnix - updateTime) < 3600; 
-                
-                // Grace period: don't override trading day status in the first 30 min after open
-                // TradingView data may lag at market open
+                // Holiday detection: If it's been 4+ hours since NIFTY last updated,
+                // AND we're well past market open (45+ min), it's likely a holiday
                 const minutesSinceOpen = timeInMinutes - marketOpen;
-                const inGracePeriod = isWeekday && minutesSinceOpen >= 0 && minutesSinceOpen <= 30;
+                const wellPastOpen = minutesSinceOpen >= 45;
                 
-                // If it should be open but NIFTY hasn't updated AND we're past grace period, it's likely a holiday
-                if (timeIsOpen && !tvIsOpen && !inGracePeriod) {
+                if (timeIsOpen && staleness > 14400 && wellPastOpen) {
+                    // NIFTY hasn't updated in 4+ hours during market hours — holiday
                     isTradingDay = false;
                 }
             }
@@ -60,14 +59,16 @@ export async function GET() {
         console.error('TradingView status fetch error:', err);
     }
 
-    const isOpen = tvIsOpen !== null ? (timeIsOpen && tvIsOpen) : timeIsOpen;
+    // Time-based check is the primary source of truth
+    // Only mark closed if we've confirmed it's not a trading day (holiday)
+    const isOpen = timeIsOpen && isTradingDay;
 
     return NextResponse.json({
         success: true,
         isOpen,
         isPreMarket: isPreMarket && isTradingDay,
         isTradingDay,
-        status: isOpen ? 'OPEN' : isPreMarket ? 'PRE_MARKET' : 'CLOSED',
+        status: isOpen ? 'OPEN' : (isPreMarket && isTradingDay) ? 'PRE_MARKET' : 'CLOSED',
         currentTimeIST: ist.toISOString().replace('Z', '+05:30'),
         tradingHours: '9:15 AM - 3:30 PM IST (Mon-Fri)',
         nextOpen: !isOpen ? getNextOpenTime(ist) : null
