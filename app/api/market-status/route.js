@@ -41,10 +41,45 @@ export async function GET() {
     const preMarketOpen = 9 * 60;
     const isPreMarket = isWeekday && timeInMinutes >= preMarketOpen && timeInMinutes < marketOpen;
 
-    // Check if today is a known NSE holiday
+    // Step 1: Check known NSE holidays
     const todayIST = ist.toISOString().slice(0, 10); // YYYY-MM-DD
-    const isHoliday = NSE_HOLIDAYS_2026.includes(todayIST);
-    const isTradingDay = isWeekday && !isHoliday;
+    const isKnownHoliday = NSE_HOLIDAYS_2026.includes(todayIST);
+    let isTradingDay = isWeekday && !isKnownHoliday;
+
+    // Step 2: Smart fallback — detect unexpected closures (govt orders, circuit breakers, etc.)
+    // Only kicks in after 10:45 AM IST (90 min after open) to avoid false triggers on Monday mornings
+    const minutesSinceOpen = timeInMinutes - marketOpen;
+    if (isTradingDay && timeIsOpen && minutesSinceOpen >= 90) {
+        try {
+            const response = await fetch('https://scanner.tradingview.com/india/scan', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'User-Agent': 'Mozilla/5.0' },
+                body: JSON.stringify({
+                    symbols: { tickers: ["NSE:NIFTY"] },
+                    columns: ["update_time"]
+                }),
+                next: { revalidate: 60 }
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                if (data?.data?.[0]?.d?.[0]) {
+                    const updateTime = data.data[0].d[0];
+                    // Convert NIFTY's last update time to IST date string
+                    const updateIST = new Date((updateTime * 1000) + istOffset);
+                    const updateDateIST = updateIST.toISOString().slice(0, 10);
+                    
+                    // If NIFTY's last update date is NOT today, market likely didn't open
+                    if (updateDateIST !== todayIST) {
+                        isTradingDay = false;
+                    }
+                }
+            }
+        } catch (err) {
+            // If TradingView fetch fails, trust the time-based check (fail-open)
+            console.error('TradingView status fetch error:', err);
+        }
+    }
 
     const isOpen = timeIsOpen && isTradingDay;
 
