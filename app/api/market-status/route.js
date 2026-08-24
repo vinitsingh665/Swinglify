@@ -24,6 +24,11 @@ const NSE_HOLIDAYS_2026 = [
     '2026-12-25', // Christmas
 ];
 
+// Multiple blue-chip stocks for reliable confirmation (not just NIFTY which can be stale)
+const CONFIRMATION_TICKERS = [
+    "NSE:RELIANCE", "NSE:TCS", "NSE:HDFCBANK", "NSE:INFY", "NSE:ICICIBANK"
+];
+
 export async function GET() {
     const now = new Date();
     const istOffset = 5.5 * 60 * 60 * 1000;
@@ -46,8 +51,8 @@ export async function GET() {
     const isKnownHoliday = NSE_HOLIDAYS_2026.includes(todayIST);
     let isTradingDay = isWeekday && !isKnownHoliday;
 
-    // Step 2: Smart fallback — detect unexpected closures (govt orders, circuit breakers, etc.)
-    // Only kicks in after 10:45 AM IST (90 min after open) to avoid false triggers on Monday mornings
+    // Step 2: Smart fallback for unexpected closures (govt orders, circuit breakers, etc.)
+    // Only activates after 10:45 AM IST (90 min after open) to let TradingView data catch up
     const minutesSinceOpen = timeInMinutes - marketOpen;
     if (isTradingDay && timeIsOpen && minutesSinceOpen >= 90) {
         try {
@@ -55,7 +60,7 @@ export async function GET() {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'User-Agent': 'Mozilla/5.0' },
                 body: JSON.stringify({
-                    symbols: { tickers: ["NSE:NIFTY"] },
+                    symbols: { tickers: CONFIRMATION_TICKERS },
                     columns: ["update_time"]
                 }),
                 next: { revalidate: 60 }
@@ -63,14 +68,21 @@ export async function GET() {
             
             if (response.ok) {
                 const data = await response.json();
-                if (data?.data?.[0]?.d?.[0]) {
-                    const updateTime = data.data[0].d[0];
-                    // Convert NIFTY's last update time to IST date string
-                    const updateIST = new Date((updateTime * 1000) + istOffset);
-                    const updateDateIST = updateIST.toISOString().slice(0, 10);
+                if (data?.data?.length) {
+                    // Count how many stocks have updated today
+                    let updatedToday = 0;
+                    for (const stock of data.data) {
+                        const updateTime = stock?.d?.[0];
+                        if (updateTime) {
+                            const updateIST = new Date((updateTime * 1000) + istOffset);
+                            const updateDateIST = updateIST.toISOString().slice(0, 10);
+                            if (updateDateIST === todayIST) updatedToday++;
+                        }
+                    }
                     
-                    // If NIFTY's last update date is NOT today, market likely didn't open
-                    if (updateDateIST !== todayIST) {
+                    // Majority vote: if NONE of the 5 stocks updated today, market is likely closed
+                    // Even 1 stock updating today means market is open
+                    if (updatedToday === 0) {
                         isTradingDay = false;
                     }
                 }
