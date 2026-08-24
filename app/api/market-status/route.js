@@ -42,11 +42,16 @@ export async function GET() {
                 const updateTime = data.data[0].d[0];
                 const currentUnix = Math.floor(Date.now() / 1000);
                 
-                // If NIFTY has updated in the last 15 minutes, market is actively trading
-                tvIsOpen = (currentUnix - updateTime) < 900; 
+                // If NIFTY has updated in the last 60 minutes, market is actively trading
+                tvIsOpen = (currentUnix - updateTime) < 3600; 
                 
-                // If it should be open but NIFTY hasn't updated, it must be a holiday/closed
-                if (timeIsOpen && !tvIsOpen) {
+                // Grace period: don't override trading day status in the first 30 min after open
+                // TradingView data may lag at market open
+                const minutesSinceOpen = timeInMinutes - marketOpen;
+                const inGracePeriod = isWeekday && minutesSinceOpen >= 0 && minutesSinceOpen <= 30;
+                
+                // If it should be open but NIFTY hasn't updated AND we're past grace period, it's likely a holiday
+                if (timeIsOpen && !tvIsOpen && !inGracePeriod) {
                     isTradingDay = false;
                 }
             }
