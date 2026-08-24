@@ -1,6 +1,29 @@
 import { NextResponse } from 'next/server';
 import { getNextOpenTime } from '../../../lib/api-core';
 
+// NSE holidays for 2026 (date strings in IST: YYYY-MM-DD)
+const NSE_HOLIDAYS_2026 = [
+    '2026-01-26', // Republic Day
+    '2026-02-19', // Chhatrapati Shivaji Maharaj Jayanti  
+    '2026-03-14', // Holi
+    '2026-03-31', // Idul Fitr (Ramadan Eid)
+    '2026-04-02', // Good Friday
+    '2026-04-06', // Shri Ram Navami
+    '2026-04-14', // Dr. Baba Saheb Ambedkar Jayanti
+    '2026-05-01', // May Day / Maharashtra Day
+    '2026-06-07', // Eid-Ul-Adha (Bakri Eid)
+    '2026-07-07', // Muharram
+    '2026-08-15', // Independence Day
+    '2026-08-26', // Janmashtami
+    '2026-09-05', // Milad-un-Nabi
+    '2026-10-02', // Mahatma Gandhi Jayanti
+    '2026-10-20', // Dussehra
+    '2026-11-09', // Diwali (Laxmi Pujan)
+    '2026-11-10', // Diwali (Balipratipada)
+    '2026-11-30', // Guru Nanak Jayanti
+    '2026-12-25', // Christmas
+];
+
 export async function GET() {
     const now = new Date();
     const istOffset = 5.5 * 60 * 60 * 1000;
@@ -18,49 +41,11 @@ export async function GET() {
     const preMarketOpen = 9 * 60;
     const isPreMarket = isWeekday && timeInMinutes >= preMarketOpen && timeInMinutes < marketOpen;
 
-    let isTradingDay = isWeekday; // Base assumption
-    let tvIsOpen = null;
+    // Check if today is a known NSE holiday
+    const todayIST = ist.toISOString().slice(0, 10); // YYYY-MM-DD
+    const isHoliday = NSE_HOLIDAYS_2026.includes(todayIST);
+    const isTradingDay = isWeekday && !isHoliday;
 
-    // Fetch market status dynamically from TradingView via NIFTY update time
-    // Used ONLY to detect holidays — not to override the time-based open/closed check
-    try {
-        const response = await fetch('https://scanner.tradingview.com/india/scan', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'User-Agent': 'Mozilla/5.0'
-            },
-            body: JSON.stringify({
-                symbols: { tickers: ["NSE:NIFTY"] },
-                columns: ["update_time"]
-            }),
-            next: { revalidate: 30 }
-        });
-        
-        if (response.ok) {
-            const data = await response.json();
-            if (data?.data?.[0]?.d?.[0]) {
-                const updateTime = data.data[0].d[0];
-                const currentUnix = Math.floor(Date.now() / 1000);
-                const staleness = currentUnix - updateTime;
-                
-                // Holiday detection: If it's been 4+ hours since NIFTY last updated,
-                // AND we're well past market open (45+ min), it's likely a holiday
-                const minutesSinceOpen = timeInMinutes - marketOpen;
-                const wellPastOpen = minutesSinceOpen >= 45;
-                
-                if (timeIsOpen && staleness > 14400 && wellPastOpen) {
-                    // NIFTY hasn't updated in 4+ hours during market hours — holiday
-                    isTradingDay = false;
-                }
-            }
-        }
-    } catch (err) {
-        console.error('TradingView status fetch error:', err);
-    }
-
-    // Time-based check is the primary source of truth
-    // Only mark closed if we've confirmed it's not a trading day (holiday)
     const isOpen = timeIsOpen && isTradingDay;
 
     return NextResponse.json({
