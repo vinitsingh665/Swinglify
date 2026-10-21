@@ -36,6 +36,13 @@ export async function GET() {
     // 3. Fetch Real Live Active Users from MongoDB (only those active in last 2 mins)
     const twoMinutesAgo = new Date(now.getTime() - 120000);
     const liveUsers = await Visitor.countDocuments({ lastActive: { $gt: twoMinutesAgo } });
+    const liveMembers = await Visitor.countDocuments({
+      lastActive: { $gt: twoMinutesAgo },
+      $or: [
+        { userId: { $ne: null } },
+        { userEmail: { $ne: null } }
+      ]
+    });
 
     // Active Alerts (Still simulated until we create the Alerts DB models)
     const activeAlerts = 1428 + Math.floor(Math.random() * 10);
@@ -51,6 +58,8 @@ export async function GET() {
       success: true,
       data: {
         liveUsers,
+        liveMembers,
+
         activeAlerts,
         databaseLoad,
         cacheHitRate,

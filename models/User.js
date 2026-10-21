@@ -50,10 +50,19 @@ const UserSchema = new mongoose.Schema({
     type: [String],
     default: []
   },
+  lastSeen: {
+    type: Date,
+    default: null
+  },
   createdAt: {
     type: Date,
     default: Date.now
   }
 });
 
+if (mongoose.models.User && !mongoose.models.User.schema.paths.lastSeen) {
+  delete mongoose.models.User;
+}
+
 export default mongoose.models.User || mongoose.model('User', UserSchema);
+

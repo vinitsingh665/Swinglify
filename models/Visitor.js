@@ -6,12 +6,22 @@ const VisitorSchema = new mongoose.Schema({
     required: true,
     unique: true
   },
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    default: null
+  },
+  userEmail: {
+    type: String,
+    default: null
+  },
   ip: String,
   path: String,
   userAgent: String,
   lastActive: {
     type: Date,
-    default: Date.now
+    default: Date.now,
+    index: true
   },
   createdAt: {
     type: Date,
@@ -20,5 +30,14 @@ const VisitorSchema = new mongoose.Schema({
   }
 });
 
+VisitorSchema.index({ userId: 1, lastActive: -1 });
+VisitorSchema.index({ userEmail: 1, lastActive: -1 });
+
+// Reset cached model in dev if schema changed
+if (mongoose.models.Visitor && !mongoose.models.Visitor.schema.paths.userId) {
+  delete mongoose.models.Visitor;
+}
+
 // Avoid re-compiling the model
 export default mongoose.models.Visitor || mongoose.model('Visitor', VisitorSchema);
+
