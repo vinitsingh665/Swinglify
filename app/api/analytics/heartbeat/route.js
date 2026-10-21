@@ -14,7 +14,13 @@ export async function POST(req) {
       return NextResponse.json({ success: false, error: 'Session ID required' }, { status: 400 });
     }
 
+    // Gracefully handle local dev when MONGODB_URI is not yet configured
+    if (!process.env.MONGODB_URI || !process.env.MONGODB_URI.trim()) {
+      return NextResponse.json({ success: true, activeCount: 1 });
+    }
+
     await dbConnect();
+
 
     // Verify or retrieve server-side NextAuth session if available
     if (!userId || !userEmail) {

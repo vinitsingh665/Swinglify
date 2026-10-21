@@ -1,4 +1,5 @@
 import { fetchFromTradingView, parseStockData, getCached, setCache, FIELDS } from '../../../lib/api-core';
+import { INDEX_CONSTITUENTS } from '../../../lib/index-constituents';
 
 const NSE_BASE = [
     { left: 'is_primary', operation: 'equal', right: true },
@@ -26,6 +27,7 @@ export async function POST(request) {
         const body = await request.json();
         const {
             exchange = 'NSE',
+            index = null,
             priceMin, priceMax,
             changeMin,
             volumeMin,
@@ -46,11 +48,26 @@ export async function POST(request) {
             return Response.json(cached);
         }
 
-        // Build dynamic filter
-        const filters = exchange === 'BSE' ? [...BSE_BASE] : [...NSE_BASE];
+        const indexKey = index ? index.toLowerCase() : null;
+        let symbolsParam = { query: { types: ['stock'] } };
+        let isIndexMode = false;
 
-        // Always require some market cap minimum to filter noise
-        filters.push({ left: 'market_cap_basic', operation: 'greater', right: 1000000000 });
+        if (indexKey && INDEX_CONSTITUENTS[indexKey]) {
+            isIndexMode = true;
+            const constituents = INDEX_CONSTITUENTS[indexKey];
+            const prefix = exchange === 'BSE' ? 'BSE:' : 'NSE:';
+            const tickers = constituents.map(s => prefix + s.replace(/-/g, '_'));
+            symbolsParam = { tickers };
+        }
+
+        // Build dynamic filter
+        const filters = [];
+        if (!isIndexMode) {
+            filters.push(...(exchange === 'BSE' ? BSE_BASE : NSE_BASE));
+            // Always require some market cap minimum to filter noise for global scans
+            filters.push({ left: 'market_cap_basic', operation: 'greater', right: 1000000000 });
+        }
+
 
         // Price range
         if (priceMin) filters.push({ left: 'close', operation: 'greater', right: Number(priceMin) });
@@ -100,11 +117,12 @@ export async function POST(request) {
 
         const tvBody = {
             filter: filters,
-            symbols: { query: { types: ['stock'] } },
+            symbols: symbolsParam,
             columns: FIELDS,
             sort: { sortBy: sortMap[sortBy] || 'volume', sortOrder: sortOrder || 'desc' },
-            range: [0, Math.min(Number(limit), 1000)]
+            range: [0, isIndexMode ? Math.min(symbolsParam.tickers.length, 1000) : Math.min(Number(limit), 1000)]
         };
+
 
         const tvData = await fetchFromTradingView(tvBody);
         const stocks = parseStockData(tvData);

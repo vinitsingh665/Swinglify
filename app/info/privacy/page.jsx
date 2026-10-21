@@ -112,7 +112,7 @@ export default function PrivacyPolicyPage() {
 
             <h2>13. Contact Us & Grievance Officer</h2>
             <p>For any privacy-related questions, data deletion requests, or grievances under the Digital Personal Data Protection Act (DPDP), contact our Grievance Officer at:</p>
-            <p><strong>Email:</strong> team@swinglify.online</p>
+            <p><strong>Email:</strong> swinglify@gmail.com</p>
           </div>
         </div>
       </div>

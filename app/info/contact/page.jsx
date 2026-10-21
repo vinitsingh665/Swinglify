@@ -63,15 +63,17 @@ export default function ContactSupportPage() {
           <p className="info-subtitle">We're here to help. Reach out via any channel below or send us a message.</p>
 
           <div className="contact-methods">
-            <div className="contact-method">
+            <div className="contact-method" onClick={() => window.open('mailto:swinglify@gmail.com', '_blank')} style={{ cursor: 'pointer' }}>
               <div className="contact-method-icon">📧</div>
               <div className="contact-method-label">Email</div>
-              <div className="contact-method-desc">team@swinglify.online</div>
+              <div className="contact-method-desc">swinglify@gmail.com</div>
             </div>
-            <div className="contact-method">
+            <div className="contact-method contact-method-disabled" title="Live Chat is currently disabled" aria-disabled="true">
               <div className="contact-method-icon">💬</div>
-              <div className="contact-method-label">Live Chat</div>
-              <div className="contact-method-desc">Mon-Fri, 9AM-6PM IST</div>
+              <div className="contact-method-label">
+                Live Chat <span className="contact-disabled-badge">Disabled</span>
+              </div>
+              <div className="contact-method-desc">Currently Unavailable</div>
             </div>
             <div className="contact-method">
               <div className="contact-method-icon">🐦</div>

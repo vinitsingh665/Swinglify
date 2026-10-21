@@ -176,10 +176,26 @@ function InlineAIInsight({ ticker, s }) {
   );
 }
 
-export default function ScreenerTable({ stocks, loading, sortBy, sortOrder, onSort, selectedSymbol, onSelect }) {
+export default function ScreenerTable({ 
+  stocks, 
+  loading, 
+  sortBy, 
+  sortOrder, 
+  onSort, 
+  selectedSymbol, 
+  onSelect,
+  selectedIndex,
+  selectedIndexLabel,
+  onClearIndex
+}) {
   const [page, setPage] = useState(1);
   const totalPages = Math.ceil((stocks?.length || 0) / ITEMS_PER_PAGE);
   const paged = (stocks || []).slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
+
+  // Reset page when index or stocks list changes
+  useEffect(() => {
+    setPage(1);
+  }, [selectedIndex, stocks?.length]);
 
   const handleSort = (col) => {
     if (sortBy === col) {
@@ -211,9 +227,21 @@ export default function ScreenerTable({ stocks, loading, sortBy, sortOrder, onSo
   return (
     <div className="screener-results">
       <div className="sr-header">
-        <span className="sr-count"><strong>{stocks?.length || 0}</strong> stocks found</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+          <span className="sr-count"><strong>{stocks?.length || 0}</strong> stocks found</span>
+          {selectedIndex && selectedIndexLabel && (
+            <div className="sr-active-index-pill">
+              <span className="sr-aip-dot"></span>
+              <span>{selectedIndexLabel}</span>
+              {onClearIndex && (
+                <button onClick={onClearIndex} title="Clear index filter" className="sr-aip-clear">✕</button>
+              )}
+            </div>
+          )}
+        </div>
         {totalPages > 1 && <span className="sr-page-info">Page {page} of {totalPages}</span>}
       </div>
+
 
       <div className="sr-table-wrap">
         <table className="sr-table">

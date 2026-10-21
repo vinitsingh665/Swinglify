@@ -41,6 +41,41 @@ const DEFAULT_FILTERS = {
   sortBy: 'volume', sortOrder: 'desc'
 };
 
+const INDEX_LABEL_MAP = {
+  nifty50: 'Nifty 50',
+  niftynext50: 'Nifty Next 50',
+  nifty100: 'Nifty 100',
+  nifty200: 'Nifty 200',
+  nifty500: 'Nifty 500',
+  midcap50: 'Midcap 50',
+  midcap100: 'Midcap 100',
+  midcap150: 'Midcap 150',
+  smallcap50: 'Smallcap 50',
+  smallcap100: 'Smallcap 100',
+  smallcap250: 'Smallcap 250',
+  microcap250: 'Microcap 250',
+  largemidcap250: 'LargeMidcap 250',
+  midsmall400: 'MidSmall 400',
+  banknifty: 'Bank Nifty',
+  financial: 'Nifty Financial',
+  niftyit: 'Nifty IT',
+  pharma: 'Nifty Pharma',
+  auto: 'Nifty Auto',
+  fmcg: 'Nifty FMCG',
+  metal: 'Nifty Metal',
+  realty: 'Nifty Realty',
+  energy: 'Nifty Energy',
+  infra: 'Nifty Infra',
+  healthcare: 'Healthcare',
+  media: 'Nifty Media',
+  consumer: 'Consumer',
+  oilgas: 'Oil & Gas',
+  gainers: 'Top Gainers',
+  losers: 'Top Losers',
+  mostactive: 'Most Active'
+};
+
+
 export default function ScreenerClient({ initialStocks = [], initialSectors = [] }) {
   const searchParams = useSearchParams();
   const [theme, setThemeState] = useState('dark');
@@ -59,6 +94,9 @@ export default function ScreenerClient({ initialStocks = [], initialSectors = []
   useEffect(() => {
     const params = Object.fromEntries(searchParams.entries());
     if (Object.keys(params).length > 0) {
+      if (params.index || params.category) {
+        setSelectedIndex(params.index || params.category);
+      }
       setTimeframe(''); // Clear timeframe toggle since custom filters are applied
       setFilters(prev => ({
         ...prev,
@@ -109,13 +147,14 @@ export default function ScreenerClient({ initialStocks = [], initialSectors = []
       setLoading(true);
 
       if (selectedIndex) {
-        // Fetch from category API when an index is selected
-        const res = await fetch(`/api/stocks/${selectedIndex}?exchange=${filters.exchange}`);
+        // Fetch from category API when an index is selected (up to 1000 to cover Nifty 500 etc.)
+        const res = await fetch(`/api/stocks/${selectedIndex}?exchange=${filters.exchange}&limit=1000`);
         const data = await res.json();
         if (data.success) {
           setStocks(data.data);
         }
       } else {
+
         // Fetch from custom screener API
         const res = await fetch('/api/screener', {
           method: 'POST',
@@ -306,7 +345,11 @@ export default function ScreenerClient({ initialStocks = [], initialSectors = []
               onSort={handleSort}
               selectedSymbol={selectedStock?.symbol}
               onSelect={setSelectedStock}
+              selectedIndex={selectedIndex}
+              selectedIndexLabel={INDEX_LABEL_MAP[selectedIndex] || selectedIndex}
+              onClearIndex={() => setSelectedIndex(null)}
             />
+
 
             {/* Right: Quick Insights */}
             <QuickInsights stock={selectedStock} />

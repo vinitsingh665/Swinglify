@@ -72,7 +72,7 @@ export async function POST(req) {
     // Send the email
     await transporter.sendMail({
       from: `"Swinglify System" <${process.env.SMTP_USER}>`, // sender address
-      to: process.env.RECEIVER_EMAIL || 'team@swinglify.online', // receiver
+      to: process.env.RECEIVER_EMAIL || 'swinglify@gmail.com', // receiver
       replyTo: email,
       subject: `[Swinglify ${type === 'bug' ? 'Bug' : 'Support'}] ${subject || 'New Message from ' + name}`,
       html: htmlContent,

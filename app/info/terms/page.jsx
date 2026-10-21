@@ -78,7 +78,7 @@ export default function TermsPage() {
             <p>Swinglify reserves the right to modify these Terms of Service at any time. We will notify users of significant changes via email or in-app notification. Continued use of the Platform after changes constitutes acceptance of the modified terms.</p>
 
             <h2>10. Contact</h2>
-            <p>For questions about these Terms, please contact us at <strong>team@swinglify.online</strong>.</p>
+            <p>For questions about these Terms, please contact us at <strong>swinglify@gmail.com</strong>.</p>
           </div>
         </div>
       </div>

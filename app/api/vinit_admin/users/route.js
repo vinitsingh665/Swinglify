@@ -7,6 +7,19 @@ import Visitor from '../../../../models/Visitor';
 
 export async function GET() {
   try {
+    if (!process.env.MONGODB_URI || !process.env.MONGODB_URI.trim()) {
+      return NextResponse.json({
+        success: true,
+        data: [],
+        meta: {
+          total: 0,
+          online: 0,
+          offline: 0
+        },
+        currentUserId: ''
+      });
+    }
+
     await dbConnect();
 
     // Check current admin session
