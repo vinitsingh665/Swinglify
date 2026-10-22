@@ -1,34 +1,36 @@
+"use client";
+
 export default function MarketMarquee() {
-  // Mock live data to give the authentic trading terminal feel right on load
   const tickers = [
-    { sym: 'NIFTY 50', val: '22,419.55', chg: '+0.54%' },
-    { sym: 'BANKNIFTY', val: '47,581.00', chg: '+0.82%' },
-    { sym: 'RELIANCE', val: '2,890.15', chg: '+1.20%' },
-    { sym: 'TCS', val: '4,015.60', chg: '-0.35%' },
-    { sym: 'INFY', val: '1,502.80', chg: '-1.10%' },
-    { sym: 'HDFCBANK', val: '1,440.00', chg: '+0.45%' },
-    { sym: 'ICICIBANK', val: '1,050.25', chg: '+1.05%' },
-    { sym: 'SBIN', val: '755.30', chg: '+2.10%' },
-    { sym: 'ITC', val: '412.00', chg: '+0.15%' },
+    { sym: 'NIFTY 50', val: '24,850.20', chg: '+0.45%', isUp: true },
+    { sym: 'BANK NIFTY', val: '51,240.60', chg: '+0.82%', isUp: true },
+    { sym: 'SENSEX', val: '81,425.10', chg: '+0.38%', isUp: true },
+    { sym: 'INDIA VIX', val: '13.25', chg: '-3.10%', isUp: false },
+    { sym: 'RELIANCE', val: '₹2,940.50', chg: '+1.65%', isUp: true },
+    { sym: 'TATAMOTORS', val: '₹984.60', chg: '+3.45%', isUp: true },
+    { sym: 'TRENT', val: '₹5,420.00', chg: '+5.82%', isUp: true },
+    { sym: 'HDFCBANK', val: '₹1,680.10', chg: '+0.95%', isUp: true },
+    { sym: 'ZOMATO', val: '₹274.20', chg: '+4.12%', isUp: true },
+    { sym: 'TCS', val: '₹4,120.00', chg: '-0.40%', isUp: false },
+    { sym: 'BAJFINANCE', val: '₹7,250.00', chg: '+2.15%', isUp: true },
+    { sym: 'ICICIBANK', val: '₹1,240.80', chg: '+1.30%', isUp: true },
   ];
 
-  const items = [...tickers, ...tickers, ...tickers]; // Triplicate for endless loop
+  // Triplicate array for smooth endless loop
+  const displayItems = [...tickers, ...tickers, ...tickers];
 
   return (
-    <div className="landing-marquee">
-      <div className="marquee-content">
-        {items.map((t, i) => {
-          const isUp = t.chg.startsWith('+');
-          return (
-            <div className="ticker-item" key={i}>
-              <span className="ticker-sym">{t.sym}</span>
-              <span style={{ color: 'rgba(255,255,255,0.9)' }}>{t.val}</span>
-              <span className={isUp ? "ticker-pos" : "ticker-neg"}>
-                {isUp ? '▲' : '▼'}{t.chg}
-              </span>
-            </div>
-          );
-        })}
+    <div className="landing-marquee-wrapper" aria-hidden="true">
+      <div className="landing-marquee-track">
+        {displayItems.map((item, index) => (
+          <div key={index} className="marquee-ticker-pill">
+            <span className="marquee-pill-sym">{item.sym}</span>
+            <span className="marquee-pill-val">{item.val}</span>
+            <span className={`marquee-pill-chg ${item.isUp ? 'pos' : 'neg'}`}>
+              {item.isUp ? '▲' : '▼'} {item.chg}
+            </span>
+          </div>
+        ))}
       </div>
     </div>
   );
