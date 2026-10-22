@@ -5,7 +5,7 @@ export default function LandingFooter() {
     <footer className="landing-footer">
       <div className="footer-glow"></div>
       
-      <h2 className="footer-main-title">Stop Guessing. Start Swinging.</h2>
+      <h3 className="footer-main-title">Stop Guessing. Start Swinging.</h3>
       <p className="footer-subtitle">
         Join forward-thinking Indian stock traders building their edge with data.<br />
         No credit card required. Free forever early access.
