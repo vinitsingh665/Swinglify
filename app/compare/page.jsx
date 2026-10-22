@@ -12,7 +12,7 @@ import WinnerInsight from './components/WinnerInsight';
 
 const DEFAULT_STOCKS = ['RELIANCE', 'TCS', 'HDFCBANK'];
 
-function CompareContent() {
+export function CompareContent({ initialSymbols = null, seoHeader = null }) {
   const searchParams = useSearchParams();
   const queryStock = searchParams.get('stock');
   const [theme, setThemeState] = useState('dark');
@@ -29,6 +29,12 @@ function CompareContent() {
 
   // Symbol persistence
   useEffect(() => {
+    if (initialSymbols && initialSymbols.length > 0) {
+      setSymbols(initialSymbols);
+      setInitialLoaded(true);
+      return;
+    }
+
     let currentSymbols = DEFAULT_STOCKS;
     // 1. Try local storage first
     const savedSymbols = localStorage.getItem('compare_symbols');
@@ -151,7 +157,26 @@ function CompareContent() {
         <TopBar />
 
         <div className="compare-layout">
-          <h1 style={{ fontSize: '1.3rem', fontWeight: 700, marginBottom: '16px', color: 'var(--text-primary)' }}>Compare Stocks Side-by-Side</h1>
+          {seoHeader ? (
+            <div className="compare-seo-header" style={{ marginBottom: 18, padding: '18px 22px', background: 'var(--bg-card)', borderRadius: 12, border: '1px solid var(--border)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+                <span style={{ fontSize: '0.72rem', fontWeight: 700, padding: '3px 10px', borderRadius: 999, background: 'var(--accent-bg)', color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  Peer Stock Comparison
+                </span>
+                <span style={{ fontSize: '0.8rem', color: 'var(--text-dim)' }}>
+                  NSE & BSE Side-by-Side
+                </span>
+              </div>
+              <h1 style={{ fontSize: '1.4rem', fontWeight: 800, margin: '0 0 6px 0', color: 'var(--text-primary)' }}>
+                {seoHeader.title}
+              </h1>
+              <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.6, margin: 0 }}>
+                {seoHeader.summary}
+              </p>
+            </div>
+          ) : (
+            <h1 style={{ fontSize: '1.3rem', fontWeight: 700, marginBottom: '16px', color: 'var(--text-primary)' }}>Compare Stocks Side-by-Side</h1>
+          )}
           {/* Stock Selector Strip */}
           <StockSelector symbols={symbols} onAdd={handleAdd} onRemove={handleRemove} />
 

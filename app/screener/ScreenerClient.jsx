@@ -76,10 +76,16 @@ const INDEX_LABEL_MAP = {
 };
 
 
-export default function ScreenerClient({ initialStocks = [], initialSectors = [] }) {
+export default function ScreenerClient({ 
+  initialStocks = [], 
+  initialSectors = [], 
+  initialFilters = DEFAULT_FILTERS,
+  initialIndex = null,
+  seoHeader = null
+}) {
   const searchParams = useSearchParams();
   const [theme, setThemeState] = useState('dark');
-  const [filters, setFilters] = useState(DEFAULT_FILTERS);
+  const [filters, setFilters] = useState(initialFilters);
   const [stocks, setStocks] = useState(initialStocks);
   const [sectors, setSectors] = useState(initialSectors);
   const [loading, setLoading] = useState(false);
@@ -88,7 +94,7 @@ export default function ScreenerClient({ initialStocks = [], initialSectors = []
 
   const [searchQuery, setSearchQuery] = useState('');
   const [timeframe, setTimeframe] = useState('');
-  const [selectedIndex, setSelectedIndex] = useState(null);
+  const [selectedIndex, setSelectedIndex] = useState(initialIndex);
 
   // Apply URL query params as filters (from dashboard opportunity cards)
   useEffect(() => {
@@ -265,10 +271,34 @@ export default function ScreenerClient({ initialStocks = [], initialSectors = []
         <TopBar />
         <div className="screener-layout">
 
+          {/* SEO Header for Programmatic Screener Presets */}
+          {seoHeader && (
+            <div className="screener-seo-header" style={{ marginBottom: 16, padding: '18px 22px', background: 'var(--bg-card)', borderRadius: 12, border: '1px solid var(--border)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+                <span style={{ fontSize: '0.72rem', fontWeight: 700, padding: '3px 10px', borderRadius: 999, background: 'var(--accent-bg)', color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  {seoHeader.badge || 'Curated Strategy'}
+                </span>
+                <span style={{ fontSize: '0.8rem', color: 'var(--text-dim)' }}>
+                  NSE & BSE Technical Screen
+                </span>
+              </div>
+              <h1 style={{ fontSize: '1.4rem', fontWeight: 800, margin: '0 0 6px 0', color: 'var(--text-primary)' }}>
+                {seoHeader.title}
+              </h1>
+              <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.6, margin: 0 }}>
+                {seoHeader.description}
+              </p>
+            </div>
+          )}
+
           {/* Top Bar */}
           <div className="screener-topbar">
             <div className="st-left">
-              <h1 className="st-title">Screener</h1>
+              {seoHeader ? (
+                <div className="st-title" style={{ fontSize: '1.1rem' }}>Active Results</div>
+              ) : (
+                <h1 className="st-title">Screener</h1>
+              )}
               <div className="st-search">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
                 <input placeholder="Search symbol or name..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />

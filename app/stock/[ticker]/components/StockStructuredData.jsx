@@ -72,6 +72,51 @@ export default function StockStructuredData({ stock }) {
     ]
   };
 
+  const changeUp = (stock.change || 0) >= 0;
+  const changeSign = changeUp ? '+' : '';
+  const rsiStatus = stock.rsi != null
+    ? stock.rsi < 30 ? 'oversold (dip buying opportunity)' : stock.rsi > 70 ? 'overbought (caution / profit booking zone)' : 'neutral momentum'
+    : 'neutral';
+
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": `What is ${stock.symbol} live share price today?`,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": `${stock.symbol} (${stock.name}) is currently trading at ₹${stock.price?.toLocaleString('en-IN') ?? '—'} on ${stock.exchange || 'NSE'} with a 24-hour price change of ${changeSign}${(stock.change || 0).toFixed(2)}%.`
+        }
+      },
+      {
+        "@type": "Question",
+        "name": `What is ${stock.symbol} RSI indicator reading?`,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": `The 14-day RSI (Relative Strength Index) for ${stock.symbol} is currently ${stock.rsi != null ? stock.rsi.toFixed(1) : 'N/A'}, indicating ${rsiStatus}.`
+        }
+      },
+      {
+        "@type": "Question",
+        "name": `Is ${stock.symbol} good for swing trading right now?`,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": `According to Swinglify's composite indicator analysis, ${stock.symbol} holds a ${stock.indicatorScore?.label || 'NEUTRAL'} rating with a momentum score of ${stock.indicatorScore?.score ?? 50}/100 based on RSI, MACD crossovers, and moving averages.`
+        }
+      },
+      {
+        "@type": "Question",
+        "name": `What is the 52-week range for ${stock.symbol}?`,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": `${stock.symbol} has a 52-week high of ₹${stock.week52High?.toLocaleString('en-IN') ?? '—'} and a 52-week low of ₹${stock.week52Low?.toLocaleString('en-IN') ?? '—'}.`
+        }
+      }
+    ]
+  };
+
   return (
     <>
       <script
@@ -81,6 +126,10 @@ export default function StockStructuredData({ stock }) {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
     </>
   );

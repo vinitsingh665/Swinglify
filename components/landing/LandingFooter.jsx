@@ -15,6 +15,24 @@ export default function LandingFooter() {
         Launch Application
       </Link>
 
+      <div className="footer-links" style={{ marginBottom: '10px', flexWrap: 'wrap', gap: '14px' }}>
+        <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.8rem', fontWeight: 600 }}>Screeners:</span>
+        <Link href="/screener/rsi-oversold">RSI Oversold Stocks</Link>
+        <Link href="/screener/volume-breakouts">Volume Breakouts</Link>
+        <Link href="/screener/golden-cross">Golden Cross</Link>
+        <Link href="/screener/52-week-high">52-Week High Leaders</Link>
+        <Link href="/screener/top-gainers">Top Gainers</Link>
+      </div>
+
+      <div className="footer-links" style={{ marginBottom: '10px', flexWrap: 'wrap', gap: '14px' }}>
+        <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.8rem', fontWeight: 600 }}>Compare:</span>
+        <Link href="/compare/tcs-vs-infy">TCS vs Infosys</Link>
+        <Link href="/compare/hdfcbank-vs-icicibank">HDFC vs ICICI Bank</Link>
+        <Link href="/compare/tatamotors-vs-m_m">Tata Motors vs M&M</Link>
+        <Link href="/compare/reliance-vs-adanients">Reliance vs Adani</Link>
+        <Link href="/compare/sbi-vs-hdfcbank">SBI vs HDFC Bank</Link>
+      </div>
+
       <div className="footer-links">
         <Link href="/all-stocks">A-Z Stock Directory</Link>
         <Link href="/info/privacy">Privacy Policy</Link>

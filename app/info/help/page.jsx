@@ -57,8 +57,25 @@ export default function HelpCenterPage() {
     )
   })).filter(category => category.questions.length > 0);
 
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": faqs.flatMap(category => category.questions.map(q => ({
+      "@type": "Question",
+      "name": q.q,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": q.a
+      }
+    })))
+  };
+
   return (
     <div className="app-layout" data-theme={theme}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
       <Sidebar theme={theme} setTheme={setTheme} />
       <div className="main-area">
         <TopBar />

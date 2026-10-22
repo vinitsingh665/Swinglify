@@ -1,5 +1,3 @@
-import { fetchFromTradingView, parseStockData, FIELDS } from '../../../lib/api-core';
-
 export async function generateMetadata({ params }) {
   const { ticker } = await params;
   const symbol = ticker.toUpperCase();
@@ -32,7 +30,7 @@ export async function generateMetadata({ params }) {
       images: [{ url: '/og-image.png', width: 1200, height: 630, alt: `${symbol} stock analysis on Swinglify` }],
     },
     twitter: {
-      card: 'summary',
+      card: 'summary_large_image',
       title: `${symbol} Share Price & Analysis | Swinglify`,
       description: `${symbol} live price, RSI, MACD analysis. Free swing trading signals.`,
       images: ['/og-image.png'],
@@ -40,31 +38,6 @@ export async function generateMetadata({ params }) {
   };
 }
 
-export default async function StockLayout({ children, params }) {
-  const { ticker } = await params;
-  const symbol = ticker.toUpperCase();
-
-  const financialSchema = {
-    "@context": "https://schema.org",
-    "@type": "FinancialProduct",
-    "name": `${symbol} Stock`,
-    "alternateName": symbol,
-    "provider": {
-      "@type": "Organization",
-      "name": "Swinglify",
-      "url": "https://swinglify.online"
-    },
-    "description": `Technical analysis, live share price, RSI, MACD, and swing trading signals for ${symbol} on the NSE & BSE.`,
-    "url": `https://swinglify.online/stock/${symbol}`,
-  };
-
-  return (
-    <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(financialSchema) }}
-      />
-      {children}
-    </>
-  );
+export default async function StockLayout({ children }) {
+  return children;
 }

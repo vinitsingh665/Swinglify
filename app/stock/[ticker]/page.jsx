@@ -441,6 +441,43 @@ export default async function StockPage({ params }) {
             </p>
           </div>
 
+          {/* Frequently Asked Questions (FAQ) for Google Rich Snippets */}
+          <h2 className="stock-section-title">Frequently Asked Questions about {s.symbol}</h2>
+          <div className="stock-faq-list" style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: 28 }}>
+            <div className="stock-stat-card" style={{ padding: '16px 20px' }}>
+              <h3 style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--text-primary)', margin: '0 0 6px 0' }}>
+                What is {s.symbol} live share price today?
+              </h3>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', lineHeight: 1.6, margin: 0 }}>
+                {s.symbol} ({s.name}) is currently trading at <strong>₹{formatNumber(s.price)}</strong> on {s.exchange || 'NSE'} with a 24-hour price change of {changeSign}{(s.change || 0).toFixed(2)}% ({changeSign}₹{formatNumber(Math.abs(s.changeAbs || 0))}).
+              </p>
+            </div>
+            <div className="stock-stat-card" style={{ padding: '16px 20px' }}>
+              <h3 style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--text-primary)', margin: '0 0 6px 0' }}>
+                What is {s.symbol} RSI indicator reading?
+              </h3>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', lineHeight: 1.6, margin: 0 }}>
+                The 14-day Relative Strength Index (RSI) for {s.symbol} is currently <strong>{s.rsi != null ? s.rsi.toFixed(1) : 'N/A'}</strong>. An RSI below 30 signals oversold momentum, while an RSI above 70 indicates an overbought condition.
+              </p>
+            </div>
+            <div className="stock-stat-card" style={{ padding: '16px 20px' }}>
+              <h3 style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--text-primary)', margin: '0 0 6px 0' }}>
+                Is {s.symbol} good for swing trading right now?
+              </h3>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', lineHeight: 1.6, margin: 0 }}>
+                Swinglify composite indicator analysis scores {s.symbol} at <strong>{score.score}/100</strong> with a <strong>{score.label}</strong> signal based on EMA moving averages (EMA 20, 50, 200), MACD momentum, and Bollinger Bands.
+              </p>
+            </div>
+            <div className="stock-stat-card" style={{ padding: '16px 20px' }}>
+              <h3 style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--text-primary)', margin: '0 0 6px 0' }}>
+                What is the 52-week price range for {s.symbol}?
+              </h3>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', lineHeight: 1.6, margin: 0 }}>
+                Over the past 52 weeks, {s.symbol} has traded between a low of <strong>₹{formatNumber(s.week52Low)}</strong> and a high of <strong>₹{formatNumber(s.week52High)}</strong>.
+              </p>
+            </div>
+          </div>
+
           {/* Related Links for Internal Linking (SEO) */}
           <h2 className="stock-section-title">Explore More</h2>
           <div className="stock-related-links" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px', marginBottom: 28 }}>

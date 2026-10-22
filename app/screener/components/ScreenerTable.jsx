@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useRef, useEffect } from 'react';
+import Link from 'next/link';
 
 const ITEMS_PER_PAGE = 50;
 
@@ -268,7 +269,17 @@ export default function ScreenerTable({
                       ) : null}
                       <div className="sr-logo-fallback" style={s.logo ? { display: 'none' } : {}}>{(s.symbol || '?')[0]}</div>
                       <div>
-                        <div className="sr-sym">{s.symbol}</div>
+                        <div className="sr-sym">
+                          <Link
+                            href={`/stock/${s.symbol}`}
+                            onClick={(e) => e.stopPropagation()}
+                            title={`View ${s.symbol} share price and technical analysis`}
+                            style={{ color: 'inherit', textDecoration: 'none' }}
+                          >
+                            {s.symbol}
+                            <span style={{ display: 'inline-block', marginLeft: 4, fontSize: '0.65rem', opacity: 0.55 }}>↗</span>
+                          </Link>
+                        </div>
                         <div className="sr-name">{s.name}</div>
                       </div>
                     </div>
