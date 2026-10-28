@@ -4,7 +4,7 @@ import { fetchFromTradingView, parseStockData, FIELDS } from '../../../lib/api-c
 import { SCREENER_PRESETS } from '../../../lib/screener-presets';
 import ScreenerClient from '../ScreenerClient';
 
-export const revalidate = 300; // Recache every 5 minutes
+export const revalidate = 600; // Recache every 10 minutes
 
 export async function generateStaticParams() {
   return Object.keys(SCREENER_PRESETS).map(preset => ({ preset }));

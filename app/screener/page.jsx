@@ -2,8 +2,8 @@ import { fetchFromTradingView, parseStockData, FIELDS } from '../../lib/api-core
 import ScreenerClient from './ScreenerClient';
 import { Suspense } from 'react';
 
-// ISR: revalidate every 5 minutes (stock data stays fresh but cacheable)
-export const revalidate = 300;
+// ISR: revalidate every 10 minutes (stock data stays fresh but cacheable on CDN)
+export const revalidate = 600;
 
 // Sector list — same as the API route
 const SECTORS = [

@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 
 // In-memory cache for chart data
 const chartCache = new Map();
-const CHART_CACHE_TTL = 20 * 1000; // 20 seconds
+const CHART_CACHE_TTL = 30 * 1000; // 30 seconds
 
 // Map our index names to Yahoo Finance tickers
 const INDEX_TICKERS = {
@@ -42,7 +42,11 @@ export async function GET(request) {
     const cacheKey = `chart_${ticker}_${period}`;
     const cached = chartCache.get(cacheKey);
     if (cached && Date.now() - cached.timestamp < CHART_CACHE_TTL) {
-      return NextResponse.json({ ...cached.data, cached: true });
+      return NextResponse.json({ ...cached.data, cached: true }, {
+        headers: {
+          'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=60'
+        }
+      });
     }
 
     const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?interval=${config.interval}&range=${config.range}&includePrePost=false`;
@@ -51,42 +55,37 @@ export async function GET(request) {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
       },
+      next: { revalidate: 30 }
     });
 
     if (!response.ok) {
-      throw new Error(`Yahoo Finance returned ${response.status}`);
+      throw new Error(`Yahoo Finance API responded with ${response.status}`);
     }
 
-    const json = await response.json();
-    const result = json?.chart?.result?.[0];
+    const data = await response.json();
+    const result = data.chart?.result?.[0];
 
     if (!result) {
-      throw new Error('No chart data available');
+      throw new Error('No chart data returned from Yahoo Finance');
     }
 
     const timestamps = result.timestamp || [];
     const quotes = result.indicators?.quote?.[0] || {};
     const meta = result.meta || {};
 
-    // Build chart points - filter out null values
     const points = [];
     for (let i = 0; i < timestamps.length; i++) {
       const close = quotes.close?.[i];
-      if (close != null && !isNaN(close)) {
+      if (close !== null && close !== undefined && !isNaN(close)) {
         points.push({
-          time: timestamps[i] * 1000, // Convert to milliseconds
-          value: Math.round(close * 100) / 100,
-          open: quotes.open?.[i] ? Math.round(quotes.open[i] * 100) / 100 : null,
-          high: quotes.high?.[i] ? Math.round(quotes.high[i] * 100) / 100 : null,
-          low: quotes.low?.[i] ? Math.round(quotes.low[i] * 100) / 100 : null,
-          volume: quotes.volume?.[i] || 0,
+          time: timestamps[i],
+          price: Math.round(close * 100) / 100,
         });
       }
     }
 
     const responseData = {
       success: true,
-      ticker,
       index,
       period,
       isStock,
@@ -99,7 +98,11 @@ export async function GET(request) {
     };
 
     chartCache.set(cacheKey, { data: responseData, timestamp: Date.now() });
-    return NextResponse.json(responseData);
+    return NextResponse.json(responseData, {
+      headers: {
+        'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=60'
+      }
+    });
   } catch (error) {
     console.error('Chart API error:', error.message);
     return NextResponse.json(

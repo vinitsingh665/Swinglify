@@ -58,6 +58,7 @@ function BalanceCard({ theme, categoryName, nifty, activePeriod, setActivePeriod
 
   // Fetch chart data
   const fetchChart = useCallback(async () => {
+    if (typeof document !== 'undefined' && document.visibilityState === 'hidden') return;
     try {
       let url;
       if (chartSymbol) {

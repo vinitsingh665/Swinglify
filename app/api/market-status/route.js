@@ -81,14 +81,12 @@ export async function GET() {
                     }
                     
                     // Majority vote: if NONE of the 5 stocks updated today, market is likely closed
-                    // Even 1 stock updating today means market is open
                     if (updatedToday === 0) {
                         isTradingDay = false;
                     }
                 }
             }
         } catch (err) {
-            // If TradingView fetch fails, trust the time-based check (fail-open)
             console.error('TradingView status fetch error:', err);
         }
     }
@@ -104,5 +102,9 @@ export async function GET() {
         currentTimeIST: ist.toISOString().replace('Z', '+05:30'),
         tradingHours: '9:15 AM - 3:30 PM IST (Mon-Fri)',
         nextOpen: !isOpen ? getNextOpenTime(ist) : null
+    }, {
+        headers: {
+            'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=120'
+        }
     });
 }

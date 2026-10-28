@@ -2,6 +2,7 @@ import { ImageResponse } from 'next/og';
 import { fetchFromTradingView, parseStockData, FIELDS } from '../../../lib/api-core';
 
 export const runtime = 'edge';
+export const revalidate = 86400; // Cache generated OG image on Edge CDN for 24 hours
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
@@ -203,6 +204,11 @@ export default async function Image({ params }) {
         </div>
       </div>
     ),
-    { ...size }
+    {
+      ...size,
+      headers: {
+        'Cache-Control': 'public, max-age=86400, s-maxage=86400, stale-while-revalidate=604800',
+      },
+    }
   );
 }

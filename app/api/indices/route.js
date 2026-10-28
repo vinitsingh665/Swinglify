@@ -49,7 +49,11 @@ export async function GET() {
         };
 
         setCache('indices', result);
-        return NextResponse.json(result);
+        return NextResponse.json(result, {
+            headers: {
+                'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=60'
+            }
+        });
     } catch (error) {
         return NextResponse.json({ success: false, error: 'Failed to fetch indices', details: error.message }, { status: 500 });
     }

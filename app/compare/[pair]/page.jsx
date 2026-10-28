@@ -3,7 +3,7 @@ import { Suspense } from 'react';
 import { POPULAR_COMPARISONS } from '../../../lib/compare-presets';
 import { CompareContent } from '../page';
 
-export const revalidate = 300; // Recache every 5 minutes
+export const revalidate = 600; // Recache every 10 minutes
 
 export async function generateStaticParams() {
   return Object.keys(POPULAR_COMPARISONS).map(pair => ({ pair }));

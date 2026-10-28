@@ -32,10 +32,11 @@ export default function AdminDashboard() {
     fetchDashboardData();
     // Poll stats every 5 seconds for "live" feel
     const interval = setInterval(() => {
+      if (typeof document !== 'undefined' && document.visibilityState === 'hidden') return;
       fetch('/api/admin/stats').then(r=>r.json()).then(d => {
         if(d.success) setStats(d.data);
       });
-    }, 5000);
+    }, 30000);
     return () => clearInterval(interval);
   }, []);
 

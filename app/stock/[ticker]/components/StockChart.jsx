@@ -16,6 +16,7 @@ export default function StockChart({ symbol }) {
   const chartMetaRef = useRef(null);
 
   const fetchChart = useCallback(async () => {
+    if (typeof document !== 'undefined' && document.visibilityState === 'hidden') return;
     try {
       const url = `/api/chart?symbol=${encodeURIComponent(symbol)}&period=${activePeriod}`;
       const res = await fetch(url);

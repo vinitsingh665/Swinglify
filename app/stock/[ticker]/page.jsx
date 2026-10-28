@@ -9,7 +9,7 @@ import TopBar from '../../../components/TopBar';
 import './stock-page.css';
 
 // ISR: revalidate every 5 minutes
-export const revalidate = 300;
+export const revalidate = 3600;
 
 // Pre-render top 50 stocks at build time for fast initial loads
 export async function generateStaticParams() {
@@ -23,7 +23,7 @@ export async function generateStaticParams() {
       symbols: { query: { types: ['stock'] } },
       columns: ['name'],
       sort: { sortBy: 'market_cap_basic', sortOrder: 'desc' },
-      range: [0, 50],
+      range: [0, 100],
     };
     const tvData = await fetchFromTradingView(body);
     if (tvData?.data) {

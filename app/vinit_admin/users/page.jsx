@@ -66,8 +66,9 @@ export default function UsersAdminPage() {
 
     // Auto poll presence status every 10 seconds for real-time updates (like Journal)
     const interval = setInterval(() => {
+      if (typeof document !== 'undefined' && document.visibilityState === 'hidden') return;
       fetchUsers(true);
-    }, 10000);
+    }, 30000);
 
     return () => clearInterval(interval);
   }, []);

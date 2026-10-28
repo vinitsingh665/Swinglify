@@ -3,8 +3,8 @@ import Post from '../../../models/Post';
 import Comment from '../../../models/Comment';
 import PostClient from './PostClient';
 
-// Ensure this page is rendered dynamically on request due to community data shifting
-export const dynamic = 'force-dynamic';
+// ISR: revalidate every 3 minutes (caches SSR page at the CDN edge to save serverless compute)
+export const revalidate = 180;
 
 export async function generateMetadata({ params }) {
   const { id } = await params;
